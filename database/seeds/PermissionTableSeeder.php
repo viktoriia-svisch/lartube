@@ -9,7 +9,12 @@ class PermissionTableSeeder extends Seeder
     'role-list',
     'role-create',
     'role-edit',
-    'role-delete'
+    'role-delete',
+    'admin',
+    'role-admin',
+    'user-admin',
+    'video-admin',
+    'moderator'
     ];
  foreach ($permissions as $permission) {
       Permission::create(['name' => $permission]);

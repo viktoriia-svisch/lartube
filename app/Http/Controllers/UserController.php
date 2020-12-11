@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
@@ -8,6 +9,9 @@ use DB;
 use Hash;
 class UserController extends Controller
 {
+  function __construct()
+  {
+  }
     public function index(Request $request)
     {
         $data = User::orderBy('id','DESC')->paginate(5);
@@ -45,6 +49,10 @@ class UserController extends Controller
         $roles = Role::pluck('name','name')->all();
         $userRole = $user->roles->pluck('name','name')->all();
         return view('users.edit',compact('user','roles','userRole'));
+    }
+    public function selfEdit(){
+      $user = User::find(Auth::user()->id);
+      return view('users.selfedit',compact('user'));
     }
     public function update(Request $request, $id)
     {
