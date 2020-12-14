@@ -17,9 +17,9 @@ class MediaController extends Controller
     public function directUpload(Request $request){
       $file = $request->file('directMedia');
       $title = $request->input('title');
-      echo 'File Name: '.$file->getClientOriginalName();
-      $path = $file->store('directMedia');
-      $media = Media::create(['title' => $title,'source' => $path, 'users_id' => Auth::user()->id]);
+      echo 'File Name: '.$file->getClientOriginalName(). "   ".Auth::id();
+      $path = $file->store('public/directMedia');
+      $media = Media::create(['title' => $title,'source' => $path, 'users_id' => Auth::id()]);
       return view('directupload');
     }
     public function store(Request $request)
