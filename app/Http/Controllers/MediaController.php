@@ -13,6 +13,10 @@ class MediaController extends Controller
       return view('medias.index',compact('data'))
           ->with('i', ($request->input('page', 1) - 1) * 5);
     }
+    public function directUploadView(Request $request)
+    {
+      return view('directupload');
+    }
     public function create()
     {
     }
