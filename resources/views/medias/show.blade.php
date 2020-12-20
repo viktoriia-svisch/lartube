@@ -6,21 +6,16 @@
             <h2> Show Media</h2>
         </div>
         <div class="pull-right">
-            <a class="btn btn-primary" href="{{ route('users.index') }}"> Back</a>
+            <a class="btn btn-primary" href="{{ route('media') }}"> Back</a>
         </div>
     </div>
 </div>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Name:</strong>
-            {{ $media->title }}
-        </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Email:</strong>
-            {{ $media->source }}
+        <h2>{{ $media->title }}</h2>
+            <video poster="{{ $media->poster_source }}" playsinline controls>
+              <source src="{{ $media->source }}" type="video/mp4">
+            </video>
         </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12">

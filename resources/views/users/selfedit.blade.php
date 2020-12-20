@@ -20,6 +20,16 @@
     </ul>
   </div>
 @endif
+<img src="{{ $user->avatar_source }}" />
+{!! Form::open(array('method' => 'POST', 'route' => ['users.updateAvatar'],'files'=>'true'))  !!}
+{!! Form::file('avatar_source')  !!}
+{!! Form::submit('Upload avatar')  !!}
+{!! Form::close()  !!}
+<img src="{{ $user->background_source }}" />
+{!! Form::open(array('method' => 'POST', 'route' => ['users.updateBackground'],'files'=>'true'))  !!}
+{!! Form::file('background_source')  !!}
+{!! Form::submit('Upload background')  !!}
+{!! Form::close()  !!}
 {!! Form::model($user, ['method' => 'PATCH','route' => ['users.update', $user->id]]) !!}
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12">

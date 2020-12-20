@@ -9,13 +9,12 @@ class User extends Authenticatable
   use HasApiTokens, Notifiable;
   use HasRoles;
     protected $fillable = [
-        'name', 'email', 'password',
+        'id','name', 'email', 'password', 'avatar_source', 'background_source'
     ];
     protected $hidden = [
         'password', 'remember_token',
     ];
-    public function tags()
-{
-    return $this->belongsToMany('App\Tags');
-}
+    public function tags() {
+      return $this->belongsToMany('App\Tags');
+    }
 }

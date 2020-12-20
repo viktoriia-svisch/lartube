@@ -7,6 +7,7 @@ use App\User;
 use Spatie\Permission\Models\Role;
 use DB;
 use Hash;
+use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
   function __construct()
@@ -53,6 +54,40 @@ class UserController extends Controller
     public function selfEdit(){
       $user = User::find(Auth::user()->id);
       return view('users.selfedit',compact('user'));
+    }
+    public function updateAvatar(Request $request)
+    {
+      $user = User::find(Auth::id());
+      if(!empty($user->avatar_source)){
+        Storage::delete($user->avatar_source);
+      }
+      $file = $request->file('avatar_source');
+      $extension = $file->getClientOriginalExtension();
+      if(($extension=="jpg")||($extension=="jpeg")||($extension=="png")||($extension=="gif")){
+        $user->avatar_source = $file->store('public/u/avatars');
+        $user->save();
+        return redirect()->route('users.selfedit')
+                        ->with('success','Avatar uploaded with success');
+      }
+      return redirect()->route('users.selfedit')
+                      ->with('error','No avatar updated');
+    }
+    public function updateBackground(Request $request)
+    {
+      $user = User::find(Auth::id());
+      if(!empty($user->background_source)){
+        Storage::delete($user->background_source);
+      }
+      $file = $request->file('background_source');
+      $extension = $file->getClientOriginalExtension();
+      if(($extension=="jpg")||($extension=="jpeg")||($extension=="png")||($extension=="gif")){
+        $user->background_source = $file->store('public/u/backgrounds');
+        $user->save();
+        return redirect()->route('users.selfedit')
+                        ->with('success','Background uploaded with success');
+      }
+      return redirect()->route('users.selfedit')
+                      ->with('error','No background updated');
     }
     public function update(Request $request, $id)
     {
