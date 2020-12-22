@@ -14,6 +14,7 @@ Route::post('/user/updateBackground','UserController@updateBackground')->name('u
 Route::get('/media/add','MediaController@addMedia')->name('medias.add');
 Route::post('/media/create','MediaController@create')->name('medias.create');
 Route::get('/media/edit/{title}','MediaController@editView')->name('medias.editView');
+Route::post('/media/edit/{title}','MediaController@edit')->name('medias.edit');
 Route::get('/media/delete/{title}','MediaController@destroy')->name('medias.delete');
 Route::get('/media/{title}', 'MediaController@show')->name('media.show');
 Route::get('/profileEdit','UserController@selfEdit')->name('users.selfedit');
