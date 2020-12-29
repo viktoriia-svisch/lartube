@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@section('header')
+  </script>
+@endsection
 @section('content')
 <div class="row">
     <div class="col-lg-12 margin-tb">
@@ -20,12 +23,14 @@
     </ul>
   </div>
 @endif
-<img src="{{ $user->avatar_source }}" />
+<div id="page">
+<img id="avsrc" src="{{ url($user->avatar_source) }}" />
+</div>
 {!! Form::open(array('method' => 'POST', 'route' => ['users.updateAvatar'],'files'=>'true'))  !!}
 {!! Form::file('avatar_source')  !!}
 {!! Form::submit('Upload avatar')  !!}
 {!! Form::close()  !!}
-<img src="{{ $user->background_source }}" />
+<img src="{{ url($user->background_source) }}" />
 {!! Form::open(array('method' => 'POST', 'route' => ['users.updateBackground'],'files'=>'true'))  !!}
 {!! Form::file('background_source')  !!}
 {!! Form::submit('Upload background')  !!}
@@ -42,6 +47,12 @@
         <div class="form-group">
             <strong>Email:</strong>
             {!! Form::text('email', null, array('placeholder' => 'Email','class' => 'form-control')) !!}
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="form-group">
+            <strong>Tags (separate with spaces):</strong>
+            <input id="tags" type="text" class="form-control" name="tags" value="{{ $user->tagString() }}" >
         </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12">

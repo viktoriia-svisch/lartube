@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-<div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -28,6 +27,12 @@
                                         <strong>{{ $errors->first('email') }}</strong>
                                     </span>
                                 @endif
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="tags" class="col-md-4 col-form-label text-md-right">{{ __('Tags') }}</label>
+                            <div class="col-md-6">
+                                <input id="tags" type="text" class="form-control" name="tags" value="" >
                             </div>
                         </div>
                         <div class="form-group row">
@@ -59,5 +64,4 @@
             </div>
         </div>
     </div>
-</div>
 @endsection

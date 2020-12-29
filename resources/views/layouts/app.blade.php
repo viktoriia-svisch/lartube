@@ -7,9 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Laravel') }}</title>
     <script src="{{ asset('js/app.js') }}" defer></script>
-    <script src="https://unpkg.com/ionicons@4.3.0/dist/ionicons.js"></script>
+        <script src="{{ asset('js/jquery.min.js') }}"></script>
     @yield('header')
-    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://unpkg.com/ionicons@4.3.0/dist/ionicons.js"></script>
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -39,7 +39,7 @@
                             <li class="nav-item"><a class="dropdown-item" href="{{ route('medias.add') }}">{{ __('Upload') }}</a></li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
+                                    <img class="img-thumbnail" src="{{ url(Auth::user()->avatar_source) }}" />{{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                   <a class="dropdown-item" href="{{ route('users.selfedit') }}">{{ __('Settings') }}</a>
@@ -68,7 +68,10 @@
             </div>
         </nav>
         <main class="py-4">
+          <div class="container">
+              <div class="justify-content-center">
             @yield('content')
+          </div></div>
         </main>
     </div>
   </body>

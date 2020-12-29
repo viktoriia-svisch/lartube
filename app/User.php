@@ -8,6 +8,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
   use HasApiTokens, Notifiable;
+  use \Conner\Tagging\Taggable;
   use HasRoles;
     protected $fillable = [
         'id','name', 'email', 'password', 'avatar_source', 'background_source'
@@ -15,11 +16,15 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
-    public function tags() {
-      return $this->belongsToMany('App\Tags');
-    }
     public function medias(){
       $media = Media::where('users_id', '=' ,$this->id)->get();
       return $media;
+    }
+    public function tagString(){
+      $string = "";
+      foreach($this->tags as $tag) {
+        $string .= $tag->name." ";
+      }
+      return $string;
     }
 }
