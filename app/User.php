@@ -23,7 +23,9 @@ class User extends Authenticatable
     public function tagString(){
       $string = "";
       foreach($this->tags as $tag) {
+        if(!empty($tag)){
         $string .= $tag->name." ";
+      }
       }
       return $string;
     }

@@ -20,14 +20,14 @@
           @if ($media->type=="localVideo" || $media->type=="directVideo"|| $media->type=="torrentVideo")
             <video id="player" poster="{{ url($media->poster_source) }}" playsinline controls>
               @if ($media->type=="localVideo" || $media->type=="directVideo")
-                <source src="{{ $media->source }}" type="video/mp4">
+                <source src="{{ url($media->source) }}" type="video/mp4">
               @endif
             </video>
           @endif
           @if ($media->type=="localAudio" || $media->type=="directAudio"|| $media->type=="torrentAudio")
             <audio id="player" poster="{{ url($media->poster_source) }}" playsinline controls>
               @if ($media->type=="localAudio" || $media->type=="directAudio")
-                <source src="{{ $media->source }}" >
+                <source src="{{ url($media->source) }}" >
               @endif
             </audio>
           @endif
