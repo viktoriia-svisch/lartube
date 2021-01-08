@@ -6,9 +6,9 @@
             <h2>Role Management</h2>
         </div>
         <div class="pull-right">
-        @can('role-create')
+        @if(auth()->user()->can('role-create') || auth()->user()->can('admin'))
             <a class="btn btn-success" href="{{ route('roles.create') }}"> Create New Role</a>
-            @endcan
+        @endif
         </div>
     </div>
 </div>

@@ -21,3 +21,6 @@ Route::get('/profileEdit','UserController@selfEdit')->name('users.selfedit');
 Route::post('/directUpload','MediaController@directUpload')->name('medias.directuploadAjax');
 Route::get('/media','MediaController@index')->name('media');
 Route::put('/comment/add','CommentController@create')->name('comments.add');
+Route::get('welcome/{locale}', function ($locale) {
+    App::setLocale($locale);
+});
