@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Http\Request;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -20,9 +21,13 @@ Route::get('/media/delete/{title}','MediaController@destroy')->name('medias.dele
 Route::get('/media/{title}', 'MediaController@show')->name('media.show');
 Route::get('/profileEdit','UserController@selfEdit')->name('users.selfedit');
 Route::post('/directUpload','MediaController@directUpload')->name('medias.directuploadAjax');
+Route::put('/directUpload','MediaController@directUpload');
 Route::get('/media','MediaController@index')->name('media');
 Route::put('/comment','CommentController@create')->name('comments.add');
 Route::delete('/comment','CommentController@destroy')->name('comments.add');
 Route::get('welcome/{locale}', function ($locale) {
     App::setLocale($locale);
+});
+Route::get('/search', function (Request $request) {
+    return App\Media::search($request->search)->get();
 });

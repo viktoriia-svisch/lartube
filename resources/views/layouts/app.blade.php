@@ -17,6 +17,10 @@
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
           }
       });
+      $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+      });
     });
     </script>
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">

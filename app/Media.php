@@ -2,12 +2,14 @@
 namespace App;
 use App\User;
 use App\Comment;
+use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Model;
 class Media extends Model
 {
     use \Conner\Tagging\Taggable;
+    use Searchable;
     protected $fillable = [
-        'title', 'source','duration','poster_source', 'type', 'description', 'users_id',
+        'title', 'source','duration','poster_source', 'type', 'description', 'users_id','comments',
     ];
     protected $hidden = [
     ];
@@ -18,6 +20,12 @@ class Media extends Model
     public function comments() {
       $media = Comment::where('medias_id', '=' ,$this->id)->get()->sortByDesc('created_at');;
       return $media;
+    }
+    public function poster(){
+      if(empty($this->poster_source)){
+        return "img/404/image.png";
+      }
+      return $this->poster_source;
     }
     public function simpleType(){
       if(($this->type=="torrentAudio")||($this->type=="torrentVideo")) {
