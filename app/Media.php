@@ -18,7 +18,7 @@ class Media extends Model
       return User::find($this->users_id);
     }
     public function comments() {
-      $media = Comment::where('medias_id', '=' ,$this->id)->get()->sortByDesc('created_at');;
+      $media = Comment::where('medias_id', '=' ,$this->id)->get()->sortByDesc('created_at');
       return $media;
     }
     public function poster(){
