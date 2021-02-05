@@ -9,7 +9,7 @@ class Media extends Model
     use \Conner\Tagging\Taggable;
     use Searchable;
     protected $fillable = [
-        'title', 'source','duration','poster_source', 'type', 'description', 'users_id','comments',
+        'id', 'title', 'source','duration','poster_source', 'type', 'description', 'user_id','comments',
     ];
     protected $hidden = [
     ];
@@ -18,7 +18,7 @@ class Media extends Model
       return User::find($this->users_id);
     }
     public function comments() {
-      $media = Comment::where('medias_id', '=' ,$this->id)->get()->sortByDesc('created_at');
+      $media = Comment::where('media_id', '=' ,$this->id)->get()->sortByDesc('created_at');
       return $media;
     }
     public function poster(){

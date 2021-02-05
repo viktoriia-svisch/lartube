@@ -3,7 +3,6 @@ namespace App;
 use App\Media;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Hootlex\Friendships\Traits\Friendable;
@@ -15,14 +14,13 @@ class User extends Authenticatable
   use Friendable;
   use Notifiable;
     protected $fillable = [
-        'id','name', 'email', 'password', 'avatar_source', 'background_source'
+        'id','name', 'email', 'password', 'bio', 'avatar_source', 'background_source'
     ];
     protected $hidden = [
         'password', 'remember_token',
     ];
     public function medias(){
-      $media = Media::where('users_id', '=' ,$this->id)->get();
-      return $media;
+      return $this->hasMany('App\Media');
     }
     public function avatar(){
       if(empty($this->avatar_source)){
