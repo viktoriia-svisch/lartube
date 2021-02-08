@@ -30,7 +30,7 @@ class User extends Authenticatable
     }
     public function background(){
       if(empty($this->background_source)){
-        return "img/404/background.jpg";
+        return "img/404/background.png";
       }
       return $this->background_source;
     }
