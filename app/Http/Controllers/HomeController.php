@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\User;
+use App\Media;
 use Illuminate\Http\Request;
 class HomeController extends Controller
 {
@@ -9,7 +10,7 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
     public function index()
-    {
+    {   
         return view('home');
     }
 }
