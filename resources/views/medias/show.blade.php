@@ -104,6 +104,7 @@
     </div>
     <div class="col-xs-12 col-sm-12 col-md-12">
     </div>
+    <div><input value="Like" type="button" onclick="like({{ $media->id }},'media');" /><input value="Disike" type="button" onclick="dislike({{ $media->id }},'media');"  />{{ $media->likes() }}</div>
 </div>
 @auth
 {!! Form::open(['method' => 'PUT','route' => ['comments.add']]) !!}
@@ -186,6 +187,26 @@
           }
         });
       }
+      function like(id,type){
+      $.ajax({
+        url: '{{ url("/like") }}',
+        type: 'PUT',
+        data: type+"_id="+id+"&count=1",
+        success: function(data) {
+          alert("liked");
+        }
+      });
+    }
+    function dislike(id,type){
+    $.ajax({
+      url: '{{ url("/like") }}',
+      type: 'PUT',
+      data: type+"_id="+id+"&count=-1",
+      success: function(data) {
+        alert("disliked");
+      }
+    });
+  }
         </script>
     </div>
 </div>

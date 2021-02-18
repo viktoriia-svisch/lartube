@@ -4,6 +4,7 @@ use Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Like;
 use Spatie\Permission\Models\Role;
 use DB;
 use Hash;
@@ -138,7 +139,7 @@ class UserController extends Controller
           $user->assignRole($request->input('roles'));
         }
         $user->retag(explode(' ', $request->input('tags')));
-        return redirect()->route('users.index')
+        return redirect()->route('profile.view', $user->name)
                         ->with('success','User updated successfully');
     }
     public function destroy($id)
