@@ -33,7 +33,7 @@
  	};
  	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
  	__webpack_require__.p = "/";
- 	return __webpack_require__(__webpack_require__.s = 37);
+ 	return __webpack_require__(__webpack_require__.s = 40);
  })
  ([
  (function(module, exports, __webpack_require__) {
@@ -26485,15 +26485,121 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 }.call(exports, __webpack_require__(1), __webpack_require__(6)))
  }),
+,
+,
+,
  (function(module, exports, __webpack_require__) {
-__webpack_require__(38);
-module.exports = __webpack_require__(39);
+module.exports = __webpack_require__(41);
  }),
  (function(module, exports, __webpack_require__) {
 __webpack_require__(11);
 window.Vue = __webpack_require__(34);
-$(document).ready(function () {});
+Vue.component('media-component', __webpack_require__(42));
+$(document).ready(function () {
+  $.getJSON(baseUrl + "api/media", function (data) {
+    var items = "";
+    var indicators = "";
+    var first = true;
+    $.each(data.data, function (key, value) {
+      val1 = value;
+      items += '<div style="min-width: 300px;" class="col-lg-4 col-md-4 col-xs-6 card"><a href="{{ url("/media/") }}/' + val1.title + '" class="d-block h-100"><img class="card-img-top" src="' + val1.poster_source + '" alt=""><div class="card-img-overlay"><h4 class="card-title bg-secondary text-info" style="opacity: 0.9;">' + val1.title + '</h4></div></a></div></div></div>';
+    });
+    $("#carouselBody").html(items);
+  });
+});
+ }),
+ (function(module, exports, __webpack_require__) {
+var normalizeComponent = __webpack_require__(43)
+var __vue_script__ = null
+var __vue_template__ = null
+var __vue_template_functional__ = false
+var __vue_styles__ = null
+var __vue_scopeId__ = null
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/MediaComponent.vue"
+module.exports = Component.exports
  }),
  (function(module, exports) {
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier 
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+  if (functionalTemplate) {
+    options.functional = true
+  }
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+  var hook
+  if (moduleIdentifier) { 
+    hook = function (context) {
+      context =
+        context || 
+        (this.$vnode && this.$vnode.ssrContext) || 
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) 
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+    if (!functional) {
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      options._injectStyles = hook
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
  })
  ]);
