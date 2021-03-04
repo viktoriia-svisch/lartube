@@ -79,7 +79,20 @@ $( document ).ready(function() {
             <div class="container col-lg-9 mt-2" style="max-height:90%; margin-top: 10%; overflow-y: auto;" id="content">
                 <h1 class="my-4 text-center text-lg-left">{{ config('app.name', 'Laravel') }}</h1>
                 <div class="content">
-                  <div class="row text-center text-lg-left" id="carouselBody" >
+                  <h3>{{ __("Newest videos") }}</h3>
+                  <div id="demo" class="carousel slide" data-ride="carousel">
+                    <ul class="carousel-indicators" id="carouselIndicatorsBody">
+                    </ul>
+                    <div class="carousel-inner" id="carouselInnerBody">
+                    </div>
+                    <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                      <span class="carousel-control-prev-icon"></span>
+                    </a>
+                    <a class="carousel-control-next" href="#demo" data-slide="next">
+                      <span class="carousel-control-next-icon"></span>
+                    </a>
+                  </div>
+                  <div class="row text-center text-lg-left" id="galleryBody" >
                   </div>
                 </div>
               </div>
