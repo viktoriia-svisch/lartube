@@ -17763,6 +17763,17 @@ module.exports = __webpack_require__(39);
  (function(module, exports, __webpack_require__) {
 __webpack_require__(11);
 window.Vue = __webpack_require__(36);
+function sendFriendRequest(id, type) {
+  console.log("i should send a request to userid " + id);
+  $.ajax({
+    url: '{{ url("/friends") }}',
+    type: 'PUT',
+    data: "users_id=" + id + "&type=" + type,
+    success: function success(data) {
+      console.log("friend-request done: " + type);
+    }
+  });
+}
 $(document).ready(function () {});
  }),
  (function(module, exports, __webpack_require__) {
