@@ -24,6 +24,7 @@
 <div id="profile" >
   <div id="profileheader">
     <img class='mr-3' src='{{ url($user->avatar()) }}' />
+    @auth
     @if (Auth::user()->isFriendWith($user))
       <span class="float-right"><input type="button" value="Unfriend" onclick="sendFriendRequest({{ $user->id }},'unfriend')" /></span>
     @elseif (Auth::user()->hasSentFriendRequestTo($user))
@@ -32,6 +33,7 @@
       <span class="float-right"><input type="button" value="Add to friends" onclick="sendFriendRequest({{ $user->id }},'request')" />
       </span>
     @endif
+    @endauth
   </div>
   <div id="profilebody" style="background-color: lightgrey; opacity: 0.8;">
     <h1 class='ml-3'>{{ $user->name }}</h1>
