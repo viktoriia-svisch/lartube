@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
             $table->string('background_source')->default('');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
     public function down()

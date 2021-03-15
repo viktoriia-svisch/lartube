@@ -11,7 +11,7 @@ class Media extends Model
     use \Conner\Tagging\Taggable;
     use Searchable;
     protected $fillable = [
-        'id', 'title', 'source','duration','poster_source', 'type', 'description', 'user_id','comments',
+        'id', 'title', 'source','duration','poster_source', 'type', 'description', 'user_id','comments', 'category_id','next_id'
     ];
     protected $hidden = [
     ];

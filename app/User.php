@@ -5,6 +5,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Hootlex\Friendships\Traits\Friendable;
 class User extends Authenticatable
 {
@@ -13,6 +14,7 @@ class User extends Authenticatable
   use HasRoles;
   use Friendable;
   use Notifiable;
+  use SoftDeletes;
     protected $fillable = [
         'id','name', 'email', 'password', 'bio', 'avatar_source', 'background_source'
     ];

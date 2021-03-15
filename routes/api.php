@@ -15,7 +15,7 @@ Route::get('/user/{id}', function ($id) {
 use App\Media;
 use App\Http\Resources\Media as MediaResource;
 Route::get('/media', function () {
-    return MediaResource::collection(Media::all());
+    return MediaResource::collection(Media::paginate(12));
 });
 Route::get('/media/not/{title}', function ($title) {
     return MediaResource::collection(Media::where('title', '!=' ,$title)->get());
