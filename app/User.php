@@ -36,6 +36,9 @@ class User extends Authenticatable
       }
       return $this->background_source;
     }
+    public function created_at_readable(){
+      return $this->created_at->diffForHumans();
+    }
     public function tagString(){
       $string = "";
       foreach($this->tags as $tag) {

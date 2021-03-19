@@ -74,7 +74,6 @@
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     </head>
     <body>
-      <div  id="app" ><media-component></media-component></div>
       <script>
       // {{ url("/api/media") }}
 $( document ).ready(function() {
