@@ -15,7 +15,7 @@ Route::get('/user/{id}', function ($id) {
 use App\Media;
 use App\Http\Resources\Media as MediaResource;
 Route::get('/media', function () {
-    return MediaResource::collection(Media::orderBy('created_at', 'desc')->paginate(1));
+    return MediaResource::collection(Media::orderBy('created_at', 'desc')->paginate(3));
 });
 Route::get('/media/not/{title}', function ($title) {
     return MediaResource::collection(Media::where('title', '!=' ,$title)->paginate(12));
