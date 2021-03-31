@@ -27,11 +27,24 @@ class MediaController extends Controller
         list(, $data)      = explode(',', $data);
         $data = base64_decode($data);
         $title = $request->input('title');
+        $tagArrayExtract = explode(' ', $request->input('tags'));
+        $tagArray = array();
+        foreach($tagArrayExtract as $tag){
+          if(!starts_with($tag, '#')){
+            array_push($tagArray, "#".$tag);
+          } else {
+            array_push($tagArray, $tag);
+          }
+        }
         Storage::put('public/media/posters/'.$title.'.png', $data);
         $media = Media::create(['title' =>  $request->input('title'),'source' => $request->input('source'),'poster_source' => 'public/media/posters/'.$title.'.png', 'description' => $request->input('description'), 'type' => $request->input('type'), 'user_id' => Auth::id()]);
-        $media->retag(explode(' ', $request->input('tags')));
+        $media->retag(explode(' ', $tagArray));
         return redirect()->route('media.show',$title)
                         ->with('success','Video created successfully');
+    }
+    public function tags(Request $request){
+      $tags = Media::existingTags();
+      return view('tags.index',compact('tags'));
     }
     public function like(Request $request){
       if(!empty($request->input('media_id'))){
@@ -57,6 +70,15 @@ class MediaController extends Controller
       $title = $request->input('title');
       $file = $request->file("directMedia");
       $extension = $file->getClientOriginalExtension();
+      $tagArrayExtract = explode(' ', $request->input('tags'));
+      $tagArray = array();
+      foreach($tagArrayExtract as $tag){
+        if(!starts_with($tag, '#')){
+          array_push($tagArray, "#".$tag);
+        } else {
+          array_push($tagArray, $tag);
+        }
+      }
       if(($extension=="mp4")||($extension=="webm")){
         $path = $file->store('public/directMedia');
         $posterPath = '';
@@ -64,7 +86,7 @@ class MediaController extends Controller
           $posterPath = $posterFile->store('public/media/posters');
         }
         $media = Media::create(['title' => $title,'source' => $path,'poster_source' => 'public/media/posters/'.$title.'.png','type' => 'localVideo', 'description' => $request->input('description'), 'user_id' => Auth::id()]);
-        $media->retag(explode(' ', $request->input('tags')));
+        $media->retag($tagArray);
         Storage::put('public/media/posters/'.$title.'.png', $data);
         return redirect()->route('media.show',$title)
                         ->with('success','Video created successfully');
@@ -73,7 +95,7 @@ class MediaController extends Controller
         $path = $file->store('public/directMedia');
         $posterPath = $posterFile->store('public/media/posters');
         $media = Media::create(['title' => $title,'source' => $path,'poster_source' => 'public/media/posters/'.$title.'.png','type' => 'localAudio', 'description' => $request->input('description'), 'user_id' => Auth::id()]);
-        $media->retag(explode(' ', $request->input('tags')));
+        $media->retag($tagArray);
         Storage::put('public/media/posters/'.$title.'.png', $data);
         return redirect()->route('media.show',$title)
                         ->with('success','Audio created successfully');

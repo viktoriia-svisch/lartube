@@ -19,7 +19,7 @@ Route::get('/media/edit/{title}','MediaController@editView')->name('medias.editV
 Route::post('/media/edit/{title}','MediaController@edit')->name('medias.edit');
 Route::get('/media/delete/{title}','MediaController@destroy')->name('medias.delete');
 Route::get('/media/{title}', 'MediaController@show')->name('media.show');
-Route::post('/directUpload','MediaController@directUpload')->name('medias.directuploadAjax');
+Route::get('/tags', 'MediaController@tags')->name('tags');
 Route::put('/directUpload','MediaController@directUpload');
 Route::get('/media','MediaController@index')->name('media');
 Route::put('/like','MediaController@like')->name('media.like');
