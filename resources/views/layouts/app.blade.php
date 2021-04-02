@@ -42,6 +42,7 @@
                     <ul class="navbar-nav mr-auto">
                     </ul>
                     <ul class="navbar-nav ml-auto">
+                        <li class="nav-item"><a class="dropdown-item" href="{{ route('tags') }}">{{ __('Tags') }}</a></li>
                         @guest
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>

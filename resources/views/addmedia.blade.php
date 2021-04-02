@@ -8,7 +8,7 @@
       var matches = "";
       var match;
       while ((match = regex.exec(inputText))) {
-          matches += " #"+(match[1]);
+          matches += " "+(match[1]);
       }
       return matches;
   }
