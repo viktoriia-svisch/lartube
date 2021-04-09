@@ -18,7 +18,7 @@ class MediaController extends Controller
     }
     public function addMedia(Request $request)
     {
-      return view('addmedia');
+      return view('medias.create');
     }
     public function create(Request $request)
     {
@@ -101,7 +101,7 @@ class MediaController extends Controller
         return redirect()->route('medias.add')
                         ->with('error','Media-format is wrong');
       }
-      return view('addmedia');
+      return view('medias.create');
     }
     public function store(Request $request)
     {

@@ -33,13 +33,13 @@
  	};
  	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
  	__webpack_require__.p = "/";
- 	return __webpack_require__(__webpack_require__.s = 40);
+ 	return __webpack_require__(__webpack_require__.s = 38);
  })
  ([
  (function(module, exports, __webpack_require__) {
 "use strict";
 var bind = __webpack_require__(5);
-var isBuffer = __webpack_require__(17);
+var isBuffer = __webpack_require__(16);
 var toString = Object.prototype.toString;
 function isArray(val) {
   return toString.call(val) === '[object Array]';
@@ -167,19 +167,6 @@ module.exports = {
   trim: trim
 };
  }),
- (function(module, exports) {
-var g;
-g = (function() {
-	return this;
-})();
-try {
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	if(typeof window === "object")
-		g = window;
-}
-module.exports = g;
- }),
  (function(module, exports, __webpack_require__) {
 "use strict";
 (function(process) {
@@ -246,7 +233,20 @@ var defaults = {
 };
 defaults.headers = {
   common: {
-    'Accept': 'application/json, text/plain, *}.call(exports, __webpack_require__(10)))
+    'Accept': 'application/json, text/plain, *}.call(exports, __webpack_require__(18)))
+ }),
+ (function(module, exports) {
+var g;
+g = (function() {
+	return this;
+})();
+try {
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	if(typeof window === "object")
+		g = window;
+}
+module.exports = g;
  }),
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
@@ -1459,7 +1459,7 @@ Popper.Utils = (typeof window !== 'undefined' ? window : global).PopperUtils;
 Popper.placements = placements;
 Popper.Defaults = Defaults;
  __webpack_exports__["default"] = (Popper);
-}.call(__webpack_exports__, __webpack_require__(1)))
+}.call(__webpack_exports__, __webpack_require__(2)))
  }),
  (function(module, exports, __webpack_require__) {
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
@@ -8310,165 +8310,14 @@ Cancel.prototype.toString = function toString() {
 Cancel.prototype.__CANCEL__ = true;
 module.exports = Cancel;
  }),
- (function(module, exports) {
-var process = module.exports = {};
-var cachedSetTimeout;
-var cachedClearTimeout;
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        return setTimeout(fun, 0);
-    }
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        return clearTimeout(marker);
-    }
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; 
-process.versions = {};
-function noop() {}
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-process.listeners = function (name) { return [] }
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
- }),
  (function(module, exports, __webpack_require__) {
-window._ = __webpack_require__(12);
+window._ = __webpack_require__(11);
 window.Popper = __webpack_require__(3).default;
 try {
   window.$ = window.jQuery = __webpack_require__(4);
-  __webpack_require__(14);
+  __webpack_require__(13);
 } catch (e) {}
-window.axios = __webpack_require__(15);
+window.axios = __webpack_require__(14);
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 var token = document.head.querySelector('meta[name="csrf-token"]');
 if (token) {
@@ -8481,7 +8330,7 @@ if (token) {
 (function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;
 ;(function() {
   var undefined;
-  var VERSION = '4.17.10';
+  var VERSION = '4.17.11';
   var LARGE_ARRAY_SIZE = 200;
   var CORE_ERROR_TEXT = 'Unsupported core-js use. Try https:
       FUNC_ERROR_TEXT = 'Expected a function';
@@ -8649,7 +8498,7 @@ if (token) {
     rsEmoji
   ].join('|'), 'g');
   var reHasUnicode = RegExp('[' + rsZWJ + rsAstralRange  + rsComboRange + rsVarRange + ']');
-  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
+  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
   var contextProps = [
     'Array', 'Buffer', 'DataView', 'Date', 'Error', 'Float32Array', 'Float64Array',
     'Function', 'Int8Array', 'Int16Array', 'Int32Array', 'Map', 'Math', 'Object',
@@ -9091,11 +8940,6 @@ if (token) {
       }
     }
     return result;
-  }
-  function safeGet(object, key) {
-    return key == '__proto__'
-      ? undefined
-      : object[key];
   }
   function setToArray(set) {
     var index = -1,
@@ -10212,7 +10056,7 @@ if (token) {
           if (isArguments(objValue)) {
             newValue = toPlainObject(objValue);
           }
-          else if (!isObject(objValue) || (srcIndex && isFunction(objValue))) {
+          else if (!isObject(objValue) || isFunction(objValue)) {
             newValue = initCloneObject(srcValue);
           }
         }
@@ -11777,6 +11621,12 @@ if (token) {
         array[length] = isIndex(index, arrLength) ? oldArray[index] : undefined;
       }
       return array;
+    }
+    function safeGet(object, key) {
+      if (key == '__proto__') {
+        return;
+      }
+      return object[key];
     }
     var setData = shortOut(baseSetData);
     var setTimeout = ctxSetTimeout || function(func, wait) {
@@ -14412,7 +14262,7 @@ if (token) {
     root._ = _;
   }
 }.call(this));
-}.call(exports, __webpack_require__(1), __webpack_require__(13)(module)))
+}.call(exports, __webpack_require__(2), __webpack_require__(12)(module)))
  }),
  (function(module, exports) {
 module.exports = function(module) {
@@ -17270,14 +17120,14 @@ module.exports = function(module) {
 })));
  }),
  (function(module, exports, __webpack_require__) {
-module.exports = __webpack_require__(16);
+module.exports = __webpack_require__(15);
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(5);
-var Axios = __webpack_require__(18);
-var defaults = __webpack_require__(2);
+var Axios = __webpack_require__(17);
+var defaults = __webpack_require__(1);
 function createInstance(defaultConfig) {
   var context = new Axios(defaultConfig);
   var instance = bind(Axios.prototype.request, context);
@@ -17313,7 +17163,7 @@ function isSlowBuffer (obj) {
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(1);
 var utils = __webpack_require__(0);
 var InterceptorManager = __webpack_require__(27);
 var dispatchRequest = __webpack_require__(28);
@@ -17363,6 +17213,157 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
   };
 });
 module.exports = Axios;
+ }),
+ (function(module, exports) {
+var process = module.exports = {};
+var cachedSetTimeout;
+var cachedClearTimeout;
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        return setTimeout(fun, 0);
+    }
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        return clearTimeout(marker);
+    }
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; 
+process.versions = {};
+function noop() {}
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+process.listeners = function (name) { return [] }
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
@@ -17633,7 +17634,7 @@ module.exports = InterceptorManager;
 var utils = __webpack_require__(0);
 var transformData = __webpack_require__(29);
 var isCancel = __webpack_require__(8);
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(1);
 var isAbsoluteURL = __webpack_require__(30);
 var combineURLs = __webpack_require__(31);
 function throwIfCancellationRequested(config) {
@@ -17760,13 +17761,11 @@ module.exports = function spread(callback) {
 ,
 ,
 ,
-,
-,
  (function(module, exports, __webpack_require__) {
-module.exports = __webpack_require__(41);
+module.exports = __webpack_require__(39);
  }),
  (function(module, exports, __webpack_require__) {
-__webpack_require__(11);
+__webpack_require__(10);
 $(document).ready(function () {
   $.getJSON(baseUrl + "api/media", function (data) {
     var items = "";
