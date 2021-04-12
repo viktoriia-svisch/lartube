@@ -3,18 +3,20 @@ class siteManager {
   medias:Array<Media>;
   currentPage:string;
   sites:Array<site>;
+  currentSite:site;
   constructor(base:string){
     baseUrl = base;
     this.currentPage = "overview";
     this.sites = [];
-    this.sites.push(new overviewSite());
+    this.currentSite = new overviewSite();
   }
   getCurrentSite(){
     return this.currentPage;
   }
   changeSite(site:string,theValue:string){
+    console.log("changeSite: "+site);
     if(site=="player"){
-      this.sites.push(new playerSite(theValue));
+      new playerSite(theValue);
     } else {
       new overviewSite();
     }
@@ -106,7 +108,7 @@ class playerSite extends site {
         $("#mainContent").html(finalCarouselHtml);
         $("#mainMenu").html('<a class="btn btn-primary" id="returnBtn">Go back</a>');
         $("#returnBtn").on("click", function(){
-          sm.changeSite("overview");
+          sm.changeSite("overview", "");
         });
       }
       if(first){

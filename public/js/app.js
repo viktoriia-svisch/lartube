@@ -17797,14 +17797,15 @@ var siteManager = function () {
         baseUrl = base;
         this.currentPage = "overview";
         this.sites = [];
-        this.sites.push(new overviewSite());
+        this.currentSite = new overviewSite();
     }
     siteManager.prototype.getCurrentSite = function () {
         return this.currentPage;
     };
     siteManager.prototype.changeSite = function (site, theValue) {
+        console.log("changeSite: " + site);
         if (site == "player") {
-            this.sites.push(new playerSite(theValue));
+            new playerSite(theValue);
         } else {
             new overviewSite();
         }
@@ -17906,7 +17907,7 @@ var playerSite = function (_super) {
                 $("#mainContent").html(finalCarouselHtml);
                 $("#mainMenu").html('<a class="btn btn-primary" id="returnBtn">Go back</a>');
                 $("#returnBtn").on("click", function () {
-                    sm.changeSite("overview");
+                    sm.changeSite("overview", "");
                 });
             }
             if (first) {
