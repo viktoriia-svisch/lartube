@@ -61,6 +61,9 @@
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     </head>
     <body>
+      <div id="app">
+  <exco :aSubFirst="aFirst"></exco>
+    </div>
       <script>
       // {{ url("/api/media") }}
 $( document ).ready(function() {

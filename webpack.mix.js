@@ -14,4 +14,3 @@ mix.js('resources/assets/js/app.js', 'public/js')
             extensions: ['*', '.js', '.jsx', '.vue', '.ts', '.tsx'],
         },
     });
-mix.js('resources/assets/js/welcome.js', 'public/js');
