@@ -58,8 +58,7 @@
                 margin-bottom: 30px;
             }
         </style>
-        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    </head>
+        <link href="{{ asset('css/app.css') }}" rel="stylesheet"></head>
     <body>
       <div id="app">
   <exco :aSubFirst="aFirst"></exco>
