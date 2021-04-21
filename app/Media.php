@@ -20,8 +20,8 @@ class Media extends Model
       return User::find($this->user_id);
     }
     public function comments() {
-      $media = Comment::where('media_id', '=' ,$this->id)->get()->sortByDesc('created_at');
-      return $media;
+      $comments = Comment::where('media_id', '=' ,$this->id)->get()->sortByDesc('created_at');
+      return $comments;
     }
     public function myLike(){
       $like = Like::where('media_id', '=',$this->id)->where('user_id',Auth::id())->first();
@@ -52,9 +52,9 @@ class Media extends Model
     }
     public function poster(){
       if(empty($this->poster_source)){
-        return "img/404/poster.png";
+        return url("/")."/"."img/404/poster.png";
       }
-      return $this->poster_source;
+      return url("/")."/".$this->poster_source;
     }
     public function simpleType(){
       if(($this->type=="torrentAudio")||($this->type=="torrentVideo")) {
@@ -67,8 +67,10 @@ class Media extends Model
     public function tagString(){
       $string = "";
       foreach($this->tags as $tag) {
+        if($tag!=NULL){
         $string .= $tag->name." ";
       }
+    }
       return $string;
     }
 }
