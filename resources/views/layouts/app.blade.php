@@ -30,12 +30,10 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body class="container-fluid">
-    <div id="app">
+    <div id="app2">
         <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'LaraTube') }}
-                </a>
+              <router-link class="navbar-brand" to="/">{{ config('app.name', 'LaraTube') }}</router-link>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>

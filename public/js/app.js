@@ -33,13 +33,13 @@
  	};
  	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
  	__webpack_require__.p = "/";
- 	return __webpack_require__(__webpack_require__.s = 14);
+ 	return __webpack_require__(__webpack_require__.s = 15);
  })
  ([
  (function(module, exports, __webpack_require__) {
 "use strict";
 var bind = __webpack_require__(7);
-var isBuffer = __webpack_require__(22);
+var isBuffer = __webpack_require__(23);
 var toString = Object.prototype.toString;
 function isArray(val) {
   return toString.call(val) === '[object Array]';
@@ -180,11 +180,18 @@ try {
 }
 module.exports = g;
  }),
+ (function(module, __webpack_exports__, __webpack_require__) {
+"use strict";
+ __webpack_require__.d(__webpack_exports__, "a", function() { return eventBus; });
+ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(13);
+ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+var eventBus = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a();
+ }),
  (function(module, exports, __webpack_require__) {
 "use strict";
 (function(process) {
 var utils = __webpack_require__(0);
-var normalizeHeaderName = __webpack_require__(24);
+var normalizeHeaderName = __webpack_require__(25);
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
 };
@@ -247,13 +254,6 @@ var defaults = {
 defaults.headers = {
   common: {
     'Accept': 'application/json, text/plain, *}.call(exports, __webpack_require__(8)))
- }),
- (function(module, __webpack_exports__, __webpack_require__) {
-"use strict";
- __webpack_require__.d(__webpack_exports__, "a", function() { return eventBus; });
- var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(13);
- var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-var eventBus = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a();
  }),
  (function(module, exports) {
 module.exports = function normalizeComponent (
@@ -8421,12 +8421,12 @@ process.umask = function() { return 0; };
  (function(module, exports, __webpack_require__) {
 "use strict";
 var utils = __webpack_require__(0);
-var settle = __webpack_require__(25);
-var buildURL = __webpack_require__(27);
-var parseHeaders = __webpack_require__(28);
-var isURLSameOrigin = __webpack_require__(29);
+var settle = __webpack_require__(26);
+var buildURL = __webpack_require__(28);
+var parseHeaders = __webpack_require__(29);
+var isURLSameOrigin = __webpack_require__(30);
 var createError = __webpack_require__(10);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(30);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(31);
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
     var requestData = config.data;
@@ -8484,7 +8484,7 @@ module.exports = function xhrAdapter(config) {
       request = null;
     };
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(31);
+      var cookies = __webpack_require__(32);
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
           cookies.read(config.xsrfCookieName) :
           undefined;
@@ -8538,7 +8538,7 @@ module.exports = function xhrAdapter(config) {
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
-var enhanceError = __webpack_require__(26);
+var enhanceError = __webpack_require__(27);
 module.exports = function createError(message, config, code, request, response) {
   var error = new Error(message);
   return enhanceError(error, config, code, request, response);
@@ -17091,26 +17091,60 @@ function getOuterHTML (el) {
 }
 Vue.compile = compileToFunctions;
 module.exports = Vue;
-}.call(exports, __webpack_require__(1), __webpack_require__(40).setImmediate))
+}.call(exports, __webpack_require__(1), __webpack_require__(41).setImmediate))
  }),
  (function(module, exports, __webpack_require__) {
-__webpack_require__(15);
-module.exports = __webpack_require__(52);
+var disposed = false
+var normalizeComponent = __webpack_require__(4)
+var __vue_script__ = __webpack_require__(45)
+var __vue_template__ = __webpack_require__(46)
+var __vue_template_functional__ = false
+var __vue_styles__ = null
+var __vue_scopeId__ = null
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/OverviewComponent.vue"
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-374ef45d", Component.options)
+  } else {
+    hotAPI.reload("data-v-374ef45d", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+module.exports = Component.exports
  }),
  (function(module, exports, __webpack_require__) {
 __webpack_require__(16);
+module.exports = __webpack_require__(53);
+ }),
+ (function(module, exports, __webpack_require__) {
+__webpack_require__(17);
 $(document).ready(function () {
-  __webpack_require__(39).init("http:
+  __webpack_require__(40).init("http:
 });
  }),
  (function(module, exports, __webpack_require__) {
-window._ = __webpack_require__(17);
+window._ = __webpack_require__(18);
 window.Popper = __webpack_require__(5).default;
 try {
   window.$ = window.jQuery = __webpack_require__(6);
-  __webpack_require__(19);
+  __webpack_require__(20);
 } catch (e) {}
-window.axios = __webpack_require__(20);
+window.axios = __webpack_require__(21);
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 var token = document.head.querySelector('meta[name="csrf-token"]');
 if (token) {
@@ -23055,7 +23089,7 @@ if (token) {
     root._ = _;
   }
 }.call(this));
-}.call(exports, __webpack_require__(1), __webpack_require__(18)(module)))
+}.call(exports, __webpack_require__(1), __webpack_require__(19)(module)))
  }),
  (function(module, exports) {
 module.exports = function(module) {
@@ -25913,14 +25947,14 @@ module.exports = function(module) {
 })));
  }),
  (function(module, exports, __webpack_require__) {
-module.exports = __webpack_require__(21);
+module.exports = __webpack_require__(22);
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(7);
-var Axios = __webpack_require__(23);
-var defaults = __webpack_require__(2);
+var Axios = __webpack_require__(24);
+var defaults = __webpack_require__(3);
 function createInstance(defaultConfig) {
   var context = new Axios(defaultConfig);
   var instance = bind(Axios.prototype.request, context);
@@ -25934,12 +25968,12 @@ axios.create = function create(instanceConfig) {
   return createInstance(utils.merge(defaults, instanceConfig));
 };
 axios.Cancel = __webpack_require__(12);
-axios.CancelToken = __webpack_require__(37);
+axios.CancelToken = __webpack_require__(38);
 axios.isCancel = __webpack_require__(11);
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(38);
+axios.spread = __webpack_require__(39);
 module.exports = axios;
 module.exports.default = axios;
  }),
@@ -25956,10 +25990,10 @@ function isSlowBuffer (obj) {
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 var utils = __webpack_require__(0);
-var InterceptorManager = __webpack_require__(32);
-var dispatchRequest = __webpack_require__(33);
+var InterceptorManager = __webpack_require__(33);
+var dispatchRequest = __webpack_require__(34);
 function Axios(instanceConfig) {
   this.defaults = instanceConfig;
   this.interceptors = {
@@ -26274,11 +26308,11 @@ module.exports = InterceptorManager;
  (function(module, exports, __webpack_require__) {
 "use strict";
 var utils = __webpack_require__(0);
-var transformData = __webpack_require__(34);
+var transformData = __webpack_require__(35);
 var isCancel = __webpack_require__(11);
-var defaults = __webpack_require__(2);
-var isAbsoluteURL = __webpack_require__(35);
-var combineURLs = __webpack_require__(36);
+var defaults = __webpack_require__(3);
+var isAbsoluteURL = __webpack_require__(36);
+var combineURLs = __webpack_require__(37);
 function throwIfCancellationRequested(config) {
   if (config.cancelToken) {
     config.cancelToken.throwIfRequested();
@@ -26405,154 +26439,97 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  __webpack_exports__["init"] = init;
  var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(13);
  var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
- var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(42);
- var __WEBPACK_IMPORTED_MODULE_2__eventBus_js__ = __webpack_require__(3);
-var __extends = this && this.__extends || function () {
-    var _extendStatics = function extendStatics(d, b) {
-        _extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function (d, b) {
-            d.__proto__ = b;
-        } || function (d, b) {
-            for (var p in b) {
-                if (b.hasOwnProperty(p)) d[p] = b[p];
-            }
-        };
-        return _extendStatics(d, b);
-    };
-    return function (d, b) {
-        _extendStatics(d, b);
-        function __() {
-            this.constructor = d;
-        }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-}();
+ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(43);
+ var __WEBPACK_IMPORTED_MODULE_2__eventBus_js__ = __webpack_require__(2);
 var baseUrl;
-var theComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('exco', __webpack_require__(43));
 var app;
 var theVue;
+__webpack_require__(44);
 var siteManager = function () {
     function siteManager(base) {
         baseUrl = base + "/";
         this.currentPage = "overview";
-        this.sites = [];
-        this.currentSite = new overviewSite();
+        this.receiveUsers(true);
     }
     siteManager.prototype.getCurrentSite = function () {
         return this.currentPage;
     };
-    siteManager.prototype.changeSite = function (site, theValue) {
-        console.log("changeSite: " + site);
-        if (site == "player") {
-            this.currentSite = new playerSite(theValue);
-        } else {
-            this.currentSite = new overviewSite();
+    siteManager.prototype.receiveUsers = function (forceUpdate) {
+        if (forceUpdate === void 0) {
+            forceUpdate = false;
         }
+        var that = this;
+        $.getJSON("/api/user", function name(data) {
+            if (that.users == undefined || forceUpdate) {
+                that.users = [];
+                $.each(data.data, function (key, value) {
+                    that.users.push(new User(value.id, value.name, value.avatar, value.background));
+                });
+                that.receiveMedias();
+            }
+        });
     };
-    siteManager.prototype.buildSite = function () {
+    siteManager.prototype.receiveMediaByName = function (mediaName, forceUpdate) {
+        if (forceUpdate === void 0) {
+            forceUpdate = false;
+        }
+        var that = this;
+        $.getJSON("/api/media/" + mediaName, function name(data) {
+            that.medias[that.findMediaByName(mediaName)].comments = data.comments;
+            theVue.medias = that.medias;
+        });
     };
-    return siteManager;
-}();
-;
-var site = function () {
-    function site(title) {
-        this.title = title;
-    }
-    site.prototype.build = function () {};
-    site.prototype.destroy = function () {};
-    return site;
-}();
-;
-var overviewSite = function (_super) {
-    __extends(overviewSite, _super);
-    function overviewSite() {
-        var _this = _super.call(this, "Overview") || this;
-        _this.receiveMedias();
-        return _this;
-    }
-    overviewSite.prototype.receiveMedias = function (forceUpdate) {
+    siteManager.prototype.findMediaByName = function (mediaName) {
+        $.each(this.medias, function (key, value) {
+            if (value.title == mediaName) {
+                return key;
+            }
+        });
+    };
+    siteManager.prototype.receiveMedias = function (forceUpdate) {
         if (forceUpdate === void 0) {
             forceUpdate = false;
         }
         var that = this;
         $.getJSON("/api/media", function name(data) {
-            if (sm.medias == undefined || forceUpdate) {
-                sm.medias = [];
+            if (that.medias == undefined || forceUpdate) {
+                that.medias = [];
                 $.each(data.data, function (key, value) {
-                    sm.medias.push(new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, value.user, value.created_at, value.created_at_readable, value.comments, value.tags));
+                    var med = new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, value.user, value.user_id, value.created_at, value.created_at_readable, value.comments, value.tags);
+                    $.each(med.comments, function (key1, value1) {
+                        med.comments[key1].user = that.getUserById(value1.user_id);
+                    });
+                    that.medias.push(med);
                 });
-                theVue.medias = sm.medias;
+                that.nextLink = data.links.next;
+                that.lastLink = data.links.prev;
+                theVue.medias = that.medias;
+                if (theVue.$route.params.profileId != undefined) {
+                    theVue.user = sm.getUserById(theVue.$route.params.profileId);
+                    theVue.medias = sm.getMediasByUser(theVue.$route.params.profileId);
+                }
             }
         });
     };
-    return overviewSite;
-}(site);
-;
-var playerSite = function (_super) {
-    __extends(playerSite, _super);
-    function playerSite(title) {
-        var _this = _super.call(this, title) || this;
-        _this.receiveMedias();
-        return _this;
-    }
-    playerSite.prototype.receiveMedias = function (forceUpdate) {
-        if (forceUpdate === void 0) {
-            forceUpdate = false;
-        }
-        var that = this;
-        if (sm.medias == undefined || forceUpdate) {
-            $.getJSON("/api/media/" + that.title, function name(data) {
-                sm.medias = [];
-                $.each(data, function (key, value) {
-                    sm.medias.push(new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, value.user, value.created_at, value.created_at_readable, value.comments, value.tags));
-                });
-                theVue.medias = sm.medias;
-            });
-        }
-    };
-    playerSite.prototype.createContent = function (data) {
-        $("#mainContent").html("");
-        var carouselHtml = '';
-        var first = true;
-        var finalCarouselHtml;
-    };
-    return playerSite;
-}(site);
-;
-var Media = function () {
-    function Media(title, description, source, poster_source, simpleType, type, user, created_at, created_at_readable, comments, tags) {
-        this.title = title;
-        this.description = description;
-        this.source = source;
-        this.poster_source = poster_source;
-        this.type = type;
-        this.simpleType = simpleType;
-        this.user = user;
-        this.comments = comments;
-        this.tags = tags;
-        this.created_at = created_at;
-        this.created_at_readable = created_at_readable;
-    }
-    Media.prototype.getMediaTag = function () {
-        var tmpHtml = "";
-        if (this.type == "localVideo" || this.type == "directVideo" || this.type == "torrentVideo") {
-            tmpHtml += '<video class="col-12" id="player" poster="{{ url($media->poster()) }}" playsinline controls>';
-            if (this.type == "localVideo" || this.type == "directVideo") {
-                tmpHtml += '<source src="' + baseUrl + this.source + '" >';
+    siteManager.prototype.getUserById = function (id) {
+        var search = "{id:'0',name:'NONE',avatar:'NONY.img'}";
+        $.each(this.users, function (key, value) {
+            if (value.id == id) {
+                search = value;
             }
-            return tmpHtml + "</video>";
-        }
-        if (this.type == "localAudio" || this.type == "directAudio" || this.type == "torrentAudio") {
-            tmpHtml += '<audio class="col-12" id="player" poster="{{ url($media->poster()) }}" playsinline controls>';
-            if (this.type == "localAudio" || this.type == "directAudio") {
-                tmpHtml += '<source src="' + baseUrl + this.source + '" >';
+        });
+        return search;
+    };
+    siteManager.prototype.getMediasByUser = function (id) {
+        var userMedias = [];
+        $.each(this.medias, function (key, value) {
+            if (value.user_id == id) {
+                userMedias.push(value);
             }
-            return tmpHtml + "</audio>";
-        }
+        });
+        return userMedias;
     };
-    Media.prototype.createEditModal = function (containerId) {
-        var tmpHtml = "";
-    };
-    return Media;
+    return siteManager;
 }();
 ;
 if (sm == undefined) {
@@ -26560,32 +26537,70 @@ if (sm == undefined) {
 }
 function init(baseUrl) {
     sm = new siteManager(baseUrl);
-    var overview = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('overview', __webpack_require__(46));
-    var player = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('player', __webpack_require__(49));
-    var Foo = { template: '<div>hahha {{ $route.params.currentTitle }}</div>' };
-    var Bar = { template: '<div>bar</div>' };
+    var overview = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('overview', __webpack_require__(14));
+    var player = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('player', __webpack_require__(47));
+    var profileComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('player', __webpack_require__(50));
     __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vue_router__["a" ]);
-    var routes = [{ path: '/', component: overview }, { path: '/media/:currentTitle', component: player }, { path: '/bar', component: Bar }];
+    var routes = [{ path: '/', component: overview }, { path: '/media/:currentTitle', component: player }, { path: '/profile/:profileId', component: profileComp }];
     theVue = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
         data: { title: "Overview",
-            currentComponent: 'overview', medias: sm.medias, currentTitle: '', baseUrl: baseUrl },
+            currentComponent: 'overview', medias: sm.medias, currentTitle: '', user: new User(0, "None", "img/404/avatar.png", "img/404/background.png"), baseUrl: baseUrl },
         router: new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" ]({ routes: routes }),
         methods: {
             swapComponent: function swapComponent(component) {
                 this.currentComponent = component;
             }
+        },
+        watch: {
+            $route: function $route(to, from) {
+                if (to.params.currentTitle != undefined) {
+                }
+                if (to.params.profileId != undefined) {
+                    this.user = sm.getUserById(to.params.profileId);
+                    this.medias = sm.getMediasByUser(to.params.profileId);
+                } else {
+                    this.medias = sm.medias;
+                }
+            }
         }
     }).$mount('#app2');
-    __WEBPACK_IMPORTED_MODULE_2__eventBus_js__["a" ].$on('playerBackClick', function (title) {
-        console.log("chaNGE BACK");
-        theVue.swapComponent("overview");
-    });
     __WEBPACK_IMPORTED_MODULE_2__eventBus_js__["a" ].$on('overviewPlayClick', function (title) {
         theVue.currentTitle = title;
         theVue.title = title;
-        theVue.swapComponent("player");
     });
 }
+var User = function () {
+    function User(id, name, avatar, background) {
+        this.id = id;
+        this.name = name;
+        this.avatar = avatar;
+        this.background = background;
+    }
+    User.prototype.toJson = function () {
+        return "{id:" + this.id + ",name:'" + this.name + "',avatar:'" + this.avatar + "',background:'" + this.background + "'}";
+    };
+    return User;
+}();
+var Media = function () {
+    function Media(title, description, source, poster_source, simpleType, type, user, user_id, created_at, created_at_readable, comments, tags) {
+        this.title = title;
+        this.description = description;
+        this.source = source;
+        this.poster_source = poster_source;
+        this.type = type;
+        this.simpleType = simpleType;
+        this.user = user;
+        this.user_id = user_id;
+        this.comments = comments;
+        this.tags = tags;
+        this.created_at = created_at;
+        this.created_at_readable = created_at_readable;
+    }
+    Media.prototype.toJson = function () {
+        return "{title:'" + this.title + "',description:'" + this.description + "',source:'" + this.source;
+    };
+    return Media;
+}();
  }),
  (function(module, exports, __webpack_require__) {
 (function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -26630,7 +26645,7 @@ exports._unrefActive = exports.active = function(item) {
     }, msecs);
   }
 };
-__webpack_require__(41);
+__webpack_require__(42);
 exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
                        (typeof global !== "undefined" && global.setImmediate) ||
                        (this && this.setImmediate);
@@ -28793,130 +28808,37 @@ if (inBrowser && window.Vue) {
 }
  __webpack_exports__["a"] = (VueRouter);
  }),
- (function(module, exports, __webpack_require__) {
-var disposed = false
-var normalizeComponent = __webpack_require__(4)
-var __vue_script__ = __webpack_require__(44)
-var __vue_template__ = __webpack_require__(45)
-var __vue_template_functional__ = false
-var __vue_styles__ = null
-var __vue_scopeId__ = null
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/ExampleComponent.vue"
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-7168fb6a", Component.options)
-  } else {
-    hotAPI.reload("data-v-7168fb6a", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-module.exports = Component.exports
+ (function(module, exports) {
+var User = function () {
+    function User(id, name, avatar) {
+        this.id = id;
+        this.name = name;
+        this.avatar = avatar;
+    }
+    return User;
+}();
+var Media = function () {
+    function Media(title, description, source, poster_source, simpleType, type, user, created_at, created_at_readable, comments, tags) {
+        this.title = title;
+        this.description = description;
+        this.source = source;
+        this.poster_source = poster_source;
+        this.type = type;
+        this.simpleType = simpleType;
+        this.user = user;
+        this.comments = comments;
+        this.tags = tags;
+        this.created_at = created_at;
+        this.created_at_readable = created_at_readable;
+    }
+    return Media;
+}();
+;
  }),
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- __webpack_exports__["default"] = ({
-  props: ['title', 'swapComponent']
-});
- }),
- (function(module, exports, __webpack_require__) {
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("h1", [_vm._v(_vm._s(_vm.title))]),
-    _vm._v(" "),
-    _c(
-      "button",
-      {
-        attrs: { type: "submit" },
-        on: {
-          click: function($event) {
-            _vm.swapComponent("overview")
-          }
-        }
-      },
-      [_vm._v("Overview")]
-    ),
-    _vm._v(" "),
-    _c(
-      "button",
-      {
-        attrs: { type: "submit" },
-        on: {
-          click: function($event) {
-            _vm.swapComponent("player")
-          }
-        }
-      },
-      [_vm._v("Whatever")]
-    )
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-7168fb6a", module.exports)
-  }
-}
- }),
- (function(module, exports, __webpack_require__) {
-var disposed = false
-var normalizeComponent = __webpack_require__(4)
-var __vue_script__ = __webpack_require__(47)
-var __vue_template__ = __webpack_require__(48)
-var __vue_template_functional__ = false
-var __vue_styles__ = null
-var __vue_scopeId__ = null
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/OverviewComponent.vue"
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-374ef45d", Component.options)
-  } else {
-    hotAPI.reload("data-v-374ef45d", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-module.exports = Component.exports
- }),
- (function(module, __webpack_exports__, __webpack_require__) {
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(3);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(2);
  __webpack_exports__["default"] = ({
   props: ['medias', 'baseUrl']
 });
@@ -28998,7 +28920,33 @@ var render = function() {
                             ],
                             1
                           )
-                        ])
+                        ]),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          { staticClass: "card-footer" },
+                          [
+                            _vm._v("Tags: "),
+                            _vm._l(item.tags, function(tag) {
+                              return _c(
+                                "a",
+                                {
+                                  staticClass: "btn btn-xs btn-info mr-1",
+                                  attrs: { href: "/tags/" + tag.name }
+                                },
+                                [
+                                  _vm._v(
+                                    _vm._s(tag.name) +
+                                      " (" +
+                                      _vm._s(tag.count) +
+                                      "x)"
+                                  )
+                                ]
+                              )
+                            })
+                          ],
+                          2
+                        )
                       ]
                     )
                   ])
@@ -29045,7 +28993,33 @@ var render = function() {
                               ],
                               1
                             )
-                          ])
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "card-footer" },
+                            [
+                              _vm._v("Tags: "),
+                              _vm._l(item.tags, function(tag) {
+                                return _c(
+                                  "a",
+                                  {
+                                    staticClass: "btn btn-sm btn-info mr-1",
+                                    attrs: { href: "/tags/" + tag.name }
+                                  },
+                                  [
+                                    _vm._v(
+                                      _vm._s(tag.name) +
+                                        " (" +
+                                        _vm._s(tag.count) +
+                                        "x)"
+                                    )
+                                  ]
+                                )
+                              })
+                            ],
+                            2
+                          )
                         ]
                       )
                     ])
@@ -29102,8 +29076,8 @@ if (false) {
  (function(module, exports, __webpack_require__) {
 var disposed = false
 var normalizeComponent = __webpack_require__(4)
-var __vue_script__ = __webpack_require__(50)
-var __vue_template__ = __webpack_require__(51)
+var __vue_script__ = __webpack_require__(48)
+var __vue_template__ = __webpack_require__(49)
 var __vue_template_functional__ = false
 var __vue_styles__ = null
 var __vue_scopeId__ = null
@@ -29136,7 +29110,7 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(3);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(2);
  __webpack_exports__["default"] = ({
   props: ['medias', 'currentTitle', 'swapComponent', 'baseUrl'],
   methods: {
@@ -29226,7 +29200,7 @@ var render = function() {
                       attrs: { href: "/profile/" + item.user.name }
                     },
                     [
-                      item.user.name != undefined
+                      item.user.avatar_source == ""
                         ? _c("img", {
                             staticClass: "mx-auto rounded-circle img-fluid",
                             staticStyle: { "max-height": "20px" },
@@ -29235,14 +29209,17 @@ var render = function() {
                         : _c("img", {
                             staticClass: "mx-auto rounded-circle img-fluid",
                             staticStyle: { "max-height": "20px" },
-                            attrs: { src: item.user.avatar, alt: "avatar" }
+                            attrs: {
+                              src: item.user.avatar_source,
+                              alt: "avatar"
+                            }
                           })
                     ]
                   )
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "card-body" }, [
-                  _vm._v(_vm._s(item.description) + "\n\n    ")
+                  _vm._v(_vm._s(item.description))
                 ]),
                 _vm._v(" "),
                 _c(
@@ -29257,17 +29234,198 @@ var render = function() {
                           staticClass: "btn btn-xs btn-info mr-1",
                           attrs: { href: "/tags/" + tag.name }
                         },
-                        [_vm._v(_vm._s(tag.name))]
+                        [
+                          _vm._v(
+                            _vm._s(tag.name) + " (" + _vm._s(tag.count) + "x)"
+                          )
+                        ]
                       )
                     })
                   ],
                   2
                 )
               ])
-            ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "comments" },
+              _vm._l(item.comments, function(comment) {
+                return _c(
+                  "div",
+                  {
+                    staticClass: "comment mb-2 row",
+                    attrs: { id: "cid" + comment.id }
+                  },
+                  [
+                    _c(
+                      "div",
+                      {
+                        staticClass:
+                          "comment-avatar col-md-1 col-sm-2 text-center pr-1"
+                      },
+                      [
+                        _c("a", { attrs: { href: "" } }, [
+                          _c("img", {
+                            staticClass: "mx-auto rounded-circle img-fluid",
+                            attrs: {
+                              src: "/" + comment.user.avatar,
+                              alt: "avatar"
+                            }
+                          })
+                        ])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "comment-content col-md-11 col-sm-10" },
+                      [
+                        _c(
+                          "h6",
+                          { staticClass: "small comment-meta" },
+                          [
+                            _c(
+                              "router-link",
+                              {
+                                staticClass: "btn btn-primary mr-2",
+                                attrs: { to: "/profile/" + comment.user.id }
+                              },
+                              [_vm._v(_vm._s(comment.user.name))]
+                            ),
+                            _vm._v(
+                              " " +
+                                _vm._s(comment.created_at) +
+                                "\n                "
+                            )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "comment-body" }, [
+                          _c("p", [
+                            _vm._v(
+                              "\n                      " +
+                                _vm._s(comment.body) +
+                                "\n                      "
+                            ),
+                            _c("br"),
+                            _vm._v(" "),
+                            _vm._m(0, true)
+                          ])
+                        ])
+                      ]
+                    )
+                  ]
+                )
+              })
+            )
           ])
         : _vm._e()
     })
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("a", { staticClass: "text-right small", attrs: { href: "" } }, [
+      _c("i", { staticClass: "ion-reply" }),
+      _vm._v(" Reply")
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-3a10cef0", module.exports)
+  }
+}
+ }),
+ (function(module, exports, __webpack_require__) {
+var disposed = false
+var normalizeComponent = __webpack_require__(4)
+var __vue_script__ = __webpack_require__(51)
+var __vue_template__ = __webpack_require__(52)
+var __vue_template_functional__ = false
+var __vue_styles__ = null
+var __vue_scopeId__ = null
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ProfileComponent.vue"
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1891bcea", Component.options)
+  } else {
+    hotAPI.reload("data-v-1891bcea", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+module.exports = Component.exports
+ }),
+ (function(module, __webpack_exports__, __webpack_require__) {
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(2);
+ var __WEBPACK_IMPORTED_MODULE_1__OverviewComponent__ = __webpack_require__(14);
+ var __WEBPACK_IMPORTED_MODULE_1__OverviewComponent___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__OverviewComponent__);
+ __webpack_exports__["default"] = ({
+  props: ['medias', 'baseUrl', 'user'],
+  components: {
+    'overview': __WEBPACK_IMPORTED_MODULE_1__OverviewComponent___default.a
+  }
+});
+ }),
+ (function(module, exports, __webpack_require__) {
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c("div", { attrs: { id: "profile" } }, [
+        _c(
+          "div",
+          {
+            style: "background-image:url(" + _vm.user.background + ")",
+            attrs: { id: "profileheader" }
+          },
+          [
+            _c("img", {
+              staticClass: "pl-2 pt-1 pb-1",
+              attrs: { src: "/" + _vm.user.avatar }
+            }),
+            _c("span", [
+              _c(
+                "h3",
+                { staticClass: "ml-2", staticStyle: { display: "inline" } },
+                [_vm._v(_vm._s(_vm.user.name))]
+              )
+            ])
+          ]
+        )
+      ]),
+      _vm._v(" "),
+      _c("overview", { attrs: { medias: _vm.medias } })
+    ],
+    1
   )
 }
 var staticRenderFns = []
@@ -29276,7 +29434,7 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-3a10cef0", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-1891bcea", module.exports)
   }
 }
  }),

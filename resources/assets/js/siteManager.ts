@@ -2,91 +2,146 @@ var baseUrl:string;
 import Vue from 'vue'
 import Router from 'vue-router';
 import { eventBus } from './eventBus.js';
-var theComp = Vue.component(
-    'exco', require("./components/ExampleComponent.vue")
-);
 var app;
 var theVue;
+require("./models")
 class siteManager {
   medias:Array<Media>;
   currentPage:string;
-  sites:Array<site>;
-  currentSite:site;
+  users:Array<User>;
+  nextLink:string;
+  lastLink:string;
   constructor(base:string){
     baseUrl = base+"/";
     this.currentPage = "overview";
-    this.sites = [];
-    this.currentSite = new overviewSite();
+    this.receiveUsers(true);
   }
   getCurrentSite(){
     return this.currentPage;
   }
-  changeSite(site:string,theValue:string){
-    console.log("changeSite: "+site);
-    if(site=="player"){
-      this.currentSite = new playerSite(theValue);
-    } else {
-      this.currentSite = new overviewSite();
-    }
+  receiveUsers(forceUpdate=false):void{
+    var that = this;
+    $.getJSON("/api/user", function name(data) {
+      if((that.users==undefined)||(forceUpdate)){
+      that.users = [];
+        $.each( data.data, function( key, value ) {
+          that.users.push(new User(value.id, value.name, value.avatar, value.background));
+        });
+        that.receiveMedias();
+      }
+    });
   }
-  buildSite(){
+  receiveMediaByName(mediaName:string,forceUpdate=false):void{
+    var that = this;
+    $.getJSON("/api/media/"+mediaName, function name(data) {
+      that.medias[that.findMediaByName(mediaName)].comments = data.comments
+      theVue.medias = that.medias;
+      });
   }
-};
-class site {
-  title:string;
-  htmlSkeleton:string;
-  constructor(title:string){
-    this.title = title;
-  }
-  build(){
-  }
-  destroy(){
-  }
-};
-class overviewSite extends site {
-  private medias:Array<Media>;
-  constructor(){
-    super("Overview");
-    this.receiveMedias();
+  findMediaByName(mediaName:string):any{
+    $.each(this.medias, function(key,value){
+      if(value.title==mediaName){
+        return key;
+      }
+    });
   }
   receiveMedias(forceUpdate=false):void{
     var that = this;
     $.getJSON("/api/media", function name(data) {
-      if((sm.medias==undefined)||(forceUpdate)){
-      sm.medias = [];
+      if((that.medias==undefined)||(forceUpdate)){
+      that.medias = [];
         $.each( data.data, function( key, value ) {
-          sm.medias.push(new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, value.user,value.created_at,value.created_at_readable,value.comments,value.tags));
+          var med = new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, value.user,value.user_id,value.created_at,value.created_at_readable,value.comments,value.tags)
+          $.each( med.comments, function( key1, value1 ) {
+            med.comments[key1].user = that.getUserById(value1.user_id)
+          });
+          that.medias.push(med);
         });
-        theVue.medias = sm.medias;
+        that.nextLink = data.links.next;
+        that.lastLink = data.links.prev;
+        theVue.medias = that.medias;
+        if(theVue.$route.params.profileId != undefined){
+          theVue.user = sm.getUserById(theVue.$route.params.profileId)
+          theVue.medias = sm.getMediasByUser(theVue.$route.params.profileId)
+        }
       }
     });
   }
-};
-class playerSite extends site {
-  private medias:Array<Media>;
-  constructor(title:string){
-    super(title);
-    this.receiveMedias();
-  }
-  receiveMedias(forceUpdate=false):void{
-    var that = this;
-    if((sm.medias==undefined)||(forceUpdate)){
-    $.getJSON("/api/media/"+that.title, function name(data) {
-        sm.medias = [];
-        $.each( data, function( key, value ) {
-          sm.medias.push(new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, value.user,value.created_at,value.created_at_readable,value.comments,value.tags));
-        });
-        theVue.medias = sm.medias;
+  getUserById(id:number):any{
+    var search:any = "{id:'0',name:'NONE',avatar:'NONY.img'}"
+    $.each( this.users, function( key, value ) {
+      if(value.id == id){
+        search = value;
+      }
     });
+    return search;
   }
-  }
-  createContent(data:Array<Media>):void{
-    $("#mainContent").html("");
-    var carouselHtml = '';
-    var first = true;
-    var finalCarouselHtml;
+  getMediasByUser(id:number){
+    var userMedias = []
+    $.each( this.medias, function( key, value ) {
+      if(value.user_id == id){
+        userMedias.push(value)
+      }
+    });
+    return userMedias;
   }
 };
+if(sm==undefined){
+  var sm;
+}
+export function init(baseUrl) {
+  sm = new siteManager(baseUrl);
+  var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
+  var player = Vue.component('player', require("./components/MediaComponent.vue"));
+  var profileComp = Vue.component('player', require("./components/ProfileComponent.vue"));
+  Vue.use(Router)
+  const routes = [
+    { path: '/', component: overview },
+    { path: '/media/:currentTitle', component: player },
+    { path: '/profile/:profileId', component: profileComp }
+  ]
+ theVue = new Vue({
+  data : {title : "Overview",
+  currentComponent: 'overview', medias:sm.medias,currentTitle:'',user:new User(0,"None","img/404/avatar.png","img/404/background.png"),baseUrl:baseUrl},
+  router:new Router({ routes }),
+  methods:{
+    swapComponent: function(component) {
+      this.currentComponent = component;
+    }
+  },
+  watch:{
+    $route (to, from){
+        if(to.params.currentTitle!=undefined){
+        }
+        if(to.params.profileId!=undefined){
+          this.user = sm.getUserById(to.params.profileId)
+          this.medias = sm.getMediasByUser(to.params.profileId)
+        } else {
+          this.medias = sm.medias;
+        }
+    }
+}
+}).$mount('#app2');
+  eventBus.$on('overviewPlayClick', title => {
+    theVue.currentTitle = title;
+    theVue.title = title;
+  });
+}
+class User{
+  id:number;
+  name:string;
+  avatar:string;
+  background:string;
+  constructor(id:number,name:string,avatar:string,background:string){
+    this.id=id;
+    this.name = name;
+    this.avatar = avatar;
+    this.background = background;
+  }
+  toJson(){
+    return "{id:"+this.id+",name:'"+this.name+"',avatar:'"+this.avatar+"',background:'"+this.background+"'}"
+  }
+}
 class Media {
   title:string;
   description:string;
@@ -100,7 +155,7 @@ class Media {
   tags:any;
   created_at:string;
   created_at_readable:string;
-  constructor(title:string,description:string,source:string,poster_source:string,simpleType:string,type:string,user:any,created_at:string,created_at_readable:string,comments:any,tags:any){
+  constructor(title:string,description:string,source:string,poster_source:string,simpleType:string,type:string,user:any,user_id:any,created_at:string,created_at_readable:string,comments:any,tags:any){
     this.title = title;
     this.description = description;
     this.source = source;
@@ -108,64 +163,13 @@ class Media {
     this.type = type;
     this.simpleType = simpleType;
     this.user = user;
+    this.user_id = user_id;
     this.comments = comments;
     this.tags = tags;
     this.created_at = created_at;
     this.created_at_readable = created_at_readable;
   }
-  getMediaTag(){
-    var tmpHtml = "";
-    if(this.type=="localVideo"||this.type=="directVideo"||this.type=="torrentVideo"){
-      tmpHtml += '<video class="col-12" id="player" poster="{{ url($media->poster()) }}" playsinline controls>';
-      if(this.type=="localVideo"||this.type=="directVideo"){
-        tmpHtml += '<source src="'+baseUrl+this.source+'" >';
-      }
-      return tmpHtml+"</video>";
-    }
-    if(this.type=="localAudio"||this.type=="directAudio"||this.type=="torrentAudio"){
-      tmpHtml += '<audio class="col-12" id="player" poster="{{ url($media->poster()) }}" playsinline controls>';
-      if(this.type=="localAudio"||this.type=="directAudio"){
-        tmpHtml += '<source src="'+baseUrl+this.source+'" >';
-      }
-      return tmpHtml+"</audio>";
-    }
+  toJson(){
+    return "{title:'"+this.title+"',description:'"+this.description+"',source:'"+this.source
   }
-  createEditModal(containerId:string){
-    var tmpHtml = "";
-  }
-};
-if(sm==undefined){
-  var sm;
-}
-export function init(baseUrl) {
-    sm = new siteManager(baseUrl);
-  var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
-  var player = Vue.component('player', require("./components/MediaComponent.vue"));
-  const Foo = { template: '<div>hahha {{ $route.params.currentTitle }}</div>' }
-  const Bar = { template: '<div>bar</div>' }
-  Vue.use(Router)
-  const routes = [
-    { path: '/', component: overview },
-    { path: '/media/:currentTitle', component: player },
-    { path: '/bar', component: Bar }
-  ]
- theVue = new Vue({
-  data : {title : "Overview",
-  currentComponent: 'overview', medias:sm.medias,currentTitle:'',baseUrl:baseUrl},
-  router:new Router({ routes }),
-  methods:{
-    swapComponent: function(component) {
-      this.currentComponent = component;
-    }
-  }
-}).$mount('#app2');
-  eventBus.$on('playerBackClick', title => {
-    console.log("chaNGE BACK")
-  theVue.swapComponent("overview");
-  });
-  eventBus.$on('overviewPlayClick', title => {
-    theVue.currentTitle = title;
-    theVue.title = title;
-    theVue.swapComponent("player");
-  });
 }

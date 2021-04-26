@@ -1,6 +1,25 @@
-export function getAutoplay() {
-    if (localStorage.getItem("autoplay") == "true") {
+var User =  (function () {
+    function User(id, name, avatar) {
+        this.id = id;
+        this.name = name;
+        this.avatar = avatar;
     }
-    else {
+    return User;
+}());
+var Media =  (function () {
+    function Media(title, description, source, poster_source, simpleType, type, user, created_at, created_at_readable, comments, tags) {
+        this.title = title;
+        this.description = description;
+        this.source = source;
+        this.poster_source = poster_source;
+        this.type = type;
+        this.simpleType = simpleType;
+        this.user = user;
+        this.comments = comments;
+        this.tags = tags;
+        this.created_at = created_at;
+        this.created_at_readable = created_at_readable;
     }
-}
+    return Media;
+}());
+;
