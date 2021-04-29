@@ -10,6 +10,10 @@ var siteManager =  (function () {
         baseUrl = base + "/";
         this.currentPage = "overview";
         this.receiveUsers(true);
+        var that = this;
+        eventBus.$on('refreshMedias', function (title) {
+            that.receiveMedias(true);
+        });
     }
     siteManager.prototype.getCurrentSite = function () {
         return this.currentPage;
@@ -21,7 +25,7 @@ var siteManager =  (function () {
             if ((that.users == undefined) || (forceUpdate)) {
                 that.users = [];
                 $.each(data.data, function (key, value) {
-                    that.users.push(new User(value.id, value.name, value.avatar, value.background));
+                    that.users.push(new User(value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds));
                 });
                 that.receiveMedias();
             }
@@ -49,7 +53,7 @@ var siteManager =  (function () {
             if ((that.medias == undefined) || (forceUpdate)) {
                 that.medias = [];
                 $.each(data.data, function (key, value) {
-                    var med = new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, value.user, value.user_id, value.created_at, value.created_at_readable, value.comments, value.tags);
+                    var med = new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.created_at_readable, value.comments, value.tags);
                     $.each(med.comments, function (key1, value1) {
                         med.comments[key1].user = that.getUserById(value1.user_id);
                     });
@@ -66,7 +70,7 @@ var siteManager =  (function () {
         });
     };
     siteManager.prototype.getUserById = function (id) {
-        var search = "{id:'0',name:'NONE',avatar:'NONY.img'}";
+        var search = new User(0, "None", "/img/404/avatar.png", "/img/404/background.png", "None-profile", {});
         $.each(this.users, function (key, value) {
             if (value.id == id) {
                 search = value;
@@ -102,7 +106,7 @@ export function init(baseUrl) {
     ];
     theVue = new Vue({
         data: { title: "Overview",
-            currentComponent: 'overview', medias: sm.medias, currentTitle: '', user: new User(0, "None", "img/404/avatar.png", "img/404/background.png"), baseUrl: baseUrl },
+            currentComponent: 'overview', medias: sm.medias, currentTitle: '', user: new User(0, "None", "img/404/avatar.png", "img/404/background.png", "None-user", {}), baseUrl: baseUrl },
         router: new Router({ routes: routes }),
         methods: {
             swapComponent: function (component) {
@@ -129,11 +133,13 @@ export function init(baseUrl) {
     });
 }
 var User =  (function () {
-    function User(id, name, avatar, background) {
+    function User(id, name, avatar, background, bio, mediaIds) {
         this.id = id;
         this.name = name;
         this.avatar = avatar;
         this.background = background;
+        this.bio = bio;
+        this.mediaIds = mediaIds;
     }
     User.prototype.toJson = function () {
         return "{id:" + this.id + ",name:'" + this.name + "',avatar:'" + this.avatar + "',background:'" + this.background + "'}";

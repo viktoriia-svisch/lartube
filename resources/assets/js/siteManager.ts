@@ -15,6 +15,10 @@ class siteManager {
     baseUrl = base+"/";
     this.currentPage = "overview";
     this.receiveUsers(true);
+    var that = this;
+    eventBus.$on('refreshMedias', title => {
+      that.receiveMedias(true)
+    });
   }
   getCurrentSite(){
     return this.currentPage;
@@ -25,7 +29,7 @@ class siteManager {
       if((that.users==undefined)||(forceUpdate)){
       that.users = [];
         $.each( data.data, function( key, value ) {
-          that.users.push(new User(value.id, value.name, value.avatar, value.background));
+          that.users.push(new User(value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds));
         });
         that.receiveMedias();
       }
@@ -51,7 +55,7 @@ class siteManager {
       if((that.medias==undefined)||(forceUpdate)){
       that.medias = [];
         $.each( data.data, function( key, value ) {
-          var med = new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, value.user,value.user_id,value.created_at,value.created_at_readable,value.comments,value.tags)
+          var med = new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, that.getUserById(value.user_id),value.user_id,value.created_at,value.created_at_readable,value.comments,value.tags)
           $.each( med.comments, function( key1, value1 ) {
             med.comments[key1].user = that.getUserById(value1.user_id)
           });
@@ -67,8 +71,8 @@ class siteManager {
       }
     });
   }
-  getUserById(id:number):any{
-    var search:any = "{id:'0',name:'NONE',avatar:'NONY.img'}"
+  getUserById(id:number):User{
+    var search:User = new User(0,"None","/img/404/avatar.png","/img/404/background.png","None-profile",{})
     $.each( this.users, function( key, value ) {
       if(value.id == id){
         search = value;
@@ -102,7 +106,7 @@ export function init(baseUrl) {
   ]
  theVue = new Vue({
   data : {title : "Overview",
-  currentComponent: 'overview', medias:sm.medias,currentTitle:'',user:new User(0,"None","img/404/avatar.png","img/404/background.png"),baseUrl:baseUrl},
+  currentComponent: 'overview', medias:sm.medias,currentTitle:'',user:new User(0,"None","img/404/avatar.png","img/404/background.png", "None-user", {}),baseUrl:baseUrl},
   router:new Router({ routes }),
   methods:{
     swapComponent: function(component) {
@@ -132,11 +136,15 @@ class User{
   name:string;
   avatar:string;
   background:string;
-  constructor(id:number,name:string,avatar:string,background:string){
+  bio:string;
+  mediaIds:any;
+  constructor(id:number,name:string,avatar:string,background:string,bio:string,mediaIds:any){
     this.id=id;
     this.name = name;
     this.avatar = avatar;
     this.background = background;
+    this.bio = bio;
+    this.mediaIds = mediaIds;
   }
   toJson(){
     return "{id:"+this.id+",name:'"+this.name+"',avatar:'"+this.avatar+"',background:'"+this.background+"'}"
