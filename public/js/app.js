@@ -26452,7 +26452,10 @@ var siteManager = function () {
         this.receiveUsers(true);
         var that = this;
         __WEBPACK_IMPORTED_MODULE_2__eventBus_js__["a" ].$on('refreshMedias', function (title) {
-            that.receiveMedias(true);
+            that.receiveMedias("/api/media", true);
+        });
+        __WEBPACK_IMPORTED_MODULE_2__eventBus_js__["a" ].$on('loadMore', function (title) {
+            that.receiveMedias(that.nextLink);
         });
     }
     siteManager.prototype.getCurrentSite = function () {
@@ -26490,28 +26493,31 @@ var siteManager = function () {
             }
         });
     };
-    siteManager.prototype.receiveMedias = function (forceUpdate) {
+    siteManager.prototype.receiveMedias = function (url, forceUpdate) {
+        if (url === void 0) {
+            url = "/api/media";
+        }
         if (forceUpdate === void 0) {
             forceUpdate = false;
         }
         var that = this;
-        $.getJSON("/api/media", function name(data) {
-            if (that.medias == undefined || forceUpdate) {
+        $.getJSON(url, function name(data) {
+            if (forceUpdate || that.medias == undefined) {
                 that.medias = [];
-                $.each(data.data, function (key, value) {
-                    var med = new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.created_at_readable, value.comments, value.tags);
-                    $.each(med.comments, function (key1, value1) {
-                        med.comments[key1].user = that.getUserById(value1.user_id);
-                    });
-                    that.medias.push(med);
+            }
+            $.each(data.data, function (key, value) {
+                var med = new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.created_at_readable, value.comments, value.tags);
+                $.each(med.comments, function (key1, value1) {
+                    med.comments[key1].user = that.getUserById(value1.user_id);
                 });
-                that.nextLink = data.links.next;
-                that.lastLink = data.links.prev;
-                theVue.medias = that.medias;
-                if (theVue.$route.params.profileId != undefined) {
-                    theVue.user = sm.getUserById(theVue.$route.params.profileId);
-                    theVue.medias = sm.getMediasByUser(theVue.$route.params.profileId);
-                }
+                that.medias.push(med);
+            });
+            that.nextLink = data.links.next;
+            that.lastLink = data.links.prev;
+            theVue.medias = that.medias;
+            if (theVue.$route.params.profileId != undefined) {
+                theVue.user = sm.getUserById(theVue.$route.params.profileId);
+                theVue.medias = sm.getMediasByUser(theVue.$route.params.profileId);
             }
         });
     };
@@ -28900,8 +28906,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  __webpack_exports__["default"] = ({
   props: ['medias', 'currentTitle', 'swapComponent', 'baseUrl'],
   methods: {
-    emitBackClicked: function emitBackClicked(title) {
-      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('playerBackClick', title);
+    emitLoadMore: function emitLoadMore(title) {
+      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadMore', title);
     }
   }
 });
@@ -28911,48 +28917,63 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "row text-center text-lg-left",
-      attrs: { id: "profilevideos" }
-    },
-    _vm._l(_vm.medias, function(item) {
-      return _c("div", { staticClass: "col-lg-4 col-md-4 col-xs-6" }, [
-        _c(
-          "div",
-          { staticClass: "card", staticStyle: { "min-width": "300px" } },
-          [
-            _c(
-              "router-link",
-              {
-                staticClass: "d-block h-100",
-                attrs: { to: "/media/" + item.title }
-              },
-              [
-                _c("img", {
-                  staticClass: "card-img-top",
-                  attrs: { src: item.poster_source, alt: "" }
-                }),
-                _vm._v(" "),
-                _c("div", { staticClass: "card-img-overlay" }, [
-                  _c(
-                    "h4",
-                    {
-                      staticClass: "card-title bg-secondary text-info",
-                      staticStyle: { opacity: "0.9" }
-                    },
-                    [_vm._v(_vm._s(item.title))]
-                  )
-                ])
-              ]
-            )
-          ],
-          1
-        )
-      ])
-    })
-  )
+  return _c("div", [
+    _c(
+      "div",
+      {
+        staticClass: "row text-center text-lg-left",
+        attrs: { id: "profilevideos" }
+      },
+      _vm._l(_vm.medias, function(item) {
+        return _c("div", { staticClass: "col-lg-4 col-md-4 col-xs-6" }, [
+          _c(
+            "div",
+            { staticClass: "card", staticStyle: { "min-width": "300px" } },
+            [
+              _c(
+                "router-link",
+                {
+                  staticClass: "d-block h-100",
+                  attrs: { to: "/media/" + item.title }
+                },
+                [
+                  _c("img", {
+                    staticClass: "card-img-top",
+                    attrs: { src: item.poster_source, alt: "" }
+                  }),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "card-img-overlay" }, [
+                    _c(
+                      "h4",
+                      {
+                        staticClass: "card-title bg-secondary text-info",
+                        staticStyle: { opacity: "0.9" }
+                      },
+                      [_vm._v(_vm._s(item.title))]
+                    )
+                  ])
+                ]
+              )
+            ],
+            1
+          )
+        ])
+      })
+    ),
+    _vm._v(" "),
+    _c(
+      "button",
+      {
+        staticClass: "btn btn-danger",
+        on: {
+          click: function($event) {
+            _vm.emitLoadMore("")
+          }
+        }
+      },
+      [_vm._v("Load more")]
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -29002,10 +29023,12 @@ var render = function() {
               attrs: { id: "carouselIndicatorsBody" }
             },
             _vm._l(_vm.medias, function(item, index) {
-              return _c("li", {
-                staticClass: "active",
-                attrs: { "data-target": "#demo", "data-slide-to": index }
-              })
+              return index < 3
+                ? _c("li", {
+                    staticClass: "active",
+                    attrs: { "data-target": "#demo", "data-slide-to": index }
+                  })
+                : _vm._e()
             })
           ),
           _vm._v(" "),

@@ -17,7 +17,10 @@ class siteManager {
     this.receiveUsers(true);
     var that = this;
     eventBus.$on('refreshMedias', title => {
-      that.receiveMedias(true)
+      that.receiveMedias("/api/media",true)
+    });
+    eventBus.$on('loadMore', title => {
+      that.receiveMedias(that.nextLink)
     });
   }
   getCurrentSite(){
@@ -49,11 +52,12 @@ class siteManager {
       }
     });
   }
-  receiveMedias(forceUpdate=false):void{
+  receiveMedias(url="/api/media",forceUpdate=false):void{
     var that = this;
-    $.getJSON("/api/media", function name(data) {
-      if((that.medias==undefined)||(forceUpdate)){
-      that.medias = [];
+    $.getJSON(url, function name(data) {
+      if((forceUpdate)||(that.medias==undefined)){
+        that.medias = [];
+      }
         $.each( data.data, function( key, value ) {
           var med = new Media(value.title, value.description, value.source, value.poster_source, value.simpleType, value.type, that.getUserById(value.user_id),value.user_id,value.created_at,value.created_at_readable,value.comments,value.tags)
           $.each( med.comments, function( key1, value1 ) {
@@ -68,7 +72,6 @@ class siteManager {
           theVue.user = sm.getUserById(theVue.$route.params.profileId)
           theVue.medias = sm.getMediasByUser(theVue.$route.params.profileId)
         }
-      }
     });
   }
   getUserById(id:number):User{
