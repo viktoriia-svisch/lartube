@@ -38,12 +38,12 @@ class DatabaseSeeder extends Seeder
      $u1->acceptFriendRequest($u2);
      $m1 = Media::create(['title' => 'Audio test 1', 'source' => 'https:
      $m1->tag('Gardening');
-     $m1->tag('Open');
+     $m1->tag('Audio');
      $m1->tag('Test');
      $m1 = Media::create(['title' => 'Big bucks bunny test', 'source' => 'https:
      $m1->tag('Some');
      $m1->tag('thing');
-     $m1->tag('else');
+     $m1->tag('Movie');
      $m1 = Media::create(['title' => 'Big bucks bunny test 2', 'source' => 'https:
      $m1->tag('Some');
      $m1->tag('Test');
@@ -55,10 +55,19 @@ class DatabaseSeeder extends Seeder
      $m1->tag('thing');
      $m1 = Media::create(['title' => 'Big bucks test', 'source' => 'https:
      $m1->tag('Some');
+     $m1->tag('Movie');
+     $m1->tag('Animation');
+     $m1 = Media::create(['title' => 'Ocean test', 'source' => 'http:
+     $m1->tag('Movie');
      $m1->tag('Hello');
+     $m1->tag('Nature');
+     $m1 = Media::create(['title' => 'Another Ocean test', 'source' => 'http:
+     $m1->tag('Movie');
+     $m1->tag('Test');
+     $m1->tag('Some');
      $m1 = Media::create(['title' => 'Audio test 2', 'source' => 'https:
      $m1->tag('Some');
-     $m1->tag('thing');
+     $m1->tag('Audio');
      $m1->tag('Test');
      $m1->tag('Gardening');
      foreach ($permissions as $permission) {
