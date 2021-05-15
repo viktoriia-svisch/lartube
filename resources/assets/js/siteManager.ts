@@ -1,6 +1,7 @@
 var baseUrl:string;
 import Vue from 'vue'
 import Router from 'vue-router';
+import BootstrapVue from 'bootstrap-vue'
 import { eventBus } from './eventBus.js';
 var app;
 var theVue;
@@ -15,6 +16,7 @@ class siteManager {
   constructor(base:string){
     baseUrl = base+"/";
     this.currentPage = "overview";
+    this.initVue();
     this.receiveUsers(true);
     var that = this;
     eventBus.$on('refreshMedias', title => {
@@ -23,6 +25,58 @@ class siteManager {
     eventBus.$on('loadMore', title => {
       that.receiveMedias(that.nextLink)
     });
+    eventBus.$on('showAlert', data => {
+      console.log("got showAlert")
+      theVue.dismissCountDown = theVue.dismissSecs
+    });
+  }
+  initVue(){
+    var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
+    var player = Vue.component('player', require("./components/MediaComponent.vue"));
+    var profileComp = Vue.component('profile', require("./components/ProfileComponent.vue"));
+    var tagComp = Vue.component('tags', require("./components/TagComponent.vue"));
+    var loginComp = Vue.component('login', require("./components/LoginComponent.vue"));
+    var uploadComp = Vue.component('upload', require("./components/UploadComponent.vue"));
+    var alertComp = Vue.component('alert', require("./components/AlertComponent.vue"));
+    Vue.use(Router)
+    Vue.use(BootstrapVue);
+    const routes = [
+      { path: '/', component: overview },
+      { path: '/media/:currentTitle', component: player },
+      { path: '/profile/:profileId', component: profileComp },
+      { path: '/tags', component: tagComp },
+      { path: '/tags/:tagName', component: tagComp },
+      { path: '/login', component: loginComp },
+      { path: '/upload', component: uploadComp }
+    ]
+   theVue = new Vue({
+    data : {title : "Overview",
+    dismissSecs: 10,
+    dismissCountDown: 0,
+    showDismissibleAlert: false,
+    currentComponent: 'overview', tags:this.tags, canLoadMore:true, medias:this.medias,currentTitle:'',user:new User(0,"None","img/404/avatar.png","img/404/background.png", "None-user", {}),baseUrl:baseUrl},
+    router:new Router({ routes }),
+    components : {
+      'alert': alertComp
+    },
+    methods:{
+      swapComponent: function(component) {
+        this.currentComponent = component;
+      }
+    },
+    watch:{
+      $route (to, from){
+          if(to.params.currentTitle!=undefined){
+          }
+          if(to.params.profileId!=undefined){
+            this.user = sm.getUserById(to.params.profileId)
+            this.medias = sm.getMediasByUser(to.params.profileId)
+          } else {
+            this.medias = sm.medias;
+          }
+      }
+  }
+  }).$mount('#app2');
   }
   getCurrentSite(){
     return this.currentPage;
@@ -151,39 +205,6 @@ if(sm==undefined){
 }
 export function init(baseUrl) {
   sm = new siteManager(baseUrl);
-  var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
-  var player = Vue.component('player', require("./components/MediaComponent.vue"));
-  var profileComp = Vue.component('player', require("./components/ProfileComponent.vue"));
-  var tagComp = Vue.component('player', require("./components/TagComponent.vue"));
-  Vue.use(Router)
-  const routes = [
-    { path: '/', component: overview },
-    { path: '/media/:currentTitle', component: player },
-    { path: '/profile/:profileId', component: profileComp },
-    { path: '/tags', component: tagComp }
-  ]
- theVue = new Vue({
-  data : {title : "Overview",
-  currentComponent: 'overview', tags:sm.tags, canLoadMore:true, medias:sm.medias,currentTitle:'',user:new User(0,"None","img/404/avatar.png","img/404/background.png", "None-user", {}),baseUrl:baseUrl},
-  router:new Router({ routes }),
-  methods:{
-    swapComponent: function(component) {
-      this.currentComponent = component;
-    }
-  },
-  watch:{
-    $route (to, from){
-        if(to.params.currentTitle!=undefined){
-        }
-        if(to.params.profileId!=undefined){
-          this.user = sm.getUserById(to.params.profileId)
-          this.medias = sm.getMediasByUser(to.params.profileId)
-        } else {
-          this.medias = sm.medias;
-        }
-    }
-}
-}).$mount('#app2');
   eventBus.$on('overviewPlayClick', title => {
     theVue.currentTitle = title;
     theVue.title = title;

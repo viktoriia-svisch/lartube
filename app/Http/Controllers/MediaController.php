@@ -22,11 +22,23 @@ class MediaController extends Controller
     }
     public function create(Request $request)
     {
-        $data = $request->input('image');
-        list($type, $data) = explode(';', $data);
-        list(, $data)      = explode(',', $data);
-        $data = base64_decode($data);
         $title = $request->input('title');
+        $poster_source = 'public/media/posters/'.$title.'.png';
+        $data = $request->input('poster');
+        if(!empty($data)){
+          list($type, $data) = explode(';', $data);
+          list(, $data)      = explode(',', $data);
+          $data = base64_decode($data);
+          Storage::put('public/media/posters/'.$title.'.png', $data);
+        } else {
+          $poster_source = '';
+        }
+        $source = $request->input('source');
+        if(empty($source)){
+          $file = $request->file('directMedia');
+          $extension = $file->getClientOriginalExtension();
+          $source = $file->store('public/directMedia');
+        }
         $tagArrayExtract = explode(' ', $request->input('tags'));
         $tagArray = array();
         foreach($tagArrayExtract as $tag){
@@ -36,9 +48,8 @@ class MediaController extends Controller
             array_push($tagArray, $tag);
           }
         }
-        Storage::put('public/media/posters/'.$title.'.png', $data);
-        $media = Media::create(['title' =>  $request->input('title'),'source' => $request->input('source'),'poster_source' => 'public/media/posters/'.$title.'.png', 'description' => $request->input('description'), 'type' => $request->input('type'), 'user_id' => Auth::id()]);
-        $media->retag(explode(' ', $tagArray));
+        $media = Media::create(['title' =>  $request->input('title'),'source' => $source,'poster_source' => $poster_source, 'description' => $request->input('description'), 'type' => $request->input('type'), 'user_id' => Auth::id()]);
+        $media->retag($tagArray);
         return redirect()->route('media.show',$title)
                         ->with('success','Video created successfully');
     }
@@ -60,7 +71,6 @@ class MediaController extends Controller
       }
     }
     public function directUpload(Request $request){
-      $file = $request->file('directMedia');
       $data = $request->input('image');
       list($type, $data) = explode(';', $data);
       list(, $data)      = explode(',', $data);
