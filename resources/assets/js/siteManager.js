@@ -2,6 +2,7 @@ var baseUrl;
 import Vue from 'vue';
 import Router from 'vue-router';
 import BootstrapVue from 'bootstrap-vue';
+import VueCroppie from 'vue-croppie';
 import { eventBus } from './eventBus.js';
 var app;
 var theVue;
@@ -10,7 +11,6 @@ var siteManager =  (function () {
     function siteManager(base) {
         baseUrl = base + "/";
         this.currentPage = "overview";
-        this.initVue();
         this.receiveUsers(true);
         var that = this;
         eventBus.$on('refreshMedias', function (title) {
@@ -34,6 +34,7 @@ var siteManager =  (function () {
         var alertComp = Vue.component('alert', require("./components/AlertComponent.vue"));
         Vue.use(Router);
         Vue.use(BootstrapVue);
+        Vue.use(VueCroppie);
         var routes = [
             { path: '/', component: overview },
             { path: '/media/:currentTitle', component: player },
@@ -100,7 +101,9 @@ var siteManager =  (function () {
                 });
             }
             this.tags = that.tags;
-            theVue.tags = this.tags;
+            if (theVue != undefined) {
+                theVue.tags = this.tags;
+            }
             that.receiveMedias();
         });
     };
@@ -172,6 +175,7 @@ var siteManager =  (function () {
             });
             that.nextLink = data.links.next;
             that.lastLink = data.links.prev;
+            that.initVue();
             if (that.nextLink == null) {
                 theVue.canLoadMore = false;
             }

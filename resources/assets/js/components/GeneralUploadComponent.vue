@@ -30,7 +30,22 @@
          <input placeholder="magnet:    </div>
     <div class="form-group">
         <label>Media-poster:</label>
-        <input id="posterUpload" name="poster" type="file">
+        <vue-croppie
+          ref="croppieRef"
+          :enableOrientation="true"
+          :enableResize="false"
+          @result="result"
+          :viewport="{ width: 700, height: 394, type: 'square' }"
+          :boundary="{ width: 700, height: 394 }"
+          @update="update">
+          </vue-croppie>
+          <input type="hidden" id="posterBase" name="poster" :value="cropped" />
+          <button @click="bind()">Bind</button>
+          <button @click="rotate(-90)">Rotate Left</button>
+          <button @click="rotate(90)">Rotate Right</button>
+          <button @click="crop()">Crop Via Callback</button>
+          <button @click="cropViaEvent()">Crop Via Event</button>
+        <input id="posterUpload" @change="posterChange()" name="poster" type="file">
         <div id="poster"></div>
     </div>
       <div class="form-group">
@@ -58,12 +73,25 @@
     props: ['medias','currentTitle','swapComponent','baseUrl'],
     mounted: function () {
       console.log("mounted!");
+      this.$refs.croppieRef.bind({
+        url: '/img/404/image.png',
+      })
       $('.directMedia').on('change', function() {
         var file = this.files[0];
                                   console.log(this.files);
               });
     },
     methods: {
+      posterChange(){
+        var reader = new FileReader();
+        let that = this;
+       reader.onload = function (e) {
+         that.$refs.croppieRef.bind({
+             url: e.target.result,
+         });
+        }
+        reader.readAsDataURL($("#posterUpload")[0].files[0]);
+      },
       submitAction() {
         console.log("submit it!");
         console.log($("#theForm")[0])
@@ -90,7 +118,32 @@
       },
       showAlert() {
         this.dismissCountDown = this.dismissSecs
-      }
+      },
+      bind() {
+        let url = this.images[Math.floor(Math.random() * 4)]
+                      },
+crop() {
+                let options = {
+        format: 'png'
+    }
+    this.$refs.croppieRef.result(options, (output) => {
+        this.cropped = output;
+        console.log(output)
+    });
+},
+cropViaEvent() {
+    this.$refs.croppieRef.result(options);
+},
+result(output) {
+    this.cropped = output;
+},
+update(val) {
+  this.crop();
+    console.log(val);
+},
+rotate(rotationAngle) {
+        this.$refs.croppieRef.rotate(rotationAngle);
+}
     },
     data(){
       return {
@@ -100,6 +153,9 @@
         alertType: 'warning',
         alertMsg: '',
         showDismissibleAlert: false,
+        cropped: null,
+images: [
+    'http:    'http:    'http:    'http:]
       }
     }
   }
