@@ -18,11 +18,12 @@ class siteManager {
     baseUrl = base+"/";
     this.currentPage = "overview";
     this.receiveUsers(true);
-    var that = this;
+    let that = this;
     eventBus.$on('refreshMedias', title => {
       that.receiveMedias("/api/media",true)
     });
     eventBus.$on('loadMore', title => {
+      console.log("received load more")
       that.receiveMedias(that.nextLink)
     });
     eventBus.$on('showAlert', data => {
@@ -174,7 +175,9 @@ class siteManager {
         });
         that.nextLink = data.links.next;
         that.lastLink = data.links.prev;
-        that.initVue();
+        if(theVue==undefined){
+          that.initVue();
+        }
         if(that.nextLink==null){
           theVue.canLoadMore=false;
         }
