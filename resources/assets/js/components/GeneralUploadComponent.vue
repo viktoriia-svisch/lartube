@@ -40,11 +40,8 @@
           @update="update">
           </vue-croppie>
           <input type="hidden" id="posterBase" name="poster" :value="cropped" />
-          <button @click="bind()">Bind</button>
-          <button @click="rotate(-90)">Rotate Left</button>
-          <button @click="rotate(90)">Rotate Right</button>
-          <button @click="crop()">Crop Via Callback</button>
-          <button @click="cropViaEvent()">Crop Via Event</button>
+          <button @click="rotate(-90,$event)">Rotate Left</button>
+          <button @click="rotate(90,$event)">Rotate Right</button>
         <input id="posterUpload" @change="posterChange()" name="poster" type="file">
         <div id="poster"></div>
     </div>
@@ -72,7 +69,6 @@
   export default {
     props: ['medias','currentTitle','swapComponent','baseUrl'],
     mounted: function () {
-      console.log("mounted!");
       this.$refs.croppieRef.bind({
         url: '/img/404/image.png',
       })
@@ -93,9 +89,7 @@
         reader.readAsDataURL($("#posterUpload")[0].files[0]);
       },
       submitAction() {
-        console.log("submit it!");
-        console.log($("#theForm")[0])
-        var that = this;
+        let that = this;
         $.ajax({
             url: '/media/create',
             type: 'POST',
@@ -119,9 +113,6 @@
       showAlert() {
         this.dismissCountDown = this.dismissSecs
       },
-      bind() {
-        let url = this.images[Math.floor(Math.random() * 4)]
-                      },
 crop() {
                 let options = {
         format: 'png'
@@ -141,8 +132,9 @@ update(val) {
   this.crop();
     console.log(val);
 },
-rotate(rotationAngle) {
-        this.$refs.croppieRef.rotate(rotationAngle);
+rotate(rotationAngle,event) {
+        if (event) event.preventDefault()
+    this.$refs.croppieRef.rotate(rotationAngle);
 }
     },
     data(){
@@ -154,8 +146,6 @@ rotate(rotationAngle) {
         alertMsg: '',
         showDismissibleAlert: false,
         cropped: null,
-images: [
-    'http:    'http:    'http:    'http:]
       }
     }
   }
