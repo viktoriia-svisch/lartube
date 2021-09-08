@@ -72,10 +72,6 @@
       this.$refs.croppieRef.bind({
         url: '/img/404/image.png',
       })
-      $('.directMedia').on('change', function() {
-        var file = this.files[0];
-                                  console.log(this.files);
-              });
     },
     methods: {
       posterChange(){
@@ -99,7 +95,7 @@
             processData: false,
             complete : function(res) {
               if(res.status==200){
-                that.dismissCountDown = that.dismissSecs;
+                that.dismissCountDown = 20;
                 that.alertMsg = "Video added"
                 that.alertType = "success"
                               }
@@ -113,24 +109,16 @@
       showAlert() {
         this.dismissCountDown = this.dismissSecs
       },
-crop() {
-                let options = {
-        format: 'png'
-    }
-    this.$refs.croppieRef.result(options, (output) => {
-        this.cropped = output;
-        console.log(output)
-    });
-},
-cropViaEvent() {
-    this.$refs.croppieRef.result(options);
-},
 result(output) {
     this.cropped = output;
 },
 update(val) {
-  this.crop();
-    console.log(val);
+  let options = {
+      format: 'png'
+  }
+  this.$refs.croppieRef.result(options, (output) => {
+      this.cropped = output;
+  });
 },
 rotate(rotationAngle,event) {
         if (event) event.preventDefault()
