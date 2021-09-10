@@ -29,8 +29,11 @@ var siteManager =  (function () {
         eventBus.$on('loadMore', function (title) {
             that.receiveMedias(that.nextLink);
         });
+        eventBus.$on('refreshSearch', function (title) {
+            theVue.searching();
+        });
         eventBus.$on('showAlert', function (data) {
-            theVue.dismissCountDown = theVue.dismissSecs;
+            theVue.dismisscountdown = theVue.dismisssecs;
         });
     }
     siteManager.prototype.initVue = function () {
@@ -41,9 +44,11 @@ var siteManager =  (function () {
         var loginComp = Vue.component('login', require("./components/LoginComponent.vue"));
         var uploadComp = Vue.component('upload', require("./components/UploadComponent.vue"));
         var alertComp = Vue.component('alert', require("./components/AlertComponent.vue"));
+        var searchComp = Vue.component('search', require("./components/SearchComponent.vue"));
         Vue.use(Router);
         Vue.use(BootstrapVue);
         Vue.use(VueCroppie);
+        var that = this;
         var routes = [
             { path: '/', component: overview },
             { path: '/media/:currentTitle', component: player },
@@ -51,21 +56,44 @@ var siteManager =  (function () {
             { path: '/tags', component: tagComp },
             { path: '/tags/:tagName', component: tagComp },
             { path: '/login', component: loginComp },
-            { path: '/upload', component: uploadComp }
+            { path: '/upload', component: uploadComp },
+            { path: '/search', component: searchComp }
         ];
         theVue = new Vue({
-            data: { title: "Overview",
-                dismissSecs: 10,
-                dismissCountDown: 0,
-                showDismissibleAlert: false,
-                currentComponent: 'overview', loggeduserid: this.loggedUserId, tags: this.tags, canloadmore: true, medias: this.medias, currentTitle: '', user: new User(0, "None", "img/404/avatar.png", "img/404/background.png", "None-user", {}), baseUrl: baseUrl },
+            data: {
+                title: "Overview",
+                dismisssecs: 10,
+                dismisscountdown: 0,
+                showdismissiblealert: false,
+                search: '',
+                users: this.users,
+                loggeduserid: this.loggedUserId,
+                tags: this.tags,
+                canloadmore: true,
+                medias: this.medias,
+                currentTitle: '',
+                user: new User(0, "None", "img/404/avatar.png", "img/404/background.png", "None-user", {}),
+                baseUrl: baseUrl
+            },
             router: new Router({ routes: routes }),
             components: {
                 'alert': alertComp
             },
             methods: {
-                swapComponent: function (component) {
-                    this.currentComponent = component;
+                searching: function () {
+                    console.log("search!");
+                    console.log(s);
+                    console.log(that.medias);
+                    if (theVue.$router.currentRoute.path != "/search") {
+                        theVue.$router.push('/search');
+                    }
+                    var s = $("#theLiveSearch").val();
+                    var m = [];
+                    var so = new Search(s.toString(), that.medias, that.tags, that.users);
+                    theVue.search = so;
+                    theVue.medias = so.mediaResult;
+                    console.log(so.mediaResult);
+                    theVue.users = so.userResult;
                 }
             },
             mounted: function () {
@@ -83,6 +111,8 @@ var siteManager =  (function () {
                     }
                     else {
                         this.medias = sm.medias;
+                    }
+                    if (to.path == "/search") {
                     }
                 }
             }
@@ -196,6 +226,7 @@ var siteManager =  (function () {
             if (that.nextLink == null) {
                 theVue.canloadmore = false;
             }
+            theVue.users = that.users;
             theVue.medias = that.medias;
             if (theVue.$route.params.profileId != undefined) {
                 theVue.user = sm.getUserById(theVue.$route.params.profileId);
@@ -205,6 +236,9 @@ var siteManager =  (function () {
                 if (that.findMediaByName(theVue.$route.params.currentTitle) == undefined) {
                     that.receiveMediaByName(theVue.$route.params.currentTitle);
                 }
+            }
+            if ((theVue.$router.currentRoute.path == "/search")) {
+                theVue.searching();
             }
         });
     };
@@ -247,6 +281,61 @@ var Tag =  (function () {
         this.count = count;
     }
     return Tag;
+}());
+var Search =  (function () {
+    function Search(search, medias, tags, users) {
+        this.search = search;
+        this.tagResult = [];
+        this.userResult = [];
+        this.mediaResult = [];
+        if (search != "") {
+            var mediaTitle = $("#theLiveSearchMediaTitle").is(':checked');
+            var mediaDescription = $("#theLiveSearchMediaDescription").is(':checked');
+            console.log("WTF??");
+            console.log(mediaTitle);
+            var that_1 = this;
+            if ($("#theLiveSearchUsers").is(':checked')) {
+                $.each(users, function (key, value) {
+                    if (value.name.toLowerCase().indexOf(that_1.search.toLowerCase()) > -1) {
+                        if (that_1.userResult.includes(value) == false) {
+                            that_1.userResult.push(value);
+                        }
+                    }
+                    if (value.bio.toLowerCase().indexOf(that_1.search.toLowerCase()) > -1) {
+                        if (that_1.userResult.includes(value) == false) {
+                            that_1.userResult.push(value);
+                        }
+                    }
+                });
+            }
+            if (mediaTitle || mediaDescription) {
+                console.log("PAssed media-if");
+                console.log(medias);
+                $.each(medias, function (key, value) {
+                    console.log(that_1.search);
+                    console.log(value.title);
+                    if (mediaTitle) {
+                        if (value.title.toLowerCase().indexOf(that_1.search.toLowerCase()) > -1) {
+                            if (that_1.mediaResult.includes(value) == false) {
+                                that_1.mediaResult.push(value);
+                            }
+                        }
+                    }
+                    if (mediaDescription) {
+                        if (value.description.toLowerCase().indexOf(search.toLowerCase()) > -1) {
+                            if (that_1.mediaResult.includes(value) == false) {
+                                that_1.mediaResult.push(value);
+                            }
+                        }
+                    }
+                });
+            }
+            if ($("#theLiveSearchMedias").is(':checked')) {
+                this.userResult = medias;
+            }
+        }
+    }
+    return Search;
 }());
 var User =  (function () {
     function User(id, name, avatar, background, bio, mediaIds) {
