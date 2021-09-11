@@ -30,6 +30,9 @@ Route::get('/media/{title}', function ($title) {
 Route::get('/media/by/{title}', function ($title) {
     return MediaResource::collection(Media::where('user_id', '!=' ,$title)->get());
 });
+Route::get('/media/search/{title}', function ($title) {
+    return MediaResource::collection(Media::where('title', 'LIKE' ,'%'.$title.'%')->orWhere('description', 'LIKE' ,'%'.$title.'%')->get());
+});
 Route::get('/tags', function () {
     return TagResource::collection(DirectTag::all());
 });

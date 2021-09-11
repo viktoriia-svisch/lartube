@@ -56250,24 +56250,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 var baseUrl;
 var app;
 var theVue;
+var searchDelay;
 __webpack_require__(436);
 var siteManager = function () {
     function siteManager(base) {
+        var _this = this;
         baseUrl = base + "/";
         this.currentPage = "overview";
         this.catchedTagMedias = [];
+        this.usedSearchTerms = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
         this.receiveUsers(true);
         var that = this;
         __WEBPACK_IMPORTED_MODULE_4__eventBus_js__["a" ].$on('refreshMedias', function (title) {
             theVue.canloadmore = true;
             that.catchedTagMedias = [];
+            _this.usedSearchTerms = [];
             that.receiveMedias("/api/media", true);
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus_js__["a" ].$on('checkTag', function (tagName) {
-            if (that.catchedTagMedias.includes(tagName) == false) {
-                that.catchedTagMedias.push(tagName);
-                that.receiveMedias("/api/tags/" + tagName);
+            if (tagName == '') {
+                if ($("#specialAllTag").is(":checked")) {
+                    theVue.medias = that.medias;
+                } else {
+                    theVue.medias = [];
+                    theVue.medias = that.medias;
+                }
+            } else {
+                if (that.catchedTagMedias.includes(tagName) == false) {
+                    that.catchedTagMedias.push(tagName);
+                    that.receiveMedias("/api/tags/" + tagName);
+                }
             }
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus_js__["a" ].$on('loadMore', function (title) {
@@ -56324,6 +56337,15 @@ var siteManager = function () {
                     }
                     var s = $("#theLiveSearch").val();
                     var m = [];
+                    if (that.usedSearchTerms.includes(s.toString()) == false && s.toString() != "") {
+                        that.usedSearchTerms.push(s);
+                        if (searchDelay != undefined) {
+                            clearTimeout(searchDelay);
+                        }
+                        searchDelay = setTimeout(function () {
+                            that.receiveMedias("/api/media/search/" + s);
+                        }, 300);
+                    }
                     var so = new Search(s.toString(), that.medias, that.tags, that.users);
                     theVue.search = so;
                     theVue.medias = so.mediaResult;
@@ -68953,7 +68975,7 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("h3", [_vm._v("Newest videos " + _vm._s(_vm.loggeduserid))]),
+      _c("h3", [_vm._v("Newest videos")]),
       _vm._v(" "),
       _c("p", [
         _c(
@@ -69586,7 +69608,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__);
  __webpack_exports__["default"] = ({
   name: 'tags',
-  props: ['medias', 'baseUrl', 'user', 'tags', 'canloadmore'],
+  props: ['medias', 'baseUrl', 'user', 'tags', 'canloadmore', 'tagenabled'],
   data: function data() {
     return {
       selectedTags: [],
@@ -69602,7 +69624,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     filterMedia: function filterMedia(media, sTags) {
       var returnVal = false;
-      if ($("#specialAllTag").is(":checked")) {
+      if (this.tagenabled == false) {
         returnVal = true;
       } else {
         sTags.forEach(function (item, index) {
@@ -69626,138 +69648,115 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _c("div", [
-        _c("input", {
-          directives: [
-            {
-              name: "model",
-              rawName: "v-model",
-              value: _vm.filterTags,
-              expression: "filterTags"
-            }
-          ],
-          attrs: { type: "text", placeholder: "Filter tags" },
-          domProps: { value: _vm.filterTags },
-          on: {
-            input: function($event) {
-              if ($event.target.composing) {
-                return
-              }
-              _vm.filterTags = $event.target.value
-            }
-          }
-        }),
-        _vm.canloadmore
-          ? _c(
-              "button",
-              {
-                staticClass: "btn btn-danger",
-                on: {
-                  click: function($event) {
-                    _vm.emitLoadMore()
-                  }
-                }
-              },
-              [_vm._v("Load more")]
-            )
-          : _vm._e()
-      ]),
-      _vm._v(" "),
-      _vm._m(0),
-      _vm._v(" "),
-      _vm._l(_vm.tags, function(item, index) {
-        return item.name.toLowerCase().indexOf(_vm.filterTags.toLowerCase()) >
-          -1
-          ? _c("div", { staticClass: "btn btn-primary" }, [
+  return _c("div", [
+    (_vm.tagenabled != undefined) & (_vm.tagenabled != false)
+      ? _c(
+          "div",
+          [
+            _c("div", [
               _c("input", {
                 directives: [
                   {
                     name: "model",
                     rawName: "v-model",
-                    value: _vm.selectedTags,
-                    expression: "selectedTags"
+                    value: _vm.filterTags,
+                    expression: "filterTags"
                   }
                 ],
-                attrs: { type: "checkbox" },
-                domProps: {
-                  value: item,
-                  checked: Array.isArray(_vm.selectedTags)
-                    ? _vm._i(_vm.selectedTags, item) > -1
-                    : _vm.selectedTags
-                },
+                attrs: { type: "text", placeholder: "Filter tags" },
+                domProps: { value: _vm.filterTags },
                 on: {
-                  click: function($event) {
-                    _vm.checkTag(item.name)
-                  },
-                  change: function($event) {
-                    var $$a = _vm.selectedTags,
-                      $$el = $event.target,
-                      $$c = $$el.checked ? true : false
-                    if (Array.isArray($$a)) {
-                      var $$v = item,
-                        $$i = _vm._i($$a, $$v)
-                      if ($$el.checked) {
-                        $$i < 0 && (_vm.selectedTags = $$a.concat([$$v]))
-                      } else {
-                        $$i > -1 &&
-                          (_vm.selectedTags = $$a
-                            .slice(0, $$i)
-                            .concat($$a.slice($$i + 1)))
-                      }
-                    } else {
-                      _vm.selectedTags = $$c
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
                     }
+                    _vm.filterTags = $event.target.value
                   }
                 }
-              }),
-              _vm._v(
-                "\n        " +
-                  _vm._s(item.name) +
-                  " (" +
-                  _vm._s(item.count) +
-                  "x)\n      "
-              )
-            ])
+              })
+            ]),
+            _vm._v(" "),
+            _vm._l(_vm.tags, function(item, index) {
+              return item.name
+                .toLowerCase()
+                .indexOf(_vm.filterTags.toLowerCase()) > -1
+                ? _c("div", { staticClass: "btn btn-primary" }, [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.selectedTags,
+                          expression: "selectedTags"
+                        }
+                      ],
+                      attrs: { type: "checkbox" },
+                      domProps: {
+                        value: item,
+                        checked: Array.isArray(_vm.selectedTags)
+                          ? _vm._i(_vm.selectedTags, item) > -1
+                          : _vm.selectedTags
+                      },
+                      on: {
+                        click: function($event) {
+                          _vm.checkTag(item.name)
+                        },
+                        change: function($event) {
+                          var $$a = _vm.selectedTags,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = item,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 && (_vm.selectedTags = $$a.concat([$$v]))
+                            } else {
+                              $$i > -1 &&
+                                (_vm.selectedTags = $$a
+                                  .slice(0, $$i)
+                                  .concat($$a.slice($$i + 1)))
+                            }
+                          } else {
+                            _vm.selectedTags = $$c
+                          }
+                        }
+                      }
+                    }),
+                    _vm._v(
+                      "\n        " +
+                        _vm._s(item.name) +
+                        " (" +
+                        _vm._s(item.count) +
+                        "x)\n      "
+                    )
+                  ])
+                : _vm._e()
+            })
+          ],
+          2
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "row text-center text-lg-left",
+        attrs: { id: "profilevideos" }
+      },
+      _vm._l(_vm.medias, function(item1, index) {
+        return _vm.filterMedia(item1, _vm.selectedTags) == true
+          ? _c(
+              "div",
+              { staticClass: "col-lg-4 col-md-4 col-xs-6" },
+              [_c("singleField", { attrs: { item: item1 } })],
+              1
+            )
           : _vm._e()
-      }),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "row text-center text-lg-left",
-          attrs: { id: "profilevideos" }
-        },
-        _vm._l(_vm.medias, function(item1, index) {
-          return _vm.filterMedia(item1, _vm.selectedTags) == true
-            ? _c(
-                "div",
-                { staticClass: "col-lg-4 col-md-4 col-xs-6" },
-                [_c("singleField", { attrs: { item: item1 } })],
-                1
-              )
-            : _vm._e()
-        })
-      )
-    ],
-    2
-  )
+      })
+    )
+  ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "btn btn-success" }, [
-      _c("input", {
-        attrs: { type: "checkbox", checked: "", id: "specialAllTag" }
-      }),
-      _vm._v("\n        All\n      ")
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -70563,12 +70562,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_2__UserList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__UserList__);
  __webpack_exports__["default"] = ({
   props: ['item', 'loggeduserid', 'search', 'medias', 'canloadmore', 'loggeduserid', 'tags', 'users'],
+  data: function data() {
+    return {
+      tagsen: false
+    };
+  },
   components: {
     'userlist': __WEBPACK_IMPORTED_MODULE_2__UserList___default.a,
     'gallery': __WEBPACK_IMPORTED_MODULE_1__TagComponent___default.a
   },
   mounted: function mounted() {
-    __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshSearch', '');
+    console.log(this);
+    this.$parent.$nextTick(function () {
+      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshSearch', '');
+    });
   },
   methods: {
     emitRefreshSearch: function emitRefreshSearch(id) {
@@ -70580,6 +70587,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         $("#theLiveSearch" + id).prop('checked', true);
         $("#theLiveSearch" + id).parent().removeClass("btn-primary");
         $("#theLiveSearch" + id).parent().addClass("btn-success");
+      }
+      if (id == "Tags") {
+        this.tagsen = $("#theLiveSearch" + id).is(':checked');
       }
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshSearch', '');
     }
@@ -70758,7 +70768,7 @@ var render = function() {
     _c(
       "span",
       {
-        staticClass: "btn btn-success",
+        staticClass: "btn btn-primary",
         on: {
           click: function($event) {
             _vm.emitRefreshSearch("MediaDescription")
@@ -70768,11 +70778,7 @@ var render = function() {
       [
         _c("input", {
           staticClass: "d-none",
-          attrs: {
-            id: "theLiveSearchMediaDescription",
-            checked: "checked",
-            type: "checkbox"
-          }
+          attrs: { id: "theLiveSearchMediaDescription", type: "checkbox" }
         }),
         _vm._v("Media-description")
       ]
@@ -70781,7 +70787,7 @@ var render = function() {
     _c(
       "span",
       {
-        staticClass: "btn btn-success",
+        staticClass: "btn btn-primary",
         on: {
           click: function($event) {
             _vm.emitRefreshSearch("Tags")
@@ -70791,11 +70797,7 @@ var render = function() {
       [
         _c("input", {
           staticClass: "d-none",
-          attrs: {
-            id: "theLiveSearchTags",
-            type: "checkbox",
-            checked: "checked"
-          }
+          attrs: { id: "theLiveSearchTags", type: "checkbox" }
         }),
         _vm._v("Tags")
       ]
@@ -70808,6 +70810,7 @@ var render = function() {
       [
         _c("gallery", {
           attrs: {
+            tagenabled: _vm.tagsen,
             medias: _vm.search.mediaResult,
             tags: _vm.tags,
             canloadmore: _vm.canloadmore,

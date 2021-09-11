@@ -6,11 +6,13 @@ import VueCroppie from 'vue-croppie';
 import { eventBus } from './eventBus.js';
 var app;
 var theVue;
+var searchDelay;
 require("./models")
 class siteManager {
   medias:Array<Media>;
   currentPage:string;
   users:Array<User>;
+  usedSearchTerms:any;
   tags:Array<Tag>;
   nextLink:string;
   loggedUserId:number;
@@ -20,19 +22,30 @@ class siteManager {
     baseUrl = base+"/";
     this.currentPage = "overview";
     this.catchedTagMedias=[];
+    this.usedSearchTerms=[];
     this.loggedUserId = Number($("#loggedUserId").attr("content"));
     this.receiveUsers(true);
     let that = this;
     eventBus.$on('refreshMedias', title => {
       theVue.canloadmore = true;
       that.catchedTagMedias=[];
+      this.usedSearchTerms=[];
       that.receiveMedias("/api/media",true)
     });
     eventBus.$on('checkTag', tagName => {
+      if(tagName==''){
+        if($("#specialAllTag").is(":checked")){
+          theVue.medias = that.medias;
+        } else {
+          theVue.medias = [];
+          theVue.medias = that.medias;
+        }
+      } else {
       if(that.catchedTagMedias.includes(tagName)==false){
         that.catchedTagMedias.push(tagName);
         that.receiveMedias("/api/tags/"+tagName);
       }
+    }
     });
     eventBus.$on('loadMore', title => {
       that.receiveMedias(that.nextLink)
@@ -97,6 +110,15 @@ class siteManager {
         }
         var s =  $("#theLiveSearch").val();
         var m = [];
+        if(that.usedSearchTerms.includes(s.toString())==false&&s.toString()!=""){
+          that.usedSearchTerms.push(s);
+          if(searchDelay!=undefined){
+            clearTimeout(searchDelay);
+          }
+          searchDelay = setTimeout(function(){
+            that.receiveMedias("/api/media/search/"+s);
+          }, 300);
+        }
         var so = new Search(s.toString(),that.medias,that.tags,that.users);
         theVue.search = so;
         theVue.medias = so.mediaResult;
