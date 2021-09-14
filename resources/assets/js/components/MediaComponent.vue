@@ -2,9 +2,6 @@
   <div v-if="currentmedia!=undefined">
       <div class="row" >
         <div class="col-xs-12 col-sm-12 col-md-12">
-          <span class="float-right">
-            <router-link to="/" class="btn btn-primary">Back</router-link>
-          </span>
           <h3> {{ currentmedia.title }} </h3>
           <audio id="player" v-if="currentmedia.simpleType=='audio'" controls :poster="currentmedia.poster_source">
             <source :src="currentmedia.source" type="audio/mp3"></source>
@@ -26,7 +23,7 @@
                 <img v-if="currentmedia.user.avatar==''" class="mx-auto rounded-circle img-fluid" src="/img/404/avatar.png" alt="avatar" style="max-height: 20px;" />
               <img v-else class="mx-auto rounded-circle img-fluid" :src="'/'+currentmedia.user.avatar" alt="avatar" style="max-height: 20px;" />
             </router-link>
-            <span v-if="loggeduserid==currentmedia.user.id" class=""><router-link class="btn btn-sm btn-info float-right" to="/">Edit</router-link></span>
+            <span v-if="loggeduserid==currentmedia.user.id" class=""><router-link class="btn btn-sm btn-info float-right" :to="'/mediaedit/'+currentmedia.title">Edit</router-link></span>
           </div>
           <div class="card-body">{{ currentmedia.description }}</div>
           <div class="card-footer">Tags: <a class="btn btn-xs btn-info mr-1" v-for="tag in currentmedia.tags" :href="'/tags/'+tag.name" >{{ tag.name }} ({{ tag.count }}x)</a>
@@ -66,11 +63,8 @@
     computed: {
             currentmedia: function () {
                 let that = this;
-        var theMedia;        console.log("CRAAASH");
-        this.medias.forEach(function(val,key){
-          console.log(val.title)
+        var theMedia;        this.medias.forEach(function(val,key){
           if(val.title==that.$route.params.currentTitle){
-            console.log("found it")
             theMedia = val;
           }
         });

@@ -4,6 +4,8 @@ import Router from 'vue-router';
 import BootstrapVue from 'bootstrap-vue';
 import VueCroppie from 'vue-croppie';
 import { eventBus } from './eventBus.js';
+import { User, Media, Tag } from './models';
+import VueApexCharts from 'vue-apexcharts';
 var app;
 var theVue;
 var searchDelay;
@@ -11,6 +13,7 @@ require("./models");
 var siteManager =  (function () {
     function siteManager(base) {
         var _this = this;
+        this.initing = true;
         baseUrl = base + "/";
         this.currentPage = "overview";
         this.catchedTagMedias = [];
@@ -23,6 +26,20 @@ var siteManager =  (function () {
             that.catchedTagMedias = [];
             _this.usedSearchTerms = [];
             that.receiveMedias("/api/media", true);
+        });
+        eventBus.$on('loadAllMedias', function (title) {
+            that.receiveMedias("/api/medias/all", true);
+            theVue.canloadmore = false;
+        });
+        eventBus.$on('videoDeleted', function (title) {
+            that.deleteMediaByName(title);
+        });
+        eventBus.$on('videoEdited', function (json) {
+            that.deleteMediaByName(title);
+            that.receiveTagsForMedia(json);
+        });
+        eventBus.$on('videoCreated', function (json) {
+            that.receiveTagsForMedia(json);
         });
         eventBus.$on('checkTag', function (tagName) {
             if (tagName == '') {
@@ -52,6 +69,11 @@ var siteManager =  (function () {
         });
     }
     siteManager.prototype.initVue = function () {
+        Vue.use(Router);
+        Vue.use(BootstrapVue);
+        Vue.use(VueCroppie);
+        Vue.use(VueApexCharts);
+        Vue.component('apexchart', VueApexCharts);
         var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
         var player = Vue.component('player', require("./components/MediaComponent.vue"));
         var profileComp = Vue.component('profile', require("./components/ProfileComponent.vue"));
@@ -60,9 +82,8 @@ var siteManager =  (function () {
         var uploadComp = Vue.component('upload', require("./components/UploadComponent.vue"));
         var alertComp = Vue.component('alert', require("./components/AlertComponent.vue"));
         var searchComp = Vue.component('search', require("./components/SearchComponent.vue"));
-        Vue.use(Router);
-        Vue.use(BootstrapVue);
-        Vue.use(VueCroppie);
+        var chartsComp = Vue.component('search', require("./components/ChartsComponent.vue"));
+        var editVideoComp = Vue.component('search', require("./components/EditVideo.vue"));
         var that = this;
         var routes = [
             { path: '/', component: overview },
@@ -72,7 +93,9 @@ var siteManager =  (function () {
             { path: '/tags/:tagName', component: tagComp },
             { path: '/login', component: loginComp },
             { path: '/upload', component: uploadComp },
-            { path: '/search', component: searchComp }
+            { path: '/search', component: searchComp },
+            { path: '/charts', component: chartsComp },
+            { path: '/mediaedit/:editTitle', component: editVideoComp }
         ];
         theVue = new Vue({
             data: {
@@ -95,10 +118,13 @@ var siteManager =  (function () {
                 'alert': alertComp
             },
             methods: {
+                emitRefreshMedias: function () {
+                    eventBus.$emit('refreshMedias', "");
+                },
+                emitLoadAllMedias: function () {
+                    eventBus.$emit('loadAllMedias', "");
+                },
                 searching: function () {
-                    console.log("search!");
-                    console.log(s);
-                    console.log(that.medias);
                     if (theVue.$router.currentRoute.path != "/search") {
                         theVue.$router.push('/search');
                     }
@@ -127,6 +153,11 @@ var siteManager =  (function () {
                     if (to.params.currentTitle != undefined) {
                         if (sm.findMediaByName(to.params.currentTitle) == undefined) {
                             sm.receiveMediaByName(to.params.currentTitle);
+                        }
+                    }
+                    if (to.params.editTitle != undefined) {
+                        if (sm.findMediaByName(to.params.editTitle) == undefined) {
+                            sm.receiveMediaByName(to.params.editTitle);
                         }
                     }
                     if (to.params.profileId != undefined) {
@@ -173,6 +204,27 @@ var siteManager =  (function () {
                 theVue.tags = this.tags;
             }
             that.receiveMedias();
+        });
+    };
+    siteManager.prototype.receiveTagsForMedia = function (json, forceUpdate) {
+        if (forceUpdate === void 0) { forceUpdate = true; }
+        var that = this;
+        $.getJSON("/api/tags", function name(data) {
+            if ((that.tags == undefined) || (forceUpdate)) {
+                that.tags = [];
+                $.each(data.data, function (key, value) {
+                    that.tags.push(new Tag(value.id, value.name, value.slug, value.count));
+                });
+            }
+            this.tags = that.tags;
+            if (theVue != undefined) {
+                theVue.tags = this.tags;
+            }
+            json = json.data;
+            console.log(that.getTagsByIdArray(json.tagsIds));
+            that.medias.unshift(new Media(json.title, json.description, json.source, json.poster_source, json.simpleType, json.type, that.getUserById(json.user_id), json.user_id, json.created_at, json.created_at_readable, json.comments, that.getTagsByIdArray(json.tagsIds)));
+            theVue.medias = that.medias;
+            theVue.$router.push('/');
         });
     };
     siteManager.prototype.receiveMediaByName = function (mediaName, forceUpdate) {
@@ -223,6 +275,22 @@ var siteManager =  (function () {
         });
         return returnMedia;
     };
+    siteManager.prototype.deleteMediaByName = function (mediaName) {
+        console.log("deletemethod reach");
+        var that = this;
+        var i = 0;
+        $.each(that.medias, function (key, value) {
+            if (value != undefined) {
+                if (value.title == mediaName) {
+                    console.log("delete media " + mediaName);
+                    that.medias.splice(i, 1);
+                }
+            }
+            i++;
+        });
+        theVue.medias = that.medias;
+        theVue.$router.push('/');
+    };
     siteManager.prototype.receiveMedias = function (url, forceUpdate) {
         if (url === void 0) { url = "/api/media"; }
         if (forceUpdate === void 0) { forceUpdate = false; }
@@ -261,6 +329,11 @@ var siteManager =  (function () {
                     that.receiveMediaByName(theVue.$route.params.currentTitle);
                 }
             }
+            if (theVue.$route.params.editTitle != undefined) {
+                if (that.findMediaByName(theVue.$route.params.editTitle) == undefined) {
+                    that.receiveMediaByName(theVue.$route.params.editTitle);
+                }
+            }
             if ((theVue.$router.currentRoute.path == "/search")) {
                 theVue.searching();
             }
@@ -297,15 +370,6 @@ export function init(baseUrl) {
         theVue.title = title;
     });
 }
-var Tag =  (function () {
-    function Tag(id, name, slug, count) {
-        this.id = id;
-        this.name = name;
-        this.slug = slug;
-        this.count = count;
-    }
-    return Tag;
-}());
 var Search =  (function () {
     function Search(search, medias, tags, users) {
         this.search = search;
@@ -360,40 +424,4 @@ var Search =  (function () {
         }
     }
     return Search;
-}());
-var User =  (function () {
-    function User(id, name, avatar, background, bio, mediaIds) {
-        this.id = id;
-        this.name = name;
-        this.avatar = avatar;
-        this.background = background;
-        this.bio = bio;
-        this.mediaIds = mediaIds;
-    }
-    User.prototype.toJson = function () {
-        return "{id:" + this.id + ",name:'" + this.name + "',avatar:'" + this.avatar + "',background:'" + this.background + "'}";
-    };
-    return User;
-}());
-var Media =  (function () {
-    function Media(title, description, source, poster_source, simpleType, type, user, user_id, created_at, created_at_readable, comments, tags, tagIds) {
-        if (tagIds === void 0) { tagIds = undefined; }
-        this.title = title;
-        this.description = description;
-        this.source = source;
-        this.poster_source = poster_source;
-        this.type = type;
-        this.simpleType = simpleType;
-        this.user = user;
-        this.user_id = user_id;
-        this.comments = comments;
-        this.tags = tags;
-        this.tagIds = tagIds;
-        this.created_at = created_at;
-        this.created_at_readable = created_at_readable;
-    }
-    Media.prototype.toJson = function () {
-        return "{title:'" + this.title + "',description:'" + this.description + "',source:'" + this.source;
-    };
-    return Media;
 }());

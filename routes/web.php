@@ -18,6 +18,7 @@ Route::put('/user/updateAvatar','UserController@updateAvatar')->name('users.upda
 Route::put('/user/updateBackground','UserController@updateBackground')->name('users.updateBackground');
 Route::get('/media/add','MediaController@addMedia')->name('medias.add');
 Route::post('/media/create','MediaController@create')->name('medias.create');
+Route::put('/media','MediaController@create')->name('mediaasdasds.create');
 Route::get('/media/edit/{title}','MediaController@editView')->name('medias.editView');
 Route::post('/media/edit/{title}','MediaController@edit')->name('medias.edit');
 Route::get('/media/delete/{title}','MediaController@destroy')->name('medias.delete');
