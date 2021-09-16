@@ -16389,7 +16389,7 @@ var Media = function () {
         var theTagString = "";
         $.each(this.tags, function (key, val) {
             console.log(val.name);
-            theTagString = val.name + " ";
+            theTagString += val.name + " ";
         });
         return theTagString;
     };
@@ -56341,10 +56341,6 @@ var siteManager = function () {
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus_js__["a" ].$on('videoDeleted', function (title) {
             that.deleteMediaByName(title);
-        });
-        __WEBPACK_IMPORTED_MODULE_4__eventBus_js__["a" ].$on('videoEdited', function (json) {
-            that.deleteMediaByName(title);
-            that.receiveTagsForMedia(json);
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus_js__["a" ].$on('videoCreated', function (json) {
             that.receiveTagsForMedia(json);
