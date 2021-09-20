@@ -378,8 +378,7 @@ class Search{
     if(search!=""){
     var mediaTitle = $("#theLiveSearchMediaTitle").is(':checked')
     var mediaDescription = $("#theLiveSearchMediaDescription").is(':checked')
-    console.log("WTF??")
-    console.log(mediaTitle)
+    var tagsEnabled = $("#theLiveSearchTags").is(':checked')
     let that = this;
     if($("#theLiveSearchUsers").is(':checked')){
       $.each( users, function( key, value ) {

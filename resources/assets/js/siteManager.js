@@ -377,8 +377,7 @@ var Search =  (function () {
         if (search != "") {
             var mediaTitle = $("#theLiveSearchMediaTitle").is(':checked');
             var mediaDescription = $("#theLiveSearchMediaDescription").is(':checked');
-            console.log("WTF??");
-            console.log(mediaTitle);
+            var tagsEnabled = $("#theLiveSearchTags").is(':checked');
             var that_1 = this;
             if ($("#theLiveSearchUsers").is(':checked')) {
                 $.each(users, function (key, value) {
@@ -412,6 +411,11 @@ var Search =  (function () {
                             if (that_1.mediaResult.includes(value) == false) {
                                 that_1.mediaResult.push(value);
                             }
+                        }
+                    }
+                    if (tagsEnabled) {
+                        if (that_1.mediaResult.includes(value) == false) {
+                            that_1.mediaResult.push(value);
                         }
                     }
                 });
