@@ -413,11 +413,6 @@ var Search =  (function () {
                             }
                         }
                     }
-                    if (tagsEnabled) {
-                        if (that_1.mediaResult.includes(value) == false) {
-                            that_1.mediaResult.push(value);
-                        }
-                    }
                 });
             }
             if ($("#theLiveSearchMedias").is(':checked')) {
