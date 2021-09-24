@@ -32,6 +32,12 @@
       </div>
       <div class="comments">
         <h4>Comments</h4>
+        <form class="form-inline" id="commentForm">
+          <input id="medias_id" name="medias_id" type="hidden" :value="currentmedia.id">
+          <input id="medias_title" name="medias_title" type="hidden" :value="currentmedia.title">
+          <input placeholder="Comment..." class="col-9" id="medias_body" name="body" type="text">
+          <input type="button" class="ml-1" value="Send comment!" @click="sendComment();" />
+        </form>
         <div v-for="comment in currentmedia.comments" class="comment mb-2 row" :id='"cid"+comment.id'>
             <div class="comment-avatar col-md-1 col-sm-2 text-center pr-1">
                 <a href=""><img class="mx-auto rounded-circle img-fluid" :src="'/'+comment.user.avatar" alt="avatar" /></a>
@@ -58,6 +64,23 @@
     methods: {
       emitBackClicked(title) {
         eventBus.$emit('playerBackClick',title);
+      },
+      sendComment(){
+        console.log(new FormData($("#commentForm")[0]))
+        $.ajax({
+            url: '/comment',
+            type: 'POST',
+            data: new FormData($("#commentForm")[0]),
+            cache: false,
+            contentType: false,
+            processData: false,
+            complete : function(res) {
+              if(res.status==200){
+                              }
+              console.log(res.responseJSON)
+              eventBus.$emit('commentCreated',res.responseJSON);
+            }
+        });
       }
     },
     computed: {
