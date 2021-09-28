@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Nunito');
 @import 'variables';
 @import '~bootstrap/scss/bootstrap';
+.sgfText {
+  padding: 2px;
+  border-radius: 5px;
+}
 .customchart {
   width:510px;
   div {

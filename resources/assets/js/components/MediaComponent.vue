@@ -19,10 +19,11 @@
           <span class='h3'>{{ currentmedia.title }}</span>
           <div class="float-right">
             <span class="btn btn-info mr-1">{{ currentmedia.created_at_readable }}</span>
+              <b-btn v-b-modal.torrentmodal class="mr-1" v-if="currentmedia.type=='torrentAudio'|currentmedia.type=='torrentVideo'" >Torrent-info</b-btn>
               <router-link class="btn btn-primary" :to="'/profile/'+currentmedia.user.id">
                 <img v-if="currentmedia.user.avatar==''" class="mx-auto rounded-circle img-fluid" src="/img/404/avatar.png" alt="avatar" style="max-height: 20px;" />
-              <img v-else class="mx-auto rounded-circle img-fluid" :src="'/'+currentmedia.user.avatar" alt="avatar" style="max-height: 20px;" />
-            </router-link>
+                <img v-else class="mx-auto rounded-circle img-fluid" :src="'/'+currentmedia.user.avatar" alt="avatar" style="max-height: 20px;" />
+              </router-link>
             <span v-if="loggeduserid==currentmedia.user.id" class=""><router-link class="btn btn-sm btn-info float-right" :to="'/mediaedit/'+currentmedia.title">Edit</router-link></span>
           </div>
           <div class="card-body">{{ currentmedia.description }}</div>
@@ -55,6 +56,12 @@
             </div>
           </div>
       </div>
+      <b-modal id="torrentmodal" title="Torrent-infos">
+        <p>Peers: {{ peers }}</p>
+        <p>Downloadspeed: {{ downloadspeed }}</p>
+        <p>Uploadspeed: {{ uploadspeed }}</p>
+        <p>Downloadpercent: {{ downloadpercent }}</p>
+      </b-modal>
   </div>
 </template>
 <script>
@@ -62,6 +69,15 @@
   export default {
     props: ['medias','currentTitle','baseUrl','loggeduserid'],
     methods: {
+      prettyBytes(num) {
+        var exponent, unit, neg = num < 0, units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        if (neg) num = -num;
+        if (num < 1) return (neg ? '-' : '') + num + ' B';
+        exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1);
+        num = Number((num / Math.pow(1000, exponent)).toFixed(2));
+        unit = units[exponent];
+        return (neg ? '-' : '') + num + ' ' + unit;
+      },
       emitBackClicked(title) {
         eventBus.$emit('playerBackClick',title);
       },
@@ -94,18 +110,50 @@
         return theMedia;
       }
     },
+    updated: function () {
+      this.$nextTick(function () {
+    if((this.currentmedia!=undefined)&&(this.inited==false)){
+      this.inited=true
+    if(this.currentmedia.type=="torrentAudio"||this.currentmedia.type=="torrentVideo"){
+      var WebTorrent = require('webtorrent')
+      var client = new WebTorrent();
+      let that = this;
+      client.add(this.currentmedia.source, function (torrent) {
+                    var file = torrent.files.find(function (file) {
+            return file.name.endsWith('.mp4')
+          })
+            torrent.on('done', onDone);
+            setInterval(onProgress, 500);
+            onProgress();
+            file.getBlobURL(function (err, url) {
+              if (err){
+                console.log(err.message);
+              }
+                          });
+                        function onProgress () {
+                            that.peers = torrent.numPeers + (torrent.numPeers === 1 ? ' peer' : ' peers');
+                            var percent = Math.round(torrent.progress * 100 * 100) / 100;
+              that.downloadpercent = that.prettyBytes(torrent.downloaded) + " / " + that.prettyBytes(torrent.length) + " ("+percent+"%)";
+                            that.downloadspeed = that.prettyBytes(torrent.downloadSpeed) + '/s (down)';
+              that.uploadspeed = that.prettyBytes(torrent.uploadSpeed) + '/s (up)';
+            }
+            function onDone () {
+              onProgress();
+            }
+          file.renderTo('#player');
+        });
+    }
+  } });
+    },
     mounted(){
-      if(this.currentmedia!=undefined){
-      if(this.currentmedia.type=="torrentAudio"|this.currentmedia.type=="torrentVideo"){
-        var WebTorrent = require('webtorrent')
-        var client = new WebTorrent();
-        client.add(this.currentmedia.source, function (torrent) {
-                        var file = torrent.files.find(function (file) {
-              return file.name.endsWith('.mp4')
-            })
-            file.renderTo('#player');
-          });
-      }
+  },
+  data(){
+    return {
+      inited: false,
+      peers: '',
+      downloadspeed: '',
+      downloadpercent: '',
+      uploadspeed: '',
     }
   }
   }

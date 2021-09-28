@@ -19,7 +19,7 @@ use App\Http\Resources\Media as MediaResource;
 use App\Http\Resources\Tag as TagResource;
 use App\Http\Resources\Id as Id;
 Route::get('/media', function () {
-    return MediaResource::collection(Media::orderBy('created_at', 'desc')->paginate(3));
+    return MediaResource::collection(Media::orderBy('updated_at', 'desc')->paginate(3));
 });
 Route::get('/media/not/{title}', function ($title) {
     return MediaResource::collection(Media::where('title', '!=' ,$title)->paginate(12));

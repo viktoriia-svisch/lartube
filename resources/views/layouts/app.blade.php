@@ -31,12 +31,11 @@
                     <ul class="navbar-nav mr-auto">
                     </ul>
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item"><button @click="emitRefreshMedias()" class="btn btn-warning mr-1">Refresh</button></li>
-                        <li class="nav-item"><button @click="emitLoadAllMedias()" class="btn btn-danger mr-1">Load all medias</button></li>
+                        <li class="nav-item"><button @click="emitGetNewMedias()" class="btn btn-success mr-1">Check 4 new</button></li>
+                        <li class="nav-item"><b-btn v-b-modal.moremodal class="mr-1" >More</b-btn></li>
                         <li class="nav-item"><router-link class="btn btn-primary mr-1" to="/tags">{{ __('Tags') }}</a></li>
                         <li class="nav-item"><router-link class="btn btn-primary mr-1" to="/charts">{{ __('Charts') }}</a></li>
-                          <li class="nav-item"><router-link class="btn btn-primary mr-1" to="/about">{{ __('About') }}</a></li>
-                        <li class="nav-item"><a @click="$router.go(-1)" class="mr-1 btn btn-primary">Back</a></li>
+                        <li class="nav-item"><router-link class="btn btn-primary mr-1" to="/about">{{ __('About') }}</a></li>
                         <li class="nav-item"><input type="text" placeholder="Search" id="theLiveSearch" class="btn btn-outline-info" @keyup="searching()" @focus="searching()"></li>
                         @guest
                             <li class="nav-item">
@@ -88,6 +87,13 @@
               <div class="justify-content-center mt-5 pt-3">
             @yield('content')
           </div></div>
+          <b-modal id="moremodal" title="More options">
+            <p>Medias loaded: @{{ medias.length }}</p>
+            <p>Users loaded: @{{ users.length }}</p>
+            <p>Tags loaded: @{{ tags.length }}</p>
+            <p ><button @click="emitRefreshMedias()" class="btn btn-warning mr-1">Reset data</button></p>
+            <p><button @click="emitLoadAllMedias()" class="btn btn-danger mr-1">Load all medias</button></p>
+          </b-modal>
         </main>
     </div>
   </body>

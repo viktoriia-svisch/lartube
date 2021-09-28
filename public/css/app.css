@@ -8696,6 +8696,10 @@ a.text-dark:focus {
     border-color: #dee2e6;
   }
 }
+.sgfText {
+  padding: 2px;
+  border-radius: 5px;
+}
 .customchart {
   width: 510px;
 }
