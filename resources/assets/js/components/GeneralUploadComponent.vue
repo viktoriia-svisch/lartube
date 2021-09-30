@@ -55,7 +55,7 @@
 <script>
   import { eventBus } from '../eventBus.js';
   export default {
-    props: ['medias','currentTitle','baseUrl'],
+    props: ['medias','baseUrl'],
     mounted: function () {
       this.$refs.croppieRef.bind({
         url: '/img/404/image.png',

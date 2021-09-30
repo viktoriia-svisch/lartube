@@ -23,7 +23,7 @@ class Media extends Model
       $comments = Comment::where('media_id', '=' ,$this->id)->get()->sortByDesc('created_at');
       return $comments;
     }
-    public function myLike(){
+    public function myLike($request){
       $like = Like::where('media_id', '=',$this->id)->where('user_id',Auth::id())->first();
       if(empty($like)){
         return "0";

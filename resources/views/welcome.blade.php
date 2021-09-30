@@ -10,13 +10,13 @@
          @dismiss-count-down="countDownChanged">
          <p>@{{ alertmsg }} @{{ alerttype }}</p>
   <p>This alert will dismiss after @{{dismisscountdown}} seconds...</p>
-  <b-progress :variant="alerttype"
+    <b-progress :variant="alerttype"
               :max="dismisssecs"
               :value="dismisscountdown"
               height="4px">
-  </b-progress>
-</b-alert>
-            <div id="">
-  <router-view v-bind:tagenabled="true" v-bind:search="search" v-bind:users="users" v-bind:loggeduserid="loggeduserid" v-bind:dismisssecs="dismisssecs" v-bind:dismisscountdown="dismisscountdown" v-bind:showdismissiblealert="showdismissiblealert" v-bind:medias="medias" v-bind:canloadmore="canloadmore" v-bind:tags="tags" v-bind:currentTitle="currentTitle" v-bind:user="user"></router-view>
+            </b-progress>
+  </b-alert>
+<div id="">
+  <router-view v-bind:tagenabled="true" v-bind:search="search" v-bind:users="users" v-bind:loggeduserid="loggeduserid" v-bind:dismisssecs="dismisssecs" v-bind:dismisscountdown="dismisscountdown" v-bind:showdismissiblealert="showdismissiblealert" v-bind:medias="medias" v-bind:canloadmore="canloadmore" v-bind:tags="tags" v-bind:user="user"></router-view>
 </div>
 @endsection

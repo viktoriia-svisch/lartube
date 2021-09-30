@@ -24,6 +24,22 @@
                 <img v-if="currentmedia.user.avatar==''" class="mx-auto rounded-circle img-fluid" src="/img/404/avatar.png" alt="avatar" style="max-height: 20px;" />
                 <img v-else class="mx-auto rounded-circle img-fluid" :src="'/'+currentmedia.user.avatar" alt="avatar" style="max-height: 20px;" />
               </router-link>
+            <button id="like" v-if="mylike==1" type="button" @click="like(0,'like')" class="btn btn-success">
+              <ion-icon name="thumbs-up"></ion-icon>
+              <span class="ml-1" id="likeCount">{{ likes }}</span>
+            </button>
+            <button id="like" v-else type="button" @click="like(1,'like')" class="btn btn-primary">
+              <ion-icon name="thumbs-up"></ion-icon>
+              <span class="ml-1" id="likeCount">{{ likes }}</span>
+            </button>
+            <button id="dislike" v-if="mylike==-1" type="button" @click="like(0,'dislike')" class="btn btn-success">
+              <ion-icon name="thumbs-down"></ion-icon>
+              <span class="ml-1" id="likeCount">{{ dislikes }}</span>
+            </button>
+            <button id="dislike" v-else type="button" @click="like(-1,'dislike')" class="btn btn-primary">
+              <ion-icon name="thumbs-down"></ion-icon>
+              <span class="ml-1" id="likeCount">{{ dislikes }}</span>
+            </button>
             <span v-if="loggeduserid==currentmedia.user.id" class=""><router-link class="btn btn-sm btn-info float-right" :to="'/mediaedit/'+currentmedia.title">Edit</router-link></span>
           </div>
           <div class="card-body">{{ currentmedia.description }}</div>
@@ -33,7 +49,7 @@
       </div>
       <div class="comments">
         <h4>Comments</h4>
-        <form class="form-inline" id="commentForm">
+        <form class="form-inline mb-1" id="commentForm">
           <input id="medias_id" name="medias_id" type="hidden" :value="currentmedia.id">
           <input id="medias_title" name="medias_title" type="hidden" :value="currentmedia.title">
           <input placeholder="Comment..." class="col-9" id="medias_body" name="body" type="text">
@@ -49,7 +65,8 @@
                 <div class="comment-body">
                     <p>
                         {{ comment.body }}
-                        <br>
+                    </p>
+                    <p>
                         <a href="" class="text-right small"><i class="ion-reply"></i> Reply</a>
                     </p>
                 </div>
@@ -67,7 +84,7 @@
 <script>
   import { eventBus } from '../eventBus.js';
   export default {
-    props: ['medias','currentTitle','baseUrl','loggeduserid'],
+    props: ['medias','baseUrl','loggeduserid'],
     methods: {
       prettyBytes(num) {
         var exponent, unit, neg = num < 0, units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -81,9 +98,48 @@
       emitBackClicked(title) {
         eventBus.$emit('playerBackClick',title);
       },
-      sendComment(){
-        console.log(new FormData($("#commentForm")[0]))
+      like(l,kind){
+        let that = this;
+        if(kind=="like"){
+          if(l==0){
+            this.likes-=1;
+          } else {
+            this.likes+=1;
+          }
+        }
+        if(kind=="dislike"){
+        if(this.mylike==1){
+          this.likes-=1;
+        }
+        }
+        if(kind=="like"){
+        if(this.mylike==-1){
+          this.dislikes-=1;
+        }
+      }
+        if(kind=="dislike"){
+          if(l==0){
+            this.dislikes-=1;
+          } else {
+            this.dislikes+=1;
+          }
+        }
         $.ajax({
+            url: '/like?media_id='+this.currentmedia.id+'&count='+l,
+            type: 'GET',
+            contentType: "application/json",
+            cache: false,
+            complete : function(res) {
+              console.log("completed")
+              console.log(l)
+              that.mylike=l;
+            }
+        });
+      },
+       deleteComment(id){
+        },
+      sendComment(){
+                        $.ajax({
             url: '/comment',
             type: 'POST',
             data: new FormData($("#commentForm")[0]),
@@ -93,7 +149,6 @@
             complete : function(res) {
               if(res.status==200){
                               }
-              console.log(res.responseJSON)
               eventBus.$emit('commentCreated',res.responseJSON);
             }
         });
@@ -113,6 +168,9 @@
     updated: function () {
       this.$nextTick(function () {
     if((this.currentmedia!=undefined)&&(this.inited==false)){
+      this.mylike = Number(this.currentmedia.myLike);
+      this.likes = this.currentmedia.likes;
+      this.dislikes = this.currentmedia.dislikes;
       this.inited=true
     if(this.currentmedia.type=="torrentAudio"||this.currentmedia.type=="torrentVideo"){
       var WebTorrent = require('webtorrent')
@@ -149,6 +207,9 @@
   },
   data(){
     return {
+      mylike:0,
+      likes:0,
+      dislikes:0,
       inited: false,
       peers: '',
       downloadspeed: '',
