@@ -9,9 +9,8 @@ use App\Http\Resources\Tag as TagResource;
 use App\Http\Resources\Id as Id;
 use App\Comment;
 use App\Http\Resources\Comment as CommentResource;
-Route::post('login', 'Auth\LoginController@login');
-Route::post('register', 'API\RegisterController@register');
-Route::middleware('auth:api')->get('/user2', function (Request $request) {
+Auth::routes();
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('/user', function () {

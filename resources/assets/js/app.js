@@ -1,12 +1,4 @@
 require('./bootstrap');
-module.exports = {
-	module: {
-		loaders: [
-			{ test: /jquery-mousewheel/, loader: "imports?define=>false&this=>window" },
-			{ test: /malihu-custom-scrollbar-plugin/, loader: "imports?define=>false&this=>window" }
-		]
-	}
-};
 var $ = require('jquery');
 var WebTorrent = require('webtorrent')
 $( document ).ready(function() {

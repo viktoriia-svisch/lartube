@@ -3,10 +3,10 @@ use Illuminate\Http\Request;
 use App\Media;
 use App\DirectTag;
 use App\Http\Resources\Media as MediaResource;
+Auth::routes();
 Route::get('/', function () {
     return view('welcome');
 });
-Auth::routes();
 Route::get('/internal-api/info', function () {
     return view('info');
 });
@@ -15,7 +15,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles','RoleController');
     Route::resource('users','UserController');
 });
-Auth::routes();
+Route::get('/logout', 'Auth\LoginController@logout')->name('logout' );
 Route::post('/user/updateAvatar','UserController@updateAvatar')->name('users.updateAvatar');
 Route::put('/user/updateAvatar','UserController@updateAvatar')->name('users.updateAvatar');
 Route::put('/user/updateBackground','UserController@updateBackground')->name('users.updateBackground');
@@ -53,8 +53,8 @@ Route::get('/internal-api/media', function (Request $request) {
 Route::get('/internal-api/media/all', function (Request $request) {
     return MediaResource::collection(Media::orderBy('created_at', 'desc')->whereNotIn('id', explode(",",$request->input('i')))->get());
 });
-Route::get('/internal-api/media/search/{title}', function ($title) {
-    return MediaResource::collection(Media::where('title', 'LIKE' ,'%'.$title.'%')->orWhere('description', 'LIKE' ,'%'.$title.'%')->whereNotIn('id', explode(",",$request->input('i')))->get());
+Route::get('/internal-api/media/search/{title}', function (Request $request,$title) {
+    return MediaResource::collection(Media::where('title', 'LIKE' ,'%'.strtoupper($title).'%')->orWhere('title', 'LIKE' ,'%'.strtolower($title).'%')->orWhere('description', 'LIKE' ,'%'.strtoupper($title).'%')->orWhere('description', 'LIKE' ,'%'.strtolower($title).'%')->whereNotIn('id', explode(",",$request->input('i')))->get());
 });
 Route::get('/internal-api/media/{title}', function ($title) {
     return new MediaResource(Media::where('title', '=' ,$title)->firstOrFail());

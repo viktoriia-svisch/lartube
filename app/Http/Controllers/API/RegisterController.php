@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 class RegisterController extends BaseController
 {
-    public function register(Request $request)
+    public function register222(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',

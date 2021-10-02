@@ -1,6 +1,8 @@
-@import url('https://fonts.googleapis.com/css?family=Nunito');
 @import 'variables';
 @import '~bootstrap/scss/bootstrap';
+#torrentmodal > div > div {
+  width:530px;
+}
 #app2 {
     display: flex;
     width: 100%;

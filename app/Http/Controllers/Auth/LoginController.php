@@ -10,7 +10,7 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
-public function login(Request $request)
+public function login2(Request $request)
 {
     $this->validateLogin($request);
     if ($this->attemptLogin($request)) {

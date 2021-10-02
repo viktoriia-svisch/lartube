@@ -15,88 +15,18 @@
     @yield('header-before-js')
     <script src="{{ asset('js/app.js') }}" defer></script>
     @yield('header')
-    <script src="https://unpkg.com/ionicons@4.3.0/dist/ionicons.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
-<body class="container-fluid">
-    <div id="app2" v-cloak>
-      <nav id="sidebar" class="d-none bg-light">
-          <ul class="list-unstyled components">
-            @guest
-                <li class="nav-item">
-                    <router-link class="nav-link" to="/login">{{ __('Login') }}</router-link>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                </li>
-            @else
-                <li class="nav-item dropdown">
-                    <a id="navbarDropdown" class="nav-link dropdown-toggle btn btn-danger btn-block mb-1" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                        <img class="mr-1" style="max-height: 25px;" src="{{ url(Auth::user()->avatar()) }}" />{{ Auth::user()->name }} <span class="caret"></span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                      <a class="dropdown-item" href="{{ route('users.selfedit') }}">{{ __('Settings') }}</a>
-                      <a class="dropdown-item" href="{{ route('friends') }}">{{ __('Manage friends') }}</a>
-                      @can('role-list')
-                        <a class="dropdown-item" href="{{ route('roles.index') }}">{{ __('Manage Role') }}</a>
-                      @endcan
-                      @can('user-admin')
-                        <a class="dropdown-item" href="{{ route('users.index') }}">{{ __('Manage Users') }}</a>
-                      @endcan
-                      @can('admin')
-                        <a class="dropdown-item" href="{{ route('users.index') }}">{{ __('Site-configuration') }}</a>
-                      @endcan
-                        <a class="dropdown-item" href="{{ route('logout') }}"
-                           onclick="event.preventDefault();
-                                         document.getElementById('logout-form').submit();">
-                            {{ __('Logout') }}
-                        </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
-                    </div>
-                </li>
-                <li ><router-link class="btn btn-primary btn-block mb-1 " to="/upload">{{ __('Upload') }}</router-link></li>
-            @endguest
-                      <li>
-                          <router-link class="btn btn-primary btn-block mb-1 " to="/">{{ __('Medias') }}</router-link>
-                      </li>
-                      <li>
-                          <router-link class="btn btn-primary btn-block mb-1" to="/charts">{{ __('Charts') }}</router-link>
-                      </li>
-                      <li>
-                          <router-link class="btn btn-primary btn-block mb-1" to="/tags">{{ __('Tags') }}</router-link>
-                      </li>
-              <li>
-                  <router-link class="btn btn-primary btn-block mb-1" to="/about">{{ __('About') }}</router-link>
-              </li>
-              <li class=""><button @click="emitGetNewMedias()" class="btn btn-block btn-success mb-1">Check 4 new</button></li>
-              <li class=""><b-btn v-b-modal.moremodal class=" btn-block" >More</b-btn></li>
-          </ul>
-      </nav>
-        <nav class="navbar navbar-expand-md fixed-top navbar-light navbar-laravel">
-          <button class="btn" type="button" @click="toggleSidebar()" aria-controls="navbarSupportedContent" aria-expanded="true" aria-label="{{ __('Toggle navigation') }}">
-              <span class="navbar-toggler-icon"></span>
-          </button>
-              <router-link class="navbar-brand" to="/">{{ config('app.name', 'LaraTube') }}</router-link>
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><input type="text" placeholder="Search" id="theLiveSearch" class="btn btn-outline-info" @keyup="searching()" @focus="searching()"></li>
-                </ul>
-        </nav>
-        <main class="py-4">
-          <div class="container">
-            @if ($message = Session::get('success'))
-            <div class="alert alert-success">
-              <p>{{ $message }}</p>
-            </div>
-            @endif
-              <div class="justify-content-center" id="outerContainer">
+<body class="">
+    <div id="app2" v-cloak >
+  <thesidebar :currentuser="currentuser"></thesidebar>
+        <main class="py-4 mt-5 col-12 mb-3">
+          <div class="">
+            <div class="d-flex justify-content-center">
+              <div class="col-sm-12 col-12 col-lg-10" id="outerContainer">
             @yield('content')
-          </div></div>
-          <b-modal id="moremodal" title="More options">
+          </div></div></div>
+          <b-modal id="moremodal" style="display: none;" title="More options">
             <p>Medias loaded: @{{ medias.length }}</p>
             <p>Users loaded: @{{ users.length }}</p>
             <p>Tags loaded: @{{ tags.length }}</p>
