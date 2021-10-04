@@ -56519,7 +56519,6 @@ var siteManager = function () {
                 }
             },
             mounted: function mounted() {
-                $("#moremodal").show();
             },
             watch: {
                 $route: function $route(to, from) {
@@ -79040,52 +79039,56 @@ var render = function() {
             [
               _c("h4", [_vm._v("Comments")]),
               _vm._v(" "),
-              _c(
-                "form",
-                {
-                  staticClass: "form-inline mb-1",
-                  attrs: { id: "commentForm" }
-                },
-                [
-                  _c("input", {
-                    attrs: {
-                      id: "medias_id",
-                      name: "medias_id",
-                      type: "hidden"
+              _vm.loggeduserid != 0
+                ? _c(
+                    "form",
+                    {
+                      staticClass: "form-inline mb-1",
+                      attrs: { id: "commentForm" }
                     },
-                    domProps: { value: _vm.currentmedia.id }
-                  }),
-                  _vm._v(" "),
-                  _c("input", {
-                    attrs: {
-                      id: "medias_title",
-                      name: "medias_title",
-                      type: "hidden"
-                    },
-                    domProps: { value: _vm.currentmedia.title }
-                  }),
-                  _vm._v(" "),
-                  _c("input", {
-                    staticClass: "col-9",
-                    attrs: {
-                      placeholder: "Comment...",
-                      id: "medias_body",
-                      name: "body",
-                      type: "text"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("input", {
-                    staticClass: "ml-1",
-                    attrs: { type: "button", value: "Send comment!" },
-                    on: {
-                      click: function($event) {
-                        _vm.sendComment()
-                      }
-                    }
-                  })
-                ]
-              ),
+                    [
+                      _c("input", {
+                        attrs: {
+                          id: "medias_id",
+                          name: "medias_id",
+                          type: "hidden"
+                        },
+                        domProps: { value: _vm.currentmedia.id }
+                      }),
+                      _vm._v(" "),
+                      _c("input", {
+                        attrs: {
+                          id: "medias_title",
+                          name: "medias_title",
+                          type: "hidden"
+                        },
+                        domProps: { value: _vm.currentmedia.title }
+                      }),
+                      _vm._v(" "),
+                      _c("input", {
+                        staticClass: "col-9",
+                        attrs: {
+                          placeholder: "Comment...",
+                          id: "medias_body",
+                          name: "body",
+                          type: "text"
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("input", {
+                        staticClass: "ml-1",
+                        attrs: { type: "button", value: "Send comment!" },
+                        on: {
+                          click: function($event) {
+                            _vm.sendComment()
+                          }
+                        }
+                      })
+                    ]
+                  )
+                : _c("p"),
+              _c("h4", [_vm._v("You need to login for comment")]),
+              _c("p"),
               _vm._v(" "),
               _vm._l(_vm.currentmedia.comments, function(comment) {
                 return _c(

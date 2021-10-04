@@ -133,7 +133,6 @@ class siteManager {
       }
     },
     mounted(){
-      $("#moremodal").show();
     },
     watch:{
       $route (to, from){

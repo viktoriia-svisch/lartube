@@ -124,7 +124,6 @@ var siteManager =  (function () {
                 }
             },
             mounted: function () {
-                $("#moremodal").show();
             },
             watch: {
                 $route: function (to, from) {
