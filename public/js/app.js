@@ -68974,6 +68974,18 @@ var MediaSorter = function () {
             medias.sort(MediaSorter.byUpdatedAt);
         } else if (this.sortBy == "updated_at_reverse") {
             medias.sort(MediaSorter.byUpdatedAtReverse);
+        } else if (this.sortBy == "comments") {
+            medias.sort(MediaSorter.byUpdatedAt);
+        } else if (this.sortBy == "comments_reverse") {
+            medias.sort(MediaSorter.byUpdatedAtReverse);
+        } else if (this.sortBy == "likes") {
+            medias.sort(MediaSorter.byLikes);
+        } else if (this.sortBy == "likes_reverse") {
+            medias.sort(MediaSorter.byLikesReverse);
+        } else if (this.sortBy == "dislikes") {
+            medias.sort(MediaSorter.byDislikes);
+        } else if (this.sortBy == "dislikes_reverse") {
+            medias.sort(MediaSorter.byDislikesReverse);
         }
         return medias;
     };
@@ -68985,6 +68997,16 @@ var MediaSorter = function () {
     MediaSorter.byTypeReverse = function (a, b) {
         if (a.type < b.type) return 1;
         if (a.type > b.type) return -1;
+        return 0;
+    };
+    MediaSorter.byComments = function (a, b) {
+        if (a.comments.length < b.comments.length) return -1;
+        if (a.comments.length > b.comments.length) return 1;
+        return 0;
+    };
+    MediaSorter.byCommentsReverse = function (a, b) {
+        if (a.comments.length < b.comments.length) return 1;
+        if (a.comments.length > b.comments.length) return -1;
         return 0;
     };
     MediaSorter.bySimpleType = function (a, b) {
@@ -69005,6 +69027,26 @@ var MediaSorter = function () {
     MediaSorter.byTitleReverse = function (a, b) {
         if (a.title < b.title) return 1;
         if (a.title > b.title) return -1;
+        return 0;
+    };
+    MediaSorter.byLikes = function (a, b) {
+        if (a.likes < b.likes) return -1;
+        if (a.likes > b.likes) return 1;
+        return 0;
+    };
+    MediaSorter.byLikesReverse = function (a, b) {
+        if (a.likes < b.likes) return 1;
+        if (a.likes > b.likes) return -1;
+        return 0;
+    };
+    MediaSorter.byDislikes = function (a, b) {
+        if (a.dislikes < b.dislikes) return -1;
+        if (a.dislikes > b.dislikes) return 1;
+        return 0;
+    };
+    MediaSorter.byDislikesReverse = function (a, b) {
+        if (a.dislikes < b.dislikes) return 1;
+        if (a.dislikes > b.dislikes) return -1;
         return 0;
     };
     MediaSorter.byCreatedAt = function (a, b) {
@@ -78135,6 +78177,24 @@ var render = function() {
             ]),
             _c("option", { attrs: { value: "simpleType_reverse" } }, [
               _vm._v("By simpletype (reverse)")
+            ]),
+            _c("option", { attrs: { value: "comments" } }, [
+              _vm._v("By comments")
+            ]),
+            _c("option", { attrs: { value: "comments_reverse" } }, [
+              _vm._v("By comments (reverse)")
+            ]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "likes" } }, [_vm._v("By likes")]),
+            _c("option", { attrs: { value: "likes_reverse" } }, [
+              _vm._v("By likes (reverse)")
+            ]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "dislikes" } }, [
+              _vm._v("By dislikes")
+            ]),
+            _c("option", { attrs: { value: "dislikes_reverse" } }, [
+              _vm._v("By dislikes (reverse)")
             ])
           ]
         )
@@ -79573,6 +79633,24 @@ var render = function() {
           ]),
           _c("option", { attrs: { value: "simpleType_reverse" } }, [
             _vm._v("By simpletype (reverse)")
+          ]),
+          _c("option", { attrs: { value: "comments" } }, [
+            _vm._v("By comments")
+          ]),
+          _c("option", { attrs: { value: "comments_reverse" } }, [
+            _vm._v("By comments (reverse)")
+          ]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "likes" } }, [_vm._v("By likes")]),
+          _c("option", { attrs: { value: "likes_reverse" } }, [
+            _vm._v("By likes (reverse)")
+          ]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "dislikes" } }, [
+            _vm._v("By dislikes")
+          ]),
+          _c("option", { attrs: { value: "dislikes_reverse" } }, [
+            _vm._v("By dislikes (reverse)")
           ])
         ]
       )
