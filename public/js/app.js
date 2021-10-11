@@ -77970,7 +77970,7 @@ var render = function() {
                   staticStyle: { "padding-bottom": "0px" }
                 },
                 [
-                  _c("h4", { staticClass: "card-title text-center " }, [
+                  _c("p", { staticClass: "h4 card-title text-center " }, [
                     _c("span", { staticClass: "bg-secondary sgfText" }, [
                       _vm._v(_vm._s(_vm.item.title))
                     ])
@@ -79253,7 +79253,7 @@ var render = function() {
                       expression: "chartEnabled"
                     }
                   }),
-                  _c("label", [_vm._v("Enable chart")])
+                  _c("label", [_vm._v("Enable chart (workaround)")])
                 ],
                 1
               ),
