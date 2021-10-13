@@ -77970,24 +77970,31 @@ var render = function() {
                   staticStyle: { "padding-bottom": "0px" }
                 },
                 [
-                  _c("p", { staticClass: "h4 card-title text-center " }, [
-                    _c("span", { staticClass: "bg-secondary sgfText" }, [
-                      _vm._v(_vm._s(_vm.item.title))
-                    ])
-                  ])
+                  _c(
+                    "p",
+                    {
+                      staticClass:
+                        "card-title text-center pl-sm-0 pr-sm-0 pl-md-1 pr-md-1"
+                    },
+                    [
+                      _c("span", { staticClass: "bg-secondary sgfText" }, [
+                        _vm._v(_vm._s(_vm.item.title))
+                      ])
+                    ]
+                  )
                 ]
               ),
               _vm._v(" "),
               _c(
                 "div",
                 {
-                  staticClass: " card-body ",
+                  staticClass: " card-body pl-md-1 pr-md-1 pl-sm-0 pr-sm-0",
                   staticStyle: { "padding-top": "0px" }
                 },
                 [
                   _c(
                     "div",
-                    { staticClass: "d-none d-md-none d-sm-block d-lg-block" },
+                    { staticClass: "d-none d-md-none d-sm-block d-lg-block " },
                     [
                       _c("span", { staticClass: " bg-secondary sgfText" }, [
                         _vm._v(_vm._s(_vm.shorteneddescription))
