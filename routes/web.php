@@ -47,6 +47,8 @@ Route::get('welcome/{locale}', function ($locale) {
 Route::get('/search', function (Request $request) {
     return App\Media::search($request->search)->get();
 });
+Route::delete('/internal-api/media/{title}','MediaController@destroy')->name('mediasapi.delete');
+Route::post('/internal-api/media/{title}','MediaController@edit')->name('mediasiapi.edit');
 Route::get('/internal-api/media', function (Request $request) {
     return MediaResource::collection(Media::orderBy('updated_at', 'desc')->whereNotIn('id', explode(",",$request->input('i')))->paginate(3));
 });

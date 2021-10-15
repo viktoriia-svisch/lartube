@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 class RegisterController extends Controller
 {
     use RegistersUsers;
-    protected $redirectTo = '/';
+    protected $redirectTo = '/#/login';
     public function __construct()
     {
         $this->middleware('guest');
@@ -21,7 +21,7 @@ class RegisterController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
     }
-    public function register(Request $request)
+    public function register22(Request $request)
 {
     $this->validator($request->all())->validate();
     event(new Registered($user = $this->create($request->all())));
@@ -29,7 +29,7 @@ class RegisterController extends Controller
     return $this->registered($request, $user)
                     ?: redirect($this->redirectPath());
 }
-protected function registered(Request $request, $user)
+protected function registered22(Request $request, $user)
 {
     $user->generateToken();
     return response()->json(['data' => $user->toArray()], 201);

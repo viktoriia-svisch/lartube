@@ -108,10 +108,7 @@
             processData: false,
             complete : function(res) {
               if(res.status==200){
-                that.dismisscountdown = 20;
-                that.alertMsg = "Video edited"
-                that.alertType = "success"
-                              }
+                                                                        }
               eventBus.$emit('videoEdited',[that.currentmedia.title,res.responseJSON])
                                     }
         });

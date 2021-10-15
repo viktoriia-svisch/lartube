@@ -43,8 +43,7 @@
 </div>
 </template>
 <script>
-  import { eventBus } from '../eventBus.js';
-  import SingleGalleryField from './SingleGalleryField'
+  import { eventBus } from '../../eventBus.js';
   export default {
     props: ['medias','baseUrl','user','tags'],
     data(){
