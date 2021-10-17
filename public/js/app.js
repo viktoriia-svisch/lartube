@@ -79371,6 +79371,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   props: ['medias', 'baseUrl', 'user'],
   components: {
     'overview': __WEBPACK_IMPORTED_MODULE_1__OverviewComponent___default.a
+  },
+  computed: {
+    usermedias: function usermedias() {
+      var filteredMedias = [];
+      var that = this;
+      $.each(this.medias, function (key, value) {
+        if (value.user.id == that.user.id) {
+          filteredMedias.push(value);
+        }
+      });
+      return filteredMedias;
+    }
   }
 });
  }),
@@ -79402,7 +79414,9 @@ var render = function() {
         _c("div", [_vm._v(_vm._s(_vm.user.bio))])
       ]),
       _vm._v(" "),
-      _c("overview", { attrs: { medias: _vm.medias } })
+      _vm.usermedias.length > 0
+        ? _c("overview", { attrs: { medias: _vm.usermedias } })
+        : _c("h5", [_vm._v("User got no medias")])
     ],
     1
   )
@@ -79636,7 +79650,7 @@ var render = function() {
           _vm._v(" "),
           _c("input", {
             attrs: { type: "hidden", id: "avatarBase", name: "avatar" },
-            domProps: { value: _vm.cropped }
+            domProps: { value: _vm.avatarCropped }
           }),
           _vm._v(" "),
           _c(
@@ -79664,7 +79678,7 @@ var render = function() {
           ),
           _vm._v(" "),
           _c("input", {
-            attrs: { id: "avatarUpload", name: "avatar", type: "file" },
+            attrs: { id: "avatarUpload", name: "avatarf", type: "file" },
             on: {
               change: function($event) {
                 _vm.avatarChange()
@@ -79724,7 +79738,11 @@ var render = function() {
           ),
           _vm._v(" "),
           _c("input", {
-            attrs: { id: "backgroundUpload", name: "background", type: "file" },
+            attrs: {
+              id: "backgroundUpload",
+              name: "backgroundf",
+              type: "file"
+            },
             on: {
               change: function($event) {
                 _vm.backgroundChange()
@@ -80325,10 +80343,127 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(11);
  __webpack_exports__["default"] = ({
   props: ['medias', 'baseUrl', 'user', 'tags'],
+  mounted: function mounted() {
+    this.$refs.croppieAvatarRef.bind({
+      url: '/img/404/avatar.png'
+    });
+    this.$refs.croppieBackgroundRef.bind({
+      url: '/img/404/background.png'
+    });
+  },
+  updated: function updated() {
+    this.$nextTick(function () {
+      if (this.$refs.croppieRef != undefined & this.editpicloaded == false) {
+        this.editpicloaded = true;
+        console.log("redo picture");
+        this.$refs.croppieAvatarRef.bind({
+          url: this.currentuser.avatar_source
+        });
+        this.$refs.croppieBackgroundRef.bind({
+          url: this.currentuser.background_source
+        });
+      }
+    });
+  },
   data: function data() {
     return {
-      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      avatarCropped: null,
+      backgroundCropped: null
     };
+  },
+  methods: {
+    avatarChange: function avatarChange() {
+      var reader = new FileReader();
+      var that = this;
+      reader.onload = function (e) {
+        that.$refs.croppieAvatarRef.bind({
+          url: e.target.result
+        });
+      };
+      reader.readAsDataURL($("#avatarUpload")[0].files[0]);
+    },
+    backgroundChange: function backgroundChange() {
+      var reader = new FileReader();
+      var that = this;
+      reader.onload = function (e) {
+        that.$refs.croppieBackgroundRef.bind({
+          url: e.target.result
+        });
+      };
+      reader.readAsDataURL($("#backgroundUpload")[0].files[0]);
+    },
+    submitAction: function submitAction() {
+      var that = this;
+      $.ajax({
+        url: '/internal-api/media/' + this.currentmedia.title,
+        type: 'POST',
+        data: new FormData($("#theForm")[0]),
+        cache: false,
+        contentType: false,
+        processData: false,
+        complete: function complete(res) {
+          if (res.status == 200) {
+          }
+          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('videoEdited', [that.currentmedia.title, res.responseJSON]);
+        }
+      });
+      return false;
+    },
+    deleteAction: function deleteAction() {
+      var that = this;
+      $.ajax({
+        url: '/internal-api/media/' + this.currentmedia.title,
+        type: 'DELETE',
+        cache: false,
+        contentType: false,
+        processData: false,
+        complete: function complete(res) {
+          if (res.status == 200) {
+          }
+          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('videoDeleted', that.currentmedia.title);
+        }
+      });
+      return false;
+    },
+    countDownChanged: function countDownChanged(dismisscountdown) {
+      this.dismisscountdown = dismisscountdown;
+    },
+    showAlert: function showAlert() {
+      this.dismisscountdown = this.dismisssecs;
+    },
+    resultAvatar: function resultAvatar(output) {
+      this.avatarCropped = output;
+    },
+    resultBackground: function resultBackground(output) {
+      this.backgroundCropped = output;
+    },
+    updateAvatar: function updateAvatar(val) {
+      var _this = this;
+      var options = {
+        format: 'png'
+      };
+      this.$refs.croppieAvatarRef.result(options, function (output) {
+        _this.avatarCropped = output;
+      });
+    },
+    updateBackground: function updateBackground(val) {
+      var _this2 = this;
+      var options = {
+        format: 'png'
+      };
+      this.$refs.croppieBackgroundRef.result(options, function (output) {
+        _this2.backgroundCropped = output;
+      });
+    },
+    rotateAvatar: function rotateAvatar(rotationAngle, event) {
+      if (event) event.preventDefault();
+      this.$refs.croppieAvatarRef.rotate(rotationAngle);
+    },
+    rotateBackground: function rotateBackground(rotationAngle, event) {
+      if (event) event.preventDefault();
+      this.$refs.croppieBackgroundRef.rotate(rotationAngle);
+    }
   }
 });
  }),
@@ -80357,6 +80492,141 @@ var render = function() {
                 attrs: { type: "hidden", name: "_token" },
                 domProps: { value: _vm.csrf }
               }),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "form-group row" },
+                [
+                  _c("label", [_vm._v("Avatar")]),
+                  _vm._v(" "),
+                  _c("vue-croppie", {
+                    ref: "croppieAvatarRef",
+                    attrs: {
+                      enableOrientation: true,
+                      enableResize: false,
+                      viewport: { width: 180, height: 180, type: "circle" },
+                      boundary: { width: 200, height: 200 }
+                    },
+                    on: { result: _vm.resultAvatar, update: _vm.updateAvatar }
+                  }),
+                  _vm._v(" "),
+                  _c("input", {
+                    attrs: { type: "hidden", id: "avatarBase", name: "avatar" },
+                    domProps: { value: _vm.avatarCropped }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      on: {
+                        click: function($event) {
+                          _vm.rotateAvatar(-90, $event)
+                        }
+                      }
+                    },
+                    [_vm._v("Rotate Left")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      on: {
+                        click: function($event) {
+                          _vm.rotateAvatar(90, $event)
+                        }
+                      }
+                    },
+                    [_vm._v("Rotate Right")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    attrs: {
+                      id: "avatarUpload",
+                      name: "avatarf",
+                      type: "file"
+                    },
+                    on: {
+                      change: function($event) {
+                        _vm.avatarChange()
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("div", { attrs: { id: "avatar" } })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "form-group row" },
+                [
+                  _c("label", [_vm._v("Background")]),
+                  _vm._v(" "),
+                  _c("vue-croppie", {
+                    ref: "croppieBackgroundRef",
+                    attrs: {
+                      enableOrientation: true,
+                      enableResize: false,
+                      viewport: { width: 700, height: 394, type: "square" },
+                      boundary: { width: 700, height: 394 }
+                    },
+                    on: {
+                      result: _vm.resultBackground,
+                      update: _vm.updateBackground
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("input", {
+                    attrs: {
+                      type: "hidden",
+                      id: "backgroundBase",
+                      name: "background"
+                    },
+                    domProps: { value: _vm.backgroundCropped }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      on: {
+                        click: function($event) {
+                          _vm.rotateBackground(-90, $event)
+                        }
+                      }
+                    },
+                    [_vm._v("Rotate Left")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      on: {
+                        click: function($event) {
+                          _vm.rotateBackground(90, $event)
+                        }
+                      }
+                    },
+                    [_vm._v("Rotate Right")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    attrs: {
+                      id: "backgroundUpload",
+                      name: "backgroundf",
+                      type: "file"
+                    },
+                    on: {
+                      change: function($event) {
+                        _vm.backgroundChange()
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("div", { attrs: { id: "background" } })
+                ],
+                1
+              ),
               _vm._v(" "),
               _vm._m(0),
               _vm._v(" "),

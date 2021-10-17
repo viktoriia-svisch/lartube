@@ -18,10 +18,10 @@
           :boundary="{ width: 200, height: 200 }"
           @update="updateAvatar">
           </vue-croppie>
-          <input type="hidden" id="avatarBase" name="avatar" :value="cropped" />
+          <input type="hidden" id="avatarBase" name="avatar" :value="avatarCropped" />
           <button @click="rotateAvatar(-90,$event)">Rotate Left</button>
           <button @click="rotateAvatar(90,$event)">Rotate Right</button>
-        <input id="avatarUpload" @change="avatarChange()" name="avatar" type="file">
+        <input id="avatarUpload" @change="avatarChange()" name="avatarf" type="file">
         <div id="avatar"></div>
     </div>
     <div class="form-group">
@@ -38,7 +38,7 @@
           <input type="hidden" id="backgroundBase" name="background" :value="backgroundCropped" />
           <button @click="rotateBackground(-90,$event)">Rotate Left</button>
           <button @click="rotateBackground(90,$event)">Rotate Right</button>
-        <input id="backgroundUpload" @change="backgroundChange()" name="background" type="file">
+        <input id="backgroundUpload" @change="backgroundChange()" name="backgroundf" type="file">
         <div id="background"></div>
     </div>
       <div class="form-group">
