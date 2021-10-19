@@ -78702,8 +78702,6 @@ var render = function() {
         [
           _c("div", { staticClass: "row" }, [
             _c("div", { staticClass: "col-xs-12 col-sm-12 col-md-12" }, [
-              _c("h3", [_vm._v(" " + _vm._s(_vm.currentmedia.title) + " ")]),
-              _vm._v(" "),
               _vm.currentmedia.simpleType == "audio"
                 ? _c("div", { staticClass: "text-center" }, [
                     _c("p", [
@@ -79169,9 +79167,7 @@ var render = function() {
                       })
                     ]
                   )
-                : _c("p"),
-              _c("h4", [_vm._v("You need to login for comment")]),
-              _c("p"),
+                : _vm._e(),
               _vm._v(" "),
               _vm._l(_vm.currentmedia.comments, function(comment) {
                 return _c(
