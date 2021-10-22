@@ -56,6 +56,12 @@ class DatabaseSeeder extends Seeder
      $m1->tag('Walulis');
      $m1->tag('Torrent');
      $m1->tag('Movie');
+     $m1 = Media::create(['title' => 'Hackerethik - eine Einführung', 'source' => 'https:
+     $m1->tag('35C3');
+     $m1->tag('Doku');
+     $m1 = Media::create(['title' => 'Freude ist nur ein Mangel an information', 'source' => 'https:
+     $m1->tag('35C3');
+     $m1->tag('Doku');
      $m1 = Media::create(['title' => 'Big bucks bunny test 2', 'source' => 'https:
      $m1->tag('Big');
      $m1->tag('SampleVideos');

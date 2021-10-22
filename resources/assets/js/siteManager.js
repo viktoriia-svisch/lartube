@@ -179,7 +179,7 @@ var siteManager =  (function () {
         });
         eventBus.$on('commentCreated', function (json) {
             that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title);
-            theVue.alert("Look for new medias..", "success");
+            theVue.alert("Comment created", "success");
         });
         eventBus.$on('videoDeleted', function (title) {
             theVue.alert("Video " + title + " deleted", "success");

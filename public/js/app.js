@@ -56571,7 +56571,7 @@ var siteManager = function () {
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('commentCreated', function (json) {
             that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title);
-            theVue.alert("Look for new medias..", "success");
+            theVue.alert("Comment created", "success");
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('videoDeleted', function (title) {
             theVue.alert("Video " + title + " deleted", "success");
