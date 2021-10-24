@@ -20,7 +20,7 @@ class Media extends Model
       return User::find($this->user_id);
     }
     public function comments() {
-      $comments = Comment::where('media_id', '=' ,$this->id)->get()->sortByDesc('created_at');
+      $comments = Comment::where('media_id', '=' ,$this->id)->where("parent_id","=","0")->get()->sortByDesc('created_at');
       return $comments;
     }
     public function myLike($request){

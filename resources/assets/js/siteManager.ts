@@ -75,6 +75,73 @@ class siteManager {
       { path: '/about', component: aboutComp },
       { path: '/mediaedit/:editTitle', component: editVideoComp }
     ]
+    eventBus.$on('getNewMedias', title => {
+      theVue.alert("Look for new medias..")
+      that.receiveMedias()
+    });
+    eventBus.$on('refreshMedias', title => {
+      theVue.canloadmore = true;
+      that.catchedTagMedias=[];
+      this.usedSearchTerms=[];
+      that.receiveMedias("/internal-api/media"+this.getIgnoreParam(),true)
+    });
+    eventBus.$on('loadAllMedias', title => {
+      that.receiveMedias("/internal-api/medias/all"+this.getIgnoreParam())
+      theVue.canloadmore=false
+    });
+    eventBus.$on('loadUserVideos', userid => {
+      console.log("/internal-api/medias/by/"+userid+this.getIgnoreParam())
+      that.receiveMedias("/internal-api/medias/by/"+userid+this.getIgnoreParam())
+    });
+    eventBus.$on('sortBy', sortBy => {
+      theMediaSorter.sortBy = sortBy
+      if(theVue.$router.currentRoute.path=="/search"){
+        theVue.search.mediaResult = theMediaSorter.sort(theVue.search.mediaResult)
+      }
+      that.medias = theMediaSorter.sort(that.medias)
+      theVue.medias = that.medias
+    });
+    eventBus.$on('commentCreated', json => {
+      that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title)
+      theVue.alert("Comment created","success")
+    });
+    eventBus.$on('videoDeleted', title => {
+      theVue.alert("Video "+title+" deleted","success")
+      that.deleteMediaByName(title);
+    });
+    eventBus.$on('videoCreated', json => {
+      that.receiveTagsForMedia(json);
+      theVue.alert("Video "+json.data.title+" created","success")
+    });
+    eventBus.$on('videoEdited', json => {
+      that.deleteMediaByName(json[0]);
+      that.receiveTagsForMedia(json[1]);
+      theVue.alert("Video "+json[1].data.title+" edited","success")
+    });
+    eventBus.$on('checkTag', tagName => {
+      if(tagName==''){
+        if($("#specialAllTag").is(":checked")){
+          theVue.medias = that.medias;
+        } else {
+          theVue.medias = [];
+          theVue.medias = that.medias;
+        }
+      } else {
+      if(that.catchedTagMedias.includes(tagName)==false){
+        that.catchedTagMedias.push(tagName);
+        that.receiveMedias("/api/tags/"+tagName);
+      }
+    }
+    });
+    eventBus.$on('loadMore', title => {
+      that.receiveMedias(that.nextLink)
+    });
+    eventBus.$on('refreshSearch', title => {
+      theVue.searching();
+    });
+    eventBus.$on('showAlert', data => {
+      theVue.dismisscountdown = theVue.dismisssecs
+    });
    theVue = new Vue({
     data : {
       title : "Overview",
@@ -163,69 +230,19 @@ class siteManager {
       }
   }
   }).$mount('#app2');
-  eventBus.$on('getNewMedias', title => {
-    theVue.alert("Look for new medias..")
-    that.receiveMedias()
-  });
-  eventBus.$on('refreshMedias', title => {
-    theVue.canloadmore = true;
-    that.catchedTagMedias=[];
-    this.usedSearchTerms=[];
-    that.receiveMedias("/internal-api/media"+this.getIgnoreParam(),true)
-  });
-  eventBus.$on('loadAllMedias', title => {
-    that.receiveMedias("/internal-api/media/all"+this.getIgnoreParam())
-    theVue.canloadmore=false
-  });
-  eventBus.$on('sortBy', sortBy => {
-    theMediaSorter.sortBy = sortBy
-    if(theVue.$router.currentRoute.path=="/search"){
-      theVue.search.mediaResult = theMediaSorter.sort(theVue.search.mediaResult)
-    }
-    that.medias = theMediaSorter.sort(that.medias)
-    theVue.medias = that.medias
-  });
-  eventBus.$on('commentCreated', json => {
-    that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title)
-    theVue.alert("Comment created","success")
-  });
-  eventBus.$on('videoDeleted', title => {
-    theVue.alert("Video "+title+" deleted","success")
-    that.deleteMediaByName(title);
-  });
-  eventBus.$on('videoCreated', json => {
-    that.receiveTagsForMedia(json);
-    theVue.alert("Video "+json.data.title+" created","success")
-  });
-  eventBus.$on('videoEdited', json => {
-    that.deleteMediaByName(json[0]);
-    that.receiveTagsForMedia(json[1]);
-    theVue.alert("Video "+json[1].data.title+" edited","success")
-  });
-  eventBus.$on('checkTag', tagName => {
-    if(tagName==''){
-      if($("#specialAllTag").is(":checked")){
-        theVue.medias = that.medias;
-      } else {
-        theVue.medias = [];
-        theVue.medias = that.medias;
-      }
-    } else {
-    if(that.catchedTagMedias.includes(tagName)==false){
-      that.catchedTagMedias.push(tagName);
-      that.receiveMedias("/api/tags/"+tagName);
-    }
   }
-  });
-  eventBus.$on('loadMore', title => {
-    that.receiveMedias(that.nextLink)
-  });
-  eventBus.$on('refreshSearch', title => {
-    theVue.searching();
-  });
-  eventBus.$on('showAlert', data => {
-    theVue.dismisscountdown = theVue.dismisssecs
-  });
+  fillUser(comment){
+    let that = this;
+    console.log("start filluser")
+    console.log(comment.childs)
+    $.each( comment.childs, function( key, value ) {
+      console.log("fill the user")
+      if(value.childs.length>0){
+        comment.childs[key] = that.fillUser(value)
+      }
+     comment.childs[key].user = that.getUserById(value.user_id)
+    });
+    return comment;
   }
   getCurrentSite(){
     return this.currentPage;
@@ -314,10 +331,11 @@ class siteManager {
       } else {
         var m = new Media(data.id,data.title, data.description, data.source, data.poster_source,data.duration, data.simpleType, data.type, that.getUserById(data.user_id),data.user_id,data.created_at,data.updated_at,data.created_at_readable,data.comments,that.getTagsByIdArray(data.tagsIds),data.myLike,data.likes,data.dislikes);
         $.each( m.comments, function( key1, value1 ) {
+          m.comments[key1] = that.fillUser(value1);
           m.comments[key1].user = that.getUserById(value1.user_id)
         });
         if(m!=that.medias[theKey]){
-          that.medias[theKey].comments = JSON.parse(JSON.stringify(m.comments)).sort(MediaSorter.byCreatedAtComments);
+          that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
           theVue.medias=that.medias
         }
       }
@@ -390,14 +408,18 @@ class siteManager {
          if(that.findMediaById(value.id)==undefined){
             var m = new Media(value.id,value.title, value.description, value.source, value.poster_source,value.duration, value.simpleType, value.type, that.getUserById(value.user_id),value.user_id,value.created_at,value.updated_at,value.created_at_readable,value.comments,that.getTagsByIdArray(value.tagsIds),value.myLike,value.likes,value.dislikes)
             $.each( m.comments, function( key1, value1 ) {
+              m.comments[key1] = that.fillUser(value1);
+              console.log(that.fillUser(value1))
               m.comments[key1].user = that.getUserById(value1.user_id)
             });
             loadCount++;
-            m.comments = JSON.parse(JSON.stringify(m.comments)).sort(MediaSorter.byCreatedAtComments);
+            m.comments = m.comments.sort(MediaSorter.byCreatedAtComments);
             that.medias.push(m);
           } else {
             var m = new Media(value.id,value.title, value.description, value.source, value.poster_source,value.duration, value.simpleType, value.type, that.getUserById(value.user_id),value.user_id,value.created_at,value.updated_at,value.created_at_readable,value.comments,that.getTagsByIdArray(value.tagsIds),value.myLike,value.likes,value.dislikes)
             $.each( m.comments, function( key1, value1 ) {
+              m.comments[key1] = that.fillUser(value1);
+              console.log(that.fillUser(value1))
               m.comments[key1].user = that.getUserById(value1.user_id)
             });
             if(m!=value){

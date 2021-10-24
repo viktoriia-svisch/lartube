@@ -4,7 +4,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
 <div class="text-center" v-if="currentmedia.simpleType=='audio'">
   <p>
-  <img :src="currentmedia.poster_source"></p>
+  <img class="img-fluid" :src="currentmedia.poster_source"></p>
   <audio class="text-center" ref="player1" id="player"  preload autobuffer v-if="currentmedia.simpleType=='audio'" controls :poster="currentmedia.poster_source">
      <source :src="currentmedia.source" type="audio/mp3"></source>
    </audio>
@@ -60,7 +60,10 @@
           </div>
         </div>
       </div>
-      <div class="col-4 float-right">
+      <div class="comments col-sm-8 col-12 float-left">
+        <comments v-bind:level="'0'" v-bind:commentlist="currentmedia.comments" v-bind:loggeduserid="loggeduserid" v-bind:currentmedia="currentmedia"></comments>
+      </div>
+      <div class="col-sm-4 col-12 float-right">
         <h4>Next videos</h4>
         <p>
       <vs-switch v-model="autoplay"/>
@@ -71,32 +74,6 @@
             </div>
         </div>
         <button class="btn btn-block btn-danger" v-if="canloadmore" @click="emitLoadMore()">Load more</button>
-      </div>
-      <div class="comments col-8 float-left">
-        <h4>Comments</h4>
-        <form class="form-inline mb-1" id="commentForm" v-if="loggeduserid!=0">
-          <input id="medias_id" name="medias_id" type="hidden" :value="currentmedia.id">
-          <input id="medias_title" name="medias_title" type="hidden" :value="currentmedia.title">
-          <input placeholder="Comment..." class="col-9" id="medias_body" name="body" type="text">
-          <input type="button" class="ml-1" value="Send comment!" @click="sendComment();" />
-        </form>
-        <div v-for="comment in currentmedia.comments" class="comment mb-2 row" :id='"cid"+comment.id'>
-            <div class="comment-avatar col-md-1 col-sm-2 text-center pr-1">
-                <a href=""><img class="mx-auto rounded-circle img-fluid" :src="'/'+comment.user.avatar" alt="avatar" /></a>
-            </div>
-            <div class="comment-content col-md-11 col-sm-10">
-                <h6 class="small comment-meta"><router-link class="btn btn-primary mr-2" :to="'/profile/'+comment.user.id">{{ comment.user.name }}</router-link> {{ comment.created_at }}
-                </h6>
-                <div class="comment-body">
-                    <p>
-                        {{ comment.body }}
-                    </p>
-                    <p>
-                        <a href="" class="text-right small"><i class="ion-reply"></i> Reply</a>
-                    </p>
-                </div>
-            </div>
-          </div>
       </div>
       <p class="" style="">
       </p>
@@ -113,10 +90,12 @@
 <script>
   import { eventBus } from '../eventBus.js';
   import SingleGalleryField from './SingleGalleryField'
+  import Comments from './Comments'
   export default {
     props: ['medias','baseUrl','loggeduserid','canloadmore'],
     components : {
-        'singleField': SingleGalleryField
+        'singleField': SingleGalleryField,
+        'comments': Comments
     },
     methods: {
       prettyBytes(num,label=true) {
@@ -178,21 +157,6 @@
         emitLoadMore() {
           eventBus.$emit('loadMore','');
         },
-      sendComment(){
-                        $.ajax({
-            url: '/comment',
-            type: 'POST',
-            data: new FormData($("#commentForm")[0]),
-            cache: false,
-            contentType: false,
-            processData: false,
-            complete : function(res) {
-              if(res.status==200){
-                              }
-              eventBus.$emit('commentCreated',res.responseJSON);
-            }
-        });
-      }
     },
     computed: {
       series2: function () {

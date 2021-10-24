@@ -9,8 +9,8 @@ class CommentController extends Controller
 {
     public function create(Request $request)
     {
-        $media = Comment::create(['media_id' =>  $request->input('medias_id'),'user_id' => Auth::id(),'body' => $request->input('body')]);
-        return new CommentResource($media);
+        $comment = Comment::create(['media_id' =>  $request->input('medias_id'),'parent_id' =>  $request->input('parent_id'),'user_id' => Auth::id(),'body' => $request->input('body')]);
+        return new CommentResource($comment);
     }
     public function destroy(Request $request)
     {
