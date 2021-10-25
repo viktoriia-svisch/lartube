@@ -138,12 +138,6 @@
         });
         return false;
       },
-      countDownChanged (dismisscountdown) {
-        this.dismisscountdown = dismisscountdown
-      },
-      showAlert() {
-        this.dismisscountdown = this.dismisssecs
-      },
 resultAvatar(output) {
     this.avatarCropped = output;
 },

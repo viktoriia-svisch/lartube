@@ -56547,21 +56547,11 @@ var siteManager = function () {
             },
             router: new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" ]({ routes: routes }),
             methods: {
-                emitRefreshMedias: function emitRefreshMedias() {
-                    __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$emit('refreshMedias', "");
-                },
-                emitLoadAllMedias: function emitLoadAllMedias() {
-                    __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$emit('loadAllMedias', "");
-                },
                 alert: function alert(msg, type) {
                     if (type === void 0) {
                         type = "dark";
                     }
                     this.$vs.notify({ title: msg, text: '', color: type, position: 'bottom-center' });
-                },
-                toggleSidebar: function toggleSidebar() {},
-                countDownChanged: function countDownChanged(dismisscountdown) {
-                    this.dismisscountdown = dismisscountdown;
                 },
                 searching: function searching() {
                     if (theVue.$router.currentRoute.path != "/search") {
@@ -79753,12 +79743,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       });
       return false;
     },
-    countDownChanged: function countDownChanged(dismisscountdown) {
-      this.dismisscountdown = dismisscountdown;
-    },
-    showAlert: function showAlert() {
-      this.dismisscountdown = this.dismisssecs;
-    },
     resultAvatar: function resultAvatar(output) {
       this.avatarCropped = output;
     },
@@ -80630,12 +80614,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       });
       return false;
     },
-    countDownChanged: function countDownChanged(dismisscountdown) {
-      this.dismisscountdown = dismisscountdown;
-    },
-    showAlert: function showAlert() {
-      this.dismisscountdown = this.dismisssecs;
-    },
     resultAvatar: function resultAvatar(output) {
       this.avatarCropped = output;
     },
@@ -81131,12 +81109,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
       });
       return false;
-    },
-    countDownChanged: function countDownChanged(dismisscountdown) {
-      this.dismisscountdown = dismisscountdown;
-    },
-    showAlert: function showAlert() {
-      this.dismisscountdown = this.dismisssecs;
     },
     result: function result(output) {
       this.cropped = output;
@@ -82079,12 +82051,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       });
       return false;
     },
-    countDownChanged: function countDownChanged(dismisscountdown) {
-      this.dismisscountdown = dismisscountdown;
-    },
-    showAlert: function showAlert() {
-      this.dismisscountdown = this.dismisssecs;
-    },
     result: function result(output) {
       this.cropped = output;
     },
@@ -82675,7 +82641,8 @@ module.exports = function listToStyles (parentId, list) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
- __webpack_exports__["default"] = ({
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+ __webpack_exports__["default"] = (_defineProperty({
   methods: {
     searching: function searching() {
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshSearch', "");
@@ -82684,7 +82651,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('getNewMedias', "");
     }
   },
-  props: ['currentuser'],
+  props: ['currentuser', 'medias', 'users', 'tags'],
   data: function data() {
     return {
       active: false,
@@ -82692,7 +82659,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
     };
   }
-});
+}, 'methods', {
+  emitRefreshMedias: function emitRefreshMedias() {
+    __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshMedias', "");
+  },
+  emitLoadAllMedias: function emitLoadAllMedias() {
+    __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadAllMedias', "");
+  }
+}));
  }),
  (function(module, exports, __webpack_require__) {
 var render = function() {
@@ -83038,7 +83012,45 @@ var render = function() {
           )
         ],
         1
-      )
+      ),
+      _vm._v(" "),
+      _c("b-modal", { attrs: { id: "moremodal", title: "More options" } }, [
+        _c("p", [_vm._v("Medias loaded: " + _vm._s(_vm.medias.length))]),
+        _vm._v(" "),
+        _c("p", [_vm._v("Users loaded: " + _vm._s(_vm.users.length))]),
+        _vm._v(" "),
+        _c("p", [_vm._v("Tags loaded: " + _vm._s(_vm.tags.length))]),
+        _vm._v(" "),
+        _c("p", [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-warning mr-1",
+              on: {
+                click: function($event) {
+                  _vm.emitRefreshMedias()
+                }
+              }
+            },
+            [_vm._v("Reset data")]
+          )
+        ]),
+        _vm._v(" "),
+        _c("p", [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-danger mr-1",
+              on: {
+                click: function($event) {
+                  _vm.emitLoadAllMedias()
+                }
+              }
+            },
+            [_vm._v("Load all medias")]
+          )
+        ])
+      ])
     ],
     1
   )

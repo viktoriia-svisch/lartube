@@ -130,12 +130,6 @@
         });
         return false;
       },
-      countDownChanged (dismisscountdown) {
-        this.dismisscountdown = dismisscountdown
-      },
-      showAlert() {
-        this.dismisscountdown = this.dismisssecs
-      },
 result(output) {
     this.cropped = output;
 },
