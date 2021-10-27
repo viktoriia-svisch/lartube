@@ -47,6 +47,7 @@ Route::get('welcome/{locale}', function ($locale) {
 Route::get('/search', function (Request $request) {
     return App\Media::search($request->search)->get();
 });
+Route::post('/internal-api/profiles/edit/{id}','UserController@update')->name('users.edit');
 Route::delete('/internal-api/media/{title}','MediaController@destroy')->name('mediasapi.delete');
 Route::post('/internal-api/media/{title}','MediaController@edit')->name('mediasiapi.edit');
 Route::get('/internal-api/media', function (Request $request) {

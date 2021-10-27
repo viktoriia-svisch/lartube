@@ -7160,13 +7160,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  __webpack_require__.d(__webpack_exports__, "Media", function() { return Media; });
  __webpack_require__.d(__webpack_exports__, "Tag", function() { return Tag; });
 var User = function () {
-    function User(id, name, avatar, background, bio, mediaIds) {
+    function User(id, name, avatar, background, bio, mediaIds, tagString) {
         this.id = id;
         this.name = name;
         this.avatar = avatar;
         this.background = background;
         this.bio = bio;
         this.mediaIds = mediaIds;
+        this.tagString = tagString;
     }
     User.prototype.toJson = function () {
         return "{id:" + this.id + ",name:'" + this.name + "',avatar:'" + this.avatar + "',background:'" + this.background + "'}";
@@ -56461,6 +56462,10 @@ var siteManager = function () {
             theVue.alert("Look for new medias..");
             that.receiveMedias();
         });
+        __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('userEdited', function (title) {
+            theVue.alert("Look for new users..");
+            that.receiveUsers(true);
+        });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('refreshMedias', function (title) {
             theVue.canloadmore = true;
             that.catchedTagMedias = [];
@@ -56486,6 +56491,10 @@ var siteManager = function () {
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('commentCreated', function (json) {
             that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title);
             theVue.alert("Comment created", "success");
+        });
+        __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('refreshMedia', function (id) {
+            that.receiveMediaByName(that.findMediaById(Number(id)).title);
+            theVue.alert("Media refreshed", "success");
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('videoDeleted', function (title) {
             theVue.alert("Video " + title + " deleted", "success");
@@ -56616,6 +56625,7 @@ var siteManager = function () {
             }
             comment.childs[key].user = that.getUserById(value.user_id);
         });
+        comment.childs = comment.childs.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
         return comment;
     };
     siteManager.prototype.getCurrentSite = function () {
@@ -56630,12 +56640,15 @@ var siteManager = function () {
             if (that.users == undefined || forceUpdate) {
                 that.users = [];
                 if (that.loggedUserId == 0) {
-                    that.currentUser = new __WEBPACK_IMPORTED_MODULE_6__models__["User"](0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "");
+                    that.currentUser = new __WEBPACK_IMPORTED_MODULE_6__models__["User"](0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "");
                 }
                 $.each(data.data, function (key, value) {
-                    var u = new __WEBPACK_IMPORTED_MODULE_6__models__["User"](value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds);
+                    var u = new __WEBPACK_IMPORTED_MODULE_6__models__["User"](value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds, value.tagString);
                     if (u.id == that.loggedUserId) {
                         that.currentUser = u;
+                        if (theVue != undefined) {
+                            theVue.currentuser = u;
+                        }
                     }
                     that.users.push(u);
                 });
@@ -56721,7 +56734,8 @@ var siteManager = function () {
                     m.comments[key1].user = that.getUserById(value1.user_id);
                 });
                 if (m != that.medias[theKey]) {
-                    that.medias[theKey].comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
+                    m.comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
+                    that.medias[theKey] = m;
                     theVue.medias = that.medias;
                 }
             }
@@ -56758,9 +56772,7 @@ var siteManager = function () {
         var returnMedia = undefined;
         var that = this;
         $.each(that.medias, function (key, value) {
-            console.log("found the value:" + value.id + " vs " + id);
             if (value.id == id) {
-                console.log("found the value:" + value.id);
                 returnMedia = value;
             }
         });
@@ -56815,6 +56827,7 @@ var siteManager = function () {
                         console.log(that.fillUser(value1));
                         m.comments[key1].user = that.getUserById(value1.user_id);
                     });
+                    m.comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
                     if (m != value) {
                         replaceCount++;
                         console.log("Media replaced " + value.title + " with " + m.title);
@@ -56861,7 +56874,7 @@ var siteManager = function () {
         });
     };
     siteManager.prototype.getUserById = function (id) {
-        var search = new __WEBPACK_IMPORTED_MODULE_6__models__["User"](0, "None", "/img/404/avatar.png", "/img/404/background.png", "None-profile", {});
+        var search = new __WEBPACK_IMPORTED_MODULE_6__models__["User"](0, "None", "/img/404/avatar.png", "/img/404/background.png", "None-profile", {}, "");
         $.each(this.users, function (key, value) {
             if (value.id == id) {
                 search = value;
@@ -78742,6 +78755,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   props: ['commentlist', 'loggeduserid', 'currentmedia', 'level'],
   name: 'comments',
   methods: {
+    refreshMedia: function refreshMedia() {
+      var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshMedia', this.currentmedia.id);
+    },
     sendComment: function sendComment() {
       var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
       $.ajax({
@@ -78772,7 +78789,22 @@ var render = function() {
     [
       _vm.level == 0
         ? _c("div", [
-            _c("h4", [_vm._v("Comments")]),
+            _c("h4", [
+              _vm._v("Comments "),
+              _c(
+                "a",
+                {
+                  staticClass: "btn btn-sm",
+                  on: {
+                    click: function($event) {
+                      _vm.refreshMedia()
+                    }
+                  }
+                },
+                [_c("vs-icon", { attrs: { icon: "refresh" } })],
+                1
+              )
+            ]),
             _vm._v(" "),
             _vm.loggeduserid != 0
               ? _c(
@@ -79676,14 +79708,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   updated: function updated() {
     this.$nextTick(function () {
-      if (this.$refs.croppieRef != undefined & this.editpicloaded == false) {
+      if (this.$refs.croppieAvatarRef != undefined & this.editpicloaded == false) {
         this.editpicloaded = true;
         console.log("redo picture");
         this.$refs.croppieAvatarRef.bind({
-          url: this.currentuser.avatar_source
+          url: this.currentuser.avatar
         });
         this.$refs.croppieBackgroundRef.bind({
-          url: this.currentuser.background_source
+          url: this.currentuser.background
         });
       }
     });
@@ -79713,7 +79745,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     submitAction: function submitAction() {
       var that = this;
       $.ajax({
-        url: '/internal-api/media/' + this.currentmedia.title,
+        url: '/internal-api/profiles/edit/' + this.currentuser.id,
         type: 'POST',
         data: new FormData($("#theForm")[0]),
         cache: false,
@@ -79722,7 +79754,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         complete: function complete(res) {
           if (res.status == 200) {
           }
-          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('videoEdited', [that.currentmedia.title, res.responseJSON]);
+          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('userEdited', '');
         }
       });
       return false;
@@ -82641,14 +82673,19 @@ module.exports = function listToStyles (parentId, list) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
- __webpack_exports__["default"] = (_defineProperty({
+ __webpack_exports__["default"] = ({
   methods: {
     searching: function searching() {
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshSearch', "");
     },
     emitGetNewMedias: function emitGetNewMedias() {
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('getNewMedias', "");
+    },
+    emitRefreshMedias: function emitRefreshMedias() {
+      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshMedias', "");
+    },
+    emitLoadAllMedias: function emitLoadAllMedias() {
+      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadAllMedias', "");
     }
   },
   props: ['currentuser', 'medias', 'users', 'tags'],
@@ -82659,14 +82696,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
     };
   }
-}, 'methods', {
-  emitRefreshMedias: function emitRefreshMedias() {
-    __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshMedias', "");
-  },
-  emitLoadAllMedias: function emitLoadAllMedias() {
-    __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadAllMedias', "");
-  }
-}));
+});
  }),
  (function(module, exports, __webpack_require__) {
 var render = function() {

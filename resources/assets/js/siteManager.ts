@@ -79,6 +79,10 @@ class siteManager {
       theVue.alert("Look for new medias..")
       that.receiveMedias()
     });
+    eventBus.$on('userEdited', title => {
+      theVue.alert("Look for new users..")
+      that.receiveUsers(true)
+    });
     eventBus.$on('refreshMedias', title => {
       theVue.canloadmore = true;
       that.catchedTagMedias=[];
@@ -104,6 +108,10 @@ class siteManager {
     eventBus.$on('commentCreated', json => {
       that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title)
       theVue.alert("Comment created","success")
+    });
+    eventBus.$on('refreshMedia', id => {
+      that.receiveMediaByName(that.findMediaById(Number(id)).title)
+      theVue.alert("Media refreshed","success")
     });
     eventBus.$on('videoDeleted', title => {
       theVue.alert("Video "+title+" deleted","success")
@@ -231,6 +239,7 @@ class siteManager {
       }
      comment.childs[key].user = that.getUserById(value.user_id)
     });
+    comment.childs = comment.childs.sort(MediaSorter.byCreatedAtComments)
     return comment;
   }
   getCurrentSite(){
@@ -242,12 +251,15 @@ class siteManager {
       if((that.users==undefined)||(forceUpdate)){
       that.users = [];
       if(that.loggedUserId==0){
-        that.currentUser = new User(0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "","");
+        that.currentUser = new User(0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "","","");
       }
         $.each( data.data, function( key, value ) {
-          var u = new User(value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds);
+          var u = new User(value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds,value.tagString);
           if(u.id==that.loggedUserId){
             that.currentUser=u;
+            if(theVue!=undefined){
+              theVue.currentuser = u;
+            }
           }
           that.users.push(u);
         });
@@ -324,7 +336,8 @@ class siteManager {
           m.comments[key1].user = that.getUserById(value1.user_id)
         });
         if(m!=that.medias[theKey]){
-          that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
+          m.comments = m.comments.sort(MediaSorter.byCreatedAtComments);
+          that.medias[theKey] = m;
           theVue.medias=that.medias
         }
       }
@@ -361,9 +374,7 @@ class siteManager {
     var returnMedia = undefined;
     let that = this;
     $.each(that.medias, function(key,value){
-      console.log("found the value:"+value.id+" vs "+id)
       if(value.id==id){
-        console.log("found the value:"+value.id)
         returnMedia=value;
       }
     });
@@ -411,6 +422,7 @@ class siteManager {
               console.log(that.fillUser(value1))
               m.comments[key1].user = that.getUserById(value1.user_id)
             });
+            m.comments = m.comments.sort(MediaSorter.byCreatedAtComments);
             if(m!=value){
               replaceCount++;
               console.log("Media replaced "+value.title+" with "+m.title)
@@ -457,7 +469,7 @@ class siteManager {
     });
   }
   getUserById(id:number):User{
-    var search:User = new User(0,"None","/img/404/avatar.png","/img/404/background.png","None-profile",{})
+    var search:User = new User(0,"None","/img/404/avatar.png","/img/404/background.png","None-profile",{},"")
     $.each( this.users, function( key, value ) {
       if(value.id == id){
         search = value;

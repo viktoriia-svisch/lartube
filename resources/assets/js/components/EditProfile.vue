@@ -70,14 +70,14 @@
     },
     updated: function () {
       this.$nextTick(function () {
-        if(this.$refs.croppieRef!=undefined&this.editpicloaded==false){
+        if(this.$refs.croppieAvatarRef!=undefined&this.editpicloaded==false){
           this.editpicloaded=true;
           console.log("redo picture")
           this.$refs.croppieAvatarRef.bind({
-            url: this.currentuser.avatar_source,
+            url: this.currentuser.avatar,
           })
           this.$refs.croppieBackgroundRef.bind({
-            url: this.currentuser.background_source,
+            url: this.currentuser.background,
           })
         }
       })
@@ -108,7 +108,7 @@
       submitAction() {
         let that = this;
         $.ajax({
-            url: '/internal-api/media/'+this.currentmedia.title,
+            url: '/internal-api/profiles/edit/'+this.currentuser.id,
             type: 'POST',
             data: new FormData($("#theForm")[0]),
             cache: false,
@@ -117,7 +117,7 @@
             complete : function(res) {
               if(res.status==200){
                               }
-              eventBus.$emit('videoEdited',[that.currentmedia.title,res.responseJSON])
+              eventBus.$emit('userEdited','')
                                     }
         });
         return false;
