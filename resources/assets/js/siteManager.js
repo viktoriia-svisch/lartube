@@ -335,8 +335,7 @@ var siteManager =  (function () {
                     m.comments[key1].user = that.getUserById(value1.user_id);
                 });
                 if (m != that.medias[theKey]) {
-                    m.comments = m.comments.sort(MediaSorter.byCreatedAtComments);
-                    that.medias[theKey] = m;
+                    that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
                     theVue.medias = that.medias;
                 }
             }

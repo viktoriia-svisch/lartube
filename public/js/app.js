@@ -56734,8 +56734,7 @@ var siteManager = function () {
                     m.comments[key1].user = that.getUserById(value1.user_id);
                 });
                 if (m != that.medias[theKey]) {
-                    m.comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
-                    that.medias[theKey] = m;
+                    that.medias[theKey].comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
                     theVue.medias = that.medias;
                 }
             }
