@@ -29,6 +29,7 @@ class Media extends JsonResource
           'likes' => $this->likes(),
           'dislikes' => $this->dislikes(),
           'simpleType' => $this->simpleType(),
+          'techType' => $this->techType(),
           'tags' => $this->tags,
           'tagsIds' => $tagIds,
           'tagString' => $this->tagString(),

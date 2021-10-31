@@ -7175,7 +7175,7 @@ var User = function () {
     return User;
 }();
 var Media = function () {
-    function Media(id, title, description, source, poster_source, duration, simpleType, type, user, user_id, created_at, updated_at, created_at_readable, comments, tags, myLike, likes, dislikes) {
+    function Media(id, title, description, source, poster_source, duration, simpleType, techType, type, user, user_id, created_at, updated_at, created_at_readable, comments, tags, myLike, likes, dislikes) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -7184,6 +7184,7 @@ var Media = function () {
         this.duration = duration;
         this.type = type;
         this.simpleType = simpleType;
+        this.techType = techType;
         this.user = user;
         this.user_id = user_id;
         this.comments = comments;
@@ -56699,7 +56700,7 @@ var siteManager = function () {
                 theVue.tags = this.tags;
             }
             json = json.data;
-            that.medias.unshift(new __WEBPACK_IMPORTED_MODULE_6__models__["Media"](json.id, json.title, json.description, json.source, json.poster_source, json.duration, json.simpleType, json.type, that.getUserById(json.user_id), json.user_id, json.created_at, json.updated_at, json.created_at_readable, json.comments, that.getTagsByIdArray(json.tagsIds), json.myLike, json.likes, json.dislikes));
+            that.medias.unshift(new __WEBPACK_IMPORTED_MODULE_6__models__["Media"](json.id, json.title, json.description, json.source, json.poster_source, json.duration, json.simpleType, json.techType, json.type, that.getUserById(json.user_id), json.user_id, json.created_at, json.updated_at, json.created_at_readable, json.comments, that.getTagsByIdArray(json.tagsIds), json.myLike, json.likes, json.dislikes));
             theVue.medias = that.medias;
             theVue.$router.push('/');
         });
@@ -56720,7 +56721,7 @@ var siteManager = function () {
             });
             data = data.data;
             if (that.findMediaByName(mediaName) == undefined) {
-                var m = new __WEBPACK_IMPORTED_MODULE_6__models__["Media"](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes);
+                var m = new __WEBPACK_IMPORTED_MODULE_6__models__["Media"](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes);
                 $.each(m.comments, function (key1, value1) {
                     m.comments[key1].user = that.getUserById(value1.user_id);
                 });
@@ -56728,7 +56729,7 @@ var siteManager = function () {
                 that.medias = theMediaSorter.sort(that.medias);
                 theVue.medias = that.medias;
             } else {
-                var m = new __WEBPACK_IMPORTED_MODULE_6__models__["Media"](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes);
+                var m = new __WEBPACK_IMPORTED_MODULE_6__models__["Media"](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes);
                 $.each(m.comments, function (key1, value1) {
                     m.comments[key1] = that.fillUser(value1);
                     m.comments[key1].user = that.getUserById(value1.user_id);
@@ -56810,7 +56811,7 @@ var siteManager = function () {
             $.each(data.data, function (key, value) {
                 console.log(that.findMediaById(value.id));
                 if (that.findMediaById(value.id) == undefined) {
-                    var m = new __WEBPACK_IMPORTED_MODULE_6__models__["Media"](value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, that.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes);
+                    var m = new __WEBPACK_IMPORTED_MODULE_6__models__["Media"](value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, that.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes);
                     $.each(m.comments, function (key1, value1) {
                         m.comments[key1] = that.fillUser(value1);
                         console.log(that.fillUser(value1));
@@ -56820,7 +56821,7 @@ var siteManager = function () {
                     m.comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
                     that.medias.push(m);
                 } else {
-                    var m = new __WEBPACK_IMPORTED_MODULE_6__models__["Media"](value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, that.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes);
+                    var m = new __WEBPACK_IMPORTED_MODULE_6__models__["Media"](value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, that.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes);
                     $.each(m.comments, function (key1, value1) {
                         m.comments[key1] = that.fillUser(value1);
                         console.log(that.fillUser(value1));
@@ -78592,8 +78593,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.likes = this.currentmedia.likes;
         this.dislikes = this.currentmedia.dislikes;
         this.inited = true;
-        if (this.currentmedia.simpleType == "audio") {
-          console.log("init visualizer");
+        if (this.currentmedia.techType == "audio") {
         }
         if (this.currentmedia.type == "torrentAudio" || this.currentmedia.type == "torrentVideo") {
           var WebTorrent = __webpack_require__(91);
@@ -79049,7 +79049,7 @@ var render = function() {
         [
           _c("div", { staticClass: "row" }, [
             _c("div", { staticClass: "col-xs-12 col-sm-12 col-md-12" }, [
-              _vm.currentmedia.simpleType == "audio"
+              _vm.currentmedia.techType == "audio"
                 ? _c("div", { staticClass: "text-center" }, [
                     _c("p", [
                       _c("img", {
@@ -79058,7 +79058,7 @@ var render = function() {
                       })
                     ]),
                     _vm._v(" "),
-                    _vm.currentmedia.simpleType == "audio"
+                    _vm.currentmedia.techType == "audio"
                       ? _c(
                           "audio",
                           {
@@ -79085,7 +79085,7 @@ var render = function() {
                   ])
                 : _vm._e(),
               _vm._v(" "),
-              _vm.currentmedia.simpleType == "video"
+              _vm.currentmedia.techType == "video"
                 ? _c(
                     "video",
                     {
@@ -79107,7 +79107,7 @@ var render = function() {
                   )
                 : _vm._e(),
               _vm._v(" "),
-              _vm.currentmedia.simpleType == "torrent"
+              _vm.currentmedia.techType == "torrent"
                 ? _c("video", {
                     staticClass: "col-12",
                     attrs: {
@@ -79132,7 +79132,7 @@ var render = function() {
                 "div",
                 { staticClass: "float-right" },
                 [
-                  _vm.currentmedia.simpleType == "audio"
+                  _vm.currentmedia.techType == "audio"
                     ? _c("span", [
                         _vm._v("visualizer "),
                         _c(
@@ -80014,19 +80014,6 @@ var render = function() {
         }
       },
       [_vm._v("Save")]
-    ),
-    _vm._v(" "),
-    _c(
-      "button",
-      {
-        staticClass: "btn btn-danger",
-        on: {
-          click: function($event) {
-            _vm.deleteAction()
-          }
-        }
-      },
-      [_vm._v("Delete")]
     )
   ])
 }
@@ -81868,9 +81855,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
           audioCount = 0,
           torrentCount = 0;
       this.medias.forEach(function (item, index) {
-        if (item.simpleType == "video") {
+        if (item.techType == "video") {
           videoCount++;
-        } else if (item.simpleType == "audio") {
+        } else if (item.techType == "audio") {
           audioCount++;
         } else {
           torrentCount++;
@@ -81880,7 +81867,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         chart: {
           width: 380
         },
-        labels: ["Video", "Audio", "Torrent"],
+        labels: ["Video", "Audio"],
         responsive: [{
           breakpoint: 480,
           options: {
@@ -81896,18 +81883,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     series2: function series2() {
       var videoCount = 0,
-          audioCount = 0,
-          torrentCount = 0;
+          audioCount = 0;
       this.medias.forEach(function (item, index) {
         if (item.simpleType == "video") {
           videoCount++;
         } else if (item.simpleType == "audio") {
           audioCount++;
-        } else {
-          torrentCount++;
         }
       });
-      return [videoCount, audioCount, torrentCount];
+      return [videoCount, audioCount];
     }
   }
 });
@@ -82023,7 +82007,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     currentmedia: function currentmedia() {
       var m = this.getCurrentMedia();
       if (m == undefined) {
-        return new __WEBPACK_IMPORTED_MODULE_1__models__["Media"](0, "None", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, 0, 0);
+        return new __WEBPACK_IMPORTED_MODULE_1__models__["Media"](0, "None", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, 0, 0);
       }
       return m;
     }
@@ -82865,7 +82849,7 @@ var render = function() {
                   }
                 }
               },
-              [_vm._v("Check 4 new")]
+              [_vm._v("Check 4 new medias")]
             )
           ]),
           _vm._v(" "),
@@ -82885,72 +82869,6 @@ var render = function() {
               [_vm._v("More")]
             )
           ]),
-          _vm._v(" "),
-          _c(
-            "vs-sidebar-group",
-            { attrs: { title: "Aplication" } },
-            [
-              _c(
-                "vs-sidebar-item",
-                { attrs: { index: "1", icon: "question_answer" } },
-                [_vm._v("\n          Dashboard\n        ")]
-              ),
-              _vm._v(" "),
-              _c(
-                "vs-sidebar-group",
-                { attrs: { title: "Store" } },
-                [
-                  _c(
-                    "vs-sidebar-item",
-                    { attrs: { index: "2.1", icon: "store" } },
-                    [_vm._v("\n            Store\n          ")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "vs-sidebar-item",
-                    { attrs: { index: "2.2", icon: "nature_people" } },
-                    [_vm._v("\n            Nature\n          ")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "vs-sidebar-item",
-                    { attrs: { index: "2.3", icon: "style" } },
-                    [_vm._v("\n            Style\n          ")]
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c("vs-sidebar-item", { attrs: { index: "2", icon: "gavel" } }, [
-                _vm._v("\n          History\n        ")
-              ]),
-              _vm._v(" "),
-              _c("vs-sidebar-item", { attrs: { index: "3", icon: "https" } }, [
-                _vm._v("\n          security\n        ")
-              ]),
-              _vm._v(" "),
-              _c("vs-sidebar-item", { attrs: { index: "4", icon: "help" } }, [
-                _vm._v("\n          Help\n        ")
-              ])
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c("vs-divider", { attrs: { icon: "person", position: "left" } }, [
-            _vm._v("\n        User\n      ")
-          ]),
-          _vm._v(" "),
-          _c(
-            "vs-sidebar-item",
-            { attrs: { index: "5", icon: "verified_user" } },
-            [_vm._v("\n        Configurations\n      ")]
-          ),
-          _vm._v(" "),
-          _c(
-            "vs-sidebar-item",
-            { attrs: { index: "6", icon: "account_box" } },
-            [_vm._v("\n        Perfile\n      ")]
-          ),
           _vm._v(" "),
           _c(
             "div",

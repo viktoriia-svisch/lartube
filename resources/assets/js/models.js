@@ -15,7 +15,7 @@ var User =  (function () {
 }());
 export { User };
 var Media =  (function () {
-    function Media(id, title, description, source, poster_source, duration, simpleType, type, user, user_id, created_at, updated_at, created_at_readable, comments, tags, myLike, likes, dislikes) {
+    function Media(id, title, description, source, poster_source, duration, simpleType, techType, type, user, user_id, created_at, updated_at, created_at_readable, comments, tags, myLike, likes, dislikes) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -24,6 +24,7 @@ var Media =  (function () {
         this.duration = duration;
         this.type = type;
         this.simpleType = simpleType;
+        this.techType = techType;
         this.user = user;
         this.user_id = user_id;
         this.comments = comments;

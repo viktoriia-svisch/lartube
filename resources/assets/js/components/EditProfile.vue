@@ -52,7 +52,7 @@
           </div>
       </div>
     </form>
-    <button @click="submitAction();" class="btn btn-success" >Save</button> <button @click="deleteAction();" class="btn btn-danger" >Delete</button>
+    <button @click="submitAction();" class="btn btn-success" >Save</button> 
     </div>
 </template>
 <script>
