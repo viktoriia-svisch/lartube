@@ -41,6 +41,13 @@
         <input id="backgroundUpload" @change="backgroundChange()" name="backgroundf" type="file">
         <div id="background"></div>
     </div>
+    <div class="form-group">
+        <label for="public" class="col-md-4 col-form-label text-md-right">Public</label>
+        <div class="col-md-6">
+            <vs-switch v-model="public"/>
+            <input type="hidden" name="public" :value="Number(public)" />
+        </div>
+    </div>
       <div class="form-group">
           <label>Biographie:</label>
           <textarea placeholder="Media-description" id="addMediaDescription" class="form-control" :value="currentuser.bio" name="description" cols="50" rows="10"></textarea>
@@ -72,6 +79,7 @@
       this.$nextTick(function () {
         if(this.$refs.croppieAvatarRef!=undefined&this.editpicloaded==false){
           this.editpicloaded=true;
+          this.public = this.currentuser.publicState;
           console.log("redo picture")
           this.$refs.croppieAvatarRef.bind({
             url: this.currentuser.avatar,
@@ -176,6 +184,7 @@ rotateBackground(rotationAngle,event) {
         dismisscountdown: 0,
         alertType: 'warning',
         alertMsg: '',
+        public: false,
         editpicloaded:false,
         showdismissiblealert: false,
         avatarCropped: null,

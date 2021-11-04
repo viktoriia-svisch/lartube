@@ -10,7 +10,6 @@ import VueApexCharts from 'vue-apexcharts';
 import Vuesax from 'vuesax';
 import 'material-icons/iconfont/material-icons.css';
 import 'vuesax/dist/vuesax.css'; 
-import AudioVisual from 'vue-audio-visual';
 var app;
 var theVue;
 var searchDelay;
@@ -33,7 +32,6 @@ var siteManager =  (function () {
         Vue.use(VueCroppie);
         Vue.use(VueApexCharts);
         Vue.use(Vuesax);
-        Vue.use(AudioVisual);
         Vue.component('apexchart', VueApexCharts);
         var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
         var player = Vue.component('player', require("./components/MediaComponent.vue"));
@@ -249,10 +247,10 @@ var siteManager =  (function () {
             if ((that.users == undefined) || (forceUpdate)) {
                 that.users = [];
                 if (that.loggedUserId == 0) {
-                    that.currentUser = new User(0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "");
+                    that.currentUser = new User(0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "", false);
                 }
                 $.each(data.data, function (key, value) {
-                    var u = new User(value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds, value.tagString);
+                    var u = new User(value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds, value.tagString, value.public);
                     if (u.id == that.loggedUserId) {
                         that.currentUser = u;
                         if (theVue != undefined) {
@@ -471,7 +469,7 @@ var siteManager =  (function () {
         });
     };
     siteManager.prototype.getUserById = function (id) {
-        var search = new User(0, "None", "/img/404/avatar.png", "/img/404/background.png", "None-profile", {}, "");
+        var search = new User(0, "None", "/img/404/avatar.png", "/img/404/background.png", "None-profile", {}, "", false);
         $.each(this.users, function (key, value) {
             if (value.id == id) {
                 search = value;

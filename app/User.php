@@ -16,7 +16,7 @@ class User extends Authenticatable
   use Notifiable;
   use SoftDeletes;
     protected $fillable = [
-        'id','name', 'email', 'password', 'bio', 'avatar_source', 'background_source'
+        'id','name', 'email', 'password','public', 'bio', 'avatar_source', 'background_source'
     ];
     protected $hidden = [
         'password', 'remember_token',

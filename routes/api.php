@@ -14,7 +14,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('/user', function () {
-    return UserResource::collection(User::all());
+    return UserResource::collection(User::where("public","=",1)->get());
 });
 Route::get('/user/{id}', function ($id) {
     return new UserResource(User::find($id));
