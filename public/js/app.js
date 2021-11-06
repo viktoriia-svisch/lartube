@@ -56400,6 +56400,16 @@ var siteManager = function () {
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('loadMore', function (title) {
             that.receiveMedias(that.nextLink);
         });
+        window.onscroll = function () {
+            var d = document.documentElement;
+            var offset = d.scrollTop + window.innerHeight;
+            var height = d.offsetHeight;
+            if (offset >= height) {
+                if (that.nextLink != null) {
+                    that.receiveMedias(that.nextLink);
+                }
+            }
+        };
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('refreshSearch', function (title) {
             theVue.searching();
         });
@@ -56490,6 +56500,15 @@ var siteManager = function () {
                 }
             }
         }).$mount('#app2');
+        if (localStorage.getItem('cookiePolicy') != "read") {
+            theVue.$vs.notify({
+                title: 'We use cookies and the offline-storage',
+                text: 'Some of your informations are saved in your browser or on the server (mostly in case of login).<br /> With a Ok you acceppt this. <br /> <a class="btn btn-success" onclick="localStorage.setItem(\'cookiePolicy\',\'read\');">Ok</a>',
+                color: 'primary',
+                fixed: true,
+                click: function click() {}
+            });
+        }
     };
     siteManager.prototype.fillUser = function (comment) {
         var that = this;
@@ -77329,18 +77348,9 @@ var render = function() {
     ),
     _vm._v(" "),
     _vm.canloadmore
-      ? _c(
-          "button",
-          {
-            staticClass: "btn btn-danger",
-            on: {
-              click: function($event) {
-                _vm.emitLoadMore()
-              }
-            }
-          },
-          [_vm._v("Load more")]
-        )
+      ? _c("p", { staticClass: "text-center" }, [
+          _vm._v("Scroll to bottom to load more")
+        ])
       : _vm._e()
   ])
 }
@@ -77499,97 +77509,133 @@ var render = function() {
                       "div",
                       {
                         staticClass: "carousel-caption",
-                        staticStyle: {
-                          color: "black",
-                          background: "lightgrey",
-                          opacity: "0.9"
-                        }
+                        staticStyle: { color: "black", opacity: "0.9" }
                       },
                       [
-                        _c("h3", [
-                          _vm._v(
-                            _vm._s(item.title) +
-                              " (" +
-                              _vm._s(item.created_at_readable) +
-                              ")"
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("p", [
-                          _vm._v(_vm._s(item.description)),
-                          _c(
-                            "span",
-                            { staticClass: "float-right" },
-                            [
-                              _c(
-                                "router-link",
-                                {
-                                  staticClass: "btn btn-primary mr-2",
-                                  attrs: { to: "/media/" + item.title }
-                                },
-                                [_vm._v("Play")]
-                              )
-                            ],
-                            1
-                          )
-                        ]),
-                        _vm._v(" "),
                         _c(
-                          "div",
-                          { staticClass: "card-footer" },
+                          "vs-row",
+                          { attrs: { "vs-justify": "center" } },
                           [
-                            _vm._l(item.tags, function(tag) {
-                              return _c(
-                                "span",
-                                [
+                            _c(
+                              "vs-col",
+                              {
+                                attrs: {
+                                  type: "flex",
+                                  "vs-justify": "center",
+                                  "vs-align": "center",
+                                  "vs-w": "6"
+                                }
+                              },
+                              [
+                                _c("vs-card", [
                                   _c(
-                                    "router-link",
-                                    { attrs: { to: "/tags/" + tag.name } },
+                                    "div",
+                                    {
+                                      attrs: { slot: "header" },
+                                      slot: "header"
+                                    },
+                                    [
+                                      _c("h3", [_vm._v(_vm._s(item.title))]),
+                                      _vm._v(" "),
+                                      _c("h5", [
+                                        _vm._v(
+                                          "(" +
+                                            _vm._s(item.created_at_readable) +
+                                            ")"
+                                        )
+                                      ])
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("div", [
+                                    _c("div", [
+                                      _vm._v(_vm._s(item.description))
+                                    ]),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      _vm._l(item.tags, function(tag) {
+                                        return _c(
+                                          "span",
+                                          [
+                                            _c(
+                                              "router-link",
+                                              {
+                                                attrs: {
+                                                  to: "/tags/" + tag.name
+                                                }
+                                              },
+                                              [
+                                                _c(
+                                                  "vs-chip",
+                                                  {
+                                                    attrs: { color: "primary" }
+                                                  },
+                                                  [
+                                                    _c("vs-avatar", {
+                                                      attrs: { icon: "tag" }
+                                                    }),
+                                                    _vm._v(
+                                                      "\n          " +
+                                                        _vm._s(tag.name) +
+                                                        "\n        "
+                                                    )
+                                                  ],
+                                                  1
+                                                )
+                                              ],
+                                              1
+                                            )
+                                          ],
+                                          1
+                                        )
+                                      })
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    {
+                                      attrs: { slot: "footer" },
+                                      slot: "footer"
+                                    },
                                     [
                                       _c(
-                                        "vs-chip",
-                                        { attrs: { color: "primary" } },
+                                        "vs-row",
+                                        { attrs: { "vs-justify": "flex-end" } },
                                         [
-                                          _c("vs-avatar", {
-                                            attrs: { icon: "tag" }
-                                          }),
-                                          _vm._v(
-                                            "\n    " + _vm._s(tag.name) + "\n  "
-                                          )
+                                          _vm.loggeduserid == item.user.id
+                                            ? _c("vs-button", {
+                                                attrs: {
+                                                  icon: "settings",
+                                                  title: "Edit media",
+                                                  to: "/mediaedit/" + item.title
+                                                }
+                                              })
+                                            : _vm._e(),
+                                          _vm._v(" "),
+                                          _c("vs-button", {
+                                            attrs: {
+                                              icon: "play_circle_filled",
+                                              title: "Play",
+                                              to: "/media/" + item.title
+                                            }
+                                          })
                                         ],
                                         1
                                       )
                                     ],
                                     1
                                   )
-                                ],
-                                1
-                              )
-                            }),
-                            _vm.loggeduserid == item.user.id
-                              ? _c(
-                                  "span",
-                                  { staticClass: "float-right" },
-                                  [
-                                    _c(
-                                      "router-link",
-                                      {
-                                        staticClass:
-                                          "btn btn-sm btn-info float-right",
-                                        attrs: {
-                                          to: "/mediaedit/" + item.title
-                                        }
-                                      },
-                                      [_vm._v("Edit")]
-                                    )
-                                  ],
-                                  1
-                                )
-                              : _vm._e()
+                                ])
+                              ],
+                              1
+                            )
                           ],
-                          2
+                          1
                         )
-                      ]
+                      ],
+                      1
                     )
                   ]
                 )
@@ -77714,6 +77760,30 @@ console.log(emptyMedia);
     'comments': __WEBPACK_IMPORTED_MODULE_2__Comments___default.a
   },
   methods: {
+    visualFullScreen: function visualFullScreen() {
+      if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      } else {
+        var element = $('#audioVisual')[0];
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+          element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) {
+          element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        } else if (element.msRequestFullscreen) {
+          element.msRequestFullscreen();
+        }
+      }
+    },
     visualTypesShort: function visualTypesShort(val) {
       if (val.length > 20) {
         return val.substring(0, 19);
@@ -77726,7 +77796,6 @@ console.log(emptyMedia);
         clearInterval(torrentInterval);
         torrentInterval = undefined;
         if (theTorrent != undefined) {
-          theTorrent.destroy();
         }
       }
       if (this.currentmedia.type == "torrentAudio" || this.currentmedia.type == "torrentVideo") {
@@ -77766,7 +77835,7 @@ console.log(emptyMedia);
           }
           file.renderTo('video#torrentPlayer');
         });
-      } else if (this.currentmedia.type == 'localAudio') {
+      } else if (this.currentmedia.type == 'localAudio' & this.audiovisualtype != 'Poster') {
         $('#audioPlayer')[0].crossOrigin = 'Anonymous';
         audioCtx = new AudioContext();
         audioNode = audioCtx.createMediaElementSource($('#audioPlayer')[0]);
@@ -77862,6 +77931,14 @@ console.log(emptyMedia);
       this.initTorrent();
     },
     audiovisualtype: function audiovisualtype(val) {
+      if (torrentInterval != undefined & this.audiovisualtype == 'Poster') {
+        clearInterval(torrentInterval);
+      }
+      this.initTorrent();
+      localStorage.setItem('audioVisualType', this.audiovisualtype);
+    },
+    audioVisualChangeSeconds: function audioVisualChangeSeconds(val) {
+      localStorage.setItem('audioVisualChangeSeconds', this.audioVisualChangeSeconds);
     }
   },
   computed: {
@@ -77874,6 +77951,7 @@ console.log(emptyMedia);
   },
   updated: function updated() {
     this.$nextTick(function () {
+      this.currentmedia = this.getCurrentMedia();
       this.initTorrent();
       if (this.currentmedia != undefined && this.inited == false) {
         this.mylike = Number(this.currentmedia.myLike);
@@ -77889,6 +77967,12 @@ console.log(emptyMedia);
       this.autoplay = true;
     }
     this.currentmedia = this.getCurrentMedia();
+    if (localStorage.getItem('audioVisualType') != undefined & localStorage.getItem('audioVisualType') != '') {
+      this.audiovisualtype = localStorage.getItem('audioVisualType');
+    }
+    if (localStorage.getItem('audioVisualChangeSeconds') != undefined & localStorage.getItem('audioVisualChangeSeconds') != '') {
+      this.audioVisualChangeSeconds = localStorage.getItem('audioVisualChangeSeconds');
+    }
   },
   data: function data() {
     return {
@@ -77901,6 +77985,7 @@ console.log(emptyMedia);
       currentmedia: emptyMedia,
       originalLikes: 0,
       originalDislikes: 0,
+      audioVisualChangeSeconds: 0.0,
       autoplay: false,
       lasttorrentid: '',
       audiovisualtype: 'Flexi - alien fish pond',
@@ -84938,7 +85023,9 @@ var render = function() {
               _vm.currentmedia.techType == "audio"
                 ? _c("div", { staticClass: "text-center" }, [
                     _c("p", [
-                      _vm.currentmedia.type == "directAudio"
+                      (_vm.currentmedia.type == "directAudio") |
+                      ((_vm.currentmedia.type == "localAudio") &
+                        (_vm.audiovisualtype == "Poster"))
                         ? _c("img", {
                             staticClass: "img-fluid",
                             attrs: { src: _vm.currentmedia.poster_source }
@@ -84946,7 +85033,8 @@ var render = function() {
                         : _vm._e()
                     ]),
                     _vm._v(" "),
-                    _vm.currentmedia.type == "localAudio"
+                    (_vm.currentmedia.type == "localAudio") &
+                    (_vm.audiovisualtype != "Poster")
                       ? _c("canvas", {
                           staticClass: "col-12",
                           staticStyle: { height: "400px" },
@@ -84977,6 +85065,26 @@ var render = function() {
                               }
                             })
                           ]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.currentmedia.type == "localAudio"
+                      ? _c(
+                          "a",
+                          {
+                            staticClass: "btn btn-primary",
+                            on: {
+                              click: function($event) {
+                                _vm.visualFullScreen()
+                              }
+                            }
+                          },
+                          [
+                            _c("vs-icon", {
+                              attrs: { size: "big", icon: "fullscreen" }
+                            })
+                          ],
+                          1
                         )
                       : _vm._e(),
                     _vm._v(" "),
@@ -85056,7 +85164,27 @@ var render = function() {
                 "div",
                 { staticClass: "float-right" },
                 [
-                  _vm.currentmedia.techType == "audio"
+                  _c(
+                    "span",
+                    { staticClass: "float-left" },
+                    [
+                      _vm.currentmedia.type == "localAudio"
+                        ? _c("vs-input-number", {
+                            attrs: { step: 0.1 },
+                            model: {
+                              value: _vm.audioVisualChangeSeconds,
+                              callback: function($$v) {
+                                _vm.audioVisualChangeSeconds = $$v
+                              },
+                              expression: "audioVisualChangeSeconds"
+                            }
+                          })
+                        : _vm._e()
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _vm.currentmedia.type == "localAudio"
                     ? _c("span", [
                         _vm._v("visualizer "),
                         _c(
@@ -85087,22 +85215,30 @@ var render = function() {
                               }
                             }
                           },
-                          _vm._l(_vm.visualPresets, function(
-                            value,
-                            key,
-                            index
-                          ) {
-                            return _c("option", { domProps: { value: key } }, [
-                              _vm._v(_vm._s(_vm.visualTypesShort(key)))
-                            ])
-                          })
+                          [
+                            _c("option", { attrs: { value: "Poster" } }, [
+                              _vm._v("Poster")
+                            ]),
+                            _vm._v(" "),
+                            _vm._l(_vm.visualPresets, function(
+                              value,
+                              key,
+                              index
+                            ) {
+                              return _c(
+                                "option",
+                                { domProps: { value: key } },
+                                [_vm._v(_vm._s(_vm.visualTypesShort(key)))]
+                              )
+                            })
+                          ],
+                          2
                         )
                       ])
                     : _vm._e(),
                   _vm._v(" "),
                   (_vm.torrentdownloadurl != "") &
-                  ((_vm.currentmedia.type == "torrentAudio") |
-                    (_vm.currentmedia.type == "torrentVideo"))
+                  (_vm.currentmedia.techType == "torrent")
                     ? _c(
                         "a",
                         {
@@ -85120,8 +85256,7 @@ var render = function() {
                       )
                     : _vm._e(),
                   _vm._v(" "),
-                  (_vm.currentmedia.type == "torrentAudio") |
-                  (_vm.currentmedia.type == "torrentVideo")
+                  _vm.currentmedia.techType == "torrent"
                     ? _c(
                         "b-btn",
                         {
@@ -85626,9 +85761,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   mounted: function mounted() {
     this.$refs.croppieAvatarRef.bind({
       url: '/img/404/avatar.png'
-    });
-    this.$refs.croppieBackgroundRef.bind({
-      url: '/img/404/background.png'
     });
   },
   updated: function updated() {
@@ -88802,11 +88934,7 @@ var render = function() {
                 ],
                 1
               )
-            : _c("div", [
-                _c("h4", [_vm._v("Hello guest")]),
-                _vm._v(" "),
-                _c("p", [_vm._v("Sign up or in for more interaction")])
-              ]),
+            : _vm._e(),
           _vm._v(" "),
           _c(
             "vs-navbar-item",
@@ -88861,7 +88989,7 @@ var render = function() {
                 ],
                 staticStyle: { cursor: "pointer" }
               },
-              [_vm._v("More")]
+              [_vm._v("Special options")]
             )
           ]),
           _vm._v(" "),

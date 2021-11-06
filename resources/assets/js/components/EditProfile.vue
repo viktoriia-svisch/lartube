@@ -71,10 +71,7 @@
       this.$refs.croppieAvatarRef.bind({
         url: '/img/404/avatar.png',
       })
-      this.$refs.croppieBackgroundRef.bind({
-        url: '/img/404/background.png',
-      })
-    },
+                    },
     updated: function () {
       this.$nextTick(function () {
         if(this.$refs.croppieAvatarRef!=undefined&this.editpicloaded==false){

@@ -17,10 +17,6 @@
           <router-link class="" to="/upload">Upload</router-link>
         </vs-navbar-item>
       </div>
-      <div v-else>
-        <h4>Hello guest</h4>
-        <p>Sign up or in for more interaction</p>
-      </div>
       <vs-navbar-item index="1">
         <router-link class="" to="/">Home</router-link>
       </vs-navbar-item>
@@ -34,7 +30,7 @@
         <a @click="emitGetNewMedias()" style="cursor: pointer;" class="">Check 4 new medias</a>
       </vs-navbar-item>
       <vs-navbar-item index="4">
-      <a v-b-modal.moremodal class="" style="cursor: pointer;" >More</a>
+      <a v-b-modal.moremodal class="" style="cursor: pointer;" >Special options</a>
       </vs-navbar-item>
       <div class="footer-sidebar" slot="footer">
         <vs-button v-if="currentuser.id==0" to="/login" icon="exit_to_app" color="success" type="flat">Login</vs-button>
