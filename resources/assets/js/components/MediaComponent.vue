@@ -14,11 +14,14 @@
       <source id="audioSource" :src="currentmedia.source" type="audio/mp3"></source>
     </audio>
 </div>
-          <video controls :src="currentmedia.source" :poster="currentmedia.poster_source" class="col-12" id="videoPlayer" v-if="currentmedia.techType=='video'" >
+          <vue-plyr v-if="currentmedia.techType=='video'"><video controls :src="currentmedia.source" :poster="currentmedia.poster_source" class="col-12" id="videoPlayer"  >
             <source :src="currentmedia.source" type="video/mp4"></source>
           </video>
-          <video class="col-12" id="torrentPlayer" v-if="currentmedia.techType=='torrent'" controls :poster="currentmedia.poster_source">
+          </vue-plyr>
+          <vue-plyr v-if="currentmedia.techType=='torrent'" >
+          <video class="col-12" id="torrentPlayer" controls :poster="currentmedia.poster_source">
           </video>
+          </vue-plyr>
         </div>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12"></div>
@@ -96,7 +99,7 @@
   import { eventBus } from '../eventBus.js';
   import SingleGalleryField from './SingleGalleryField'
   import Comments from './Comments'
-  import { User, Media, Tag } from '../models';
+    import { User, Media, Tag } from '../models';
   import butterchurn from 'butterchurn';
   import butterchurnPresets from 'butterchurn-presets';
   var emptyMedia = new Media(0,"None","","","","","","","",new User(0,"None","img/404/avatar.png","img/404/background.png","", "", {},false),"","","","","",0,0,0);
@@ -152,15 +155,15 @@
       },
       initTorrent(){
         if(torrentInterval!=undefined){
-          clearInterval(torrentInterval)
-          torrentInterval=undefined
           if(theTorrent!=undefined){
                       }
         }
-            if(this.currentmedia.type=="torrentAudio"||this.currentmedia.type=="torrentVideo"){
+        if(this.currentmedia.techType=="video"){
+                }
+        else if(this.currentmedia.techType=="torrent"){
               let that = this;
               this.lasttorrentid = this.currentmedia.source;
-              client.add(this.currentmedia.source, function (torrent) {
+                          client.add(this.currentmedia.source, function (torrent) {
                 theTorrent = torrent;
                                     var file = torrent.files.find(function (file) {
                     return file.name.endsWith('.mp4')
