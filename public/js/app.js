@@ -87178,99 +87178,110 @@ var render = function() {
               { staticClass: "col-xs-12 col-sm-12 col-md-12" },
               [
                 _vm.currentmedia.techType == "audio"
-                  ? _c("div", { staticClass: "text-center" }, [
-                      _c("p", [
-                        (_vm.currentmedia.type == "directAudio") |
-                        ((_vm.currentmedia.type == "localAudio") &
-                          (_vm.audiovisualtype == "Poster"))
-                          ? _c("img", {
-                              staticClass: "img-fluid",
-                              attrs: { src: _vm.currentmedia.poster_source }
+                  ? _c(
+                      "div",
+                      { staticClass: "text-center" },
+                      [
+                        _c("p", [
+                          (_vm.currentmedia.type == "directAudio") |
+                          ((_vm.currentmedia.type == "localAudio") &
+                            (_vm.audiovisualtype == "Poster"))
+                            ? _c("img", {
+                                staticClass: "img-fluid",
+                                attrs: { src: _vm.currentmedia.poster_source }
+                              })
+                            : _vm._e()
+                        ]),
+                        _vm._v(" "),
+                        (_vm.currentmedia.type == "localAudio") &
+                        (_vm.audiovisualtype != "Poster")
+                          ? _c("canvas", {
+                              staticClass: "col-12",
+                              staticStyle: { height: "400px" },
+                              attrs: { height: "400", id: "audioVisual" }
                             })
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.currentmedia.type == "localAudio"
+                          ? _c("vue-plyr", [
+                              _c(
+                                "audio",
+                                {
+                                  staticClass: "text-center",
+                                  attrs: {
+                                    src: _vm.currentmedia.source,
+                                    id: "audioPlayer",
+                                    preload: "",
+                                    autobuffer: "",
+                                    controls: "",
+                                    poster: _vm.currentmedia.poster_source
+                                  }
+                                },
+                                [
+                                  _c("source", {
+                                    attrs: {
+                                      id: "audioSource",
+                                      src: _vm.currentmedia.source,
+                                      type: "audio/mp3"
+                                    }
+                                  })
+                                ]
+                              )
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.currentmedia.type == "localAudio"
+                          ? _c(
+                              "a",
+                              {
+                                staticClass: "btn btn-primary",
+                                on: {
+                                  click: function($event) {
+                                    _vm.visualFullScreen()
+                                  }
+                                }
+                              },
+                              [
+                                _c("vs-icon", {
+                                  attrs: { size: "big", icon: "fullscreen" }
+                                })
+                              ],
+                              1
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.currentmedia.type == "directAudio"
+                          ? _c("vue-plyr", [
+                              _vm.currentmedia.type == "directAudio"
+                                ? _c(
+                                    "audio",
+                                    {
+                                      staticClass: "text-center",
+                                      attrs: {
+                                        src: _vm.currentmedia.source,
+                                        id: "audioPlayer222",
+                                        preload: "",
+                                        autobuffer: "",
+                                        controls: "",
+                                        poster: _vm.currentmedia.poster_source
+                                      }
+                                    },
+                                    [
+                                      _c("source", {
+                                        attrs: {
+                                          id: "audioSource",
+                                          src: _vm.currentmedia.source,
+                                          type: "audio/mp3"
+                                        }
+                                      })
+                                    ]
+                                  )
+                                : _vm._e()
+                            ])
                           : _vm._e()
-                      ]),
-                      _vm._v(" "),
-                      (_vm.currentmedia.type == "localAudio") &
-                      (_vm.audiovisualtype != "Poster")
-                        ? _c("canvas", {
-                            staticClass: "col-12",
-                            staticStyle: { height: "400px" },
-                            attrs: { height: "400", id: "audioVisual" }
-                          })
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _vm.currentmedia.type == "localAudio"
-                        ? _c(
-                            "audio",
-                            {
-                              staticClass: "text-center",
-                              attrs: {
-                                src: _vm.currentmedia.source,
-                                id: "audioPlayer",
-                                preload: "",
-                                autobuffer: "",
-                                controls: "",
-                                poster: _vm.currentmedia.poster_source
-                              }
-                            },
-                            [
-                              _c("source", {
-                                attrs: {
-                                  id: "audioSource",
-                                  src: _vm.currentmedia.source,
-                                  type: "audio/mp3"
-                                }
-                              })
-                            ]
-                          )
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _vm.currentmedia.type == "localAudio"
-                        ? _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-primary",
-                              on: {
-                                click: function($event) {
-                                  _vm.visualFullScreen()
-                                }
-                              }
-                            },
-                            [
-                              _c("vs-icon", {
-                                attrs: { size: "big", icon: "fullscreen" }
-                              })
-                            ],
-                            1
-                          )
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _vm.currentmedia.type == "directAudio"
-                        ? _c(
-                            "audio",
-                            {
-                              staticClass: "text-center",
-                              attrs: {
-                                src: _vm.currentmedia.source,
-                                id: "audioPlayer222",
-                                preload: "",
-                                autobuffer: "",
-                                controls: "",
-                                poster: _vm.currentmedia.poster_source
-                              }
-                            },
-                            [
-                              _c("source", {
-                                attrs: {
-                                  id: "audioSource",
-                                  src: _vm.currentmedia.source,
-                                  type: "audio/mp3"
-                                }
-                              })
-                            ]
-                          )
-                        : _vm._e()
-                    ])
+                      ],
+                      1
+                    )
                   : _vm._e(),
                 _vm._v(" "),
                 _vm.currentmedia.techType == "video"
