@@ -79947,12 +79947,17 @@ console.log(emptyMedia);
       }
     },
     initTorrent: function initTorrent() {
+      console.log("run init");
       if (torrentInterval != undefined) {
         if (theTorrent != undefined) {
+          theTorrent.destroy();
         }
       }
       if (this.currentmedia.techType == "video") {
+        this.inited = true;
       } else if (this.currentmedia.techType == "torrent") {
+        this.inited = true;
+        console.log("run init for torrent");
         var that = this;
         this.lasttorrentid = this.currentmedia.source;
         client.add(this.currentmedia.source, function (torrent) {
@@ -79990,6 +79995,7 @@ console.log(emptyMedia);
           file.renderTo('video#torrentPlayer');
         });
       } else if (this.currentmedia.type == 'localAudio' & this.audiovisualtype != 'Poster') {
+        this.inited = true;
         $('#audioPlayer')[0].crossOrigin = 'Anonymous';
         audioCtx = new AudioContext();
         audioNode = audioCtx.createMediaElementSource($('#audioPlayer')[0]);
@@ -80081,14 +80087,11 @@ console.log(emptyMedia);
   },
   watch: {
     '$route.params.currentTitle': function $routeParamsCurrentTitle(val) {
+      this.inited = false;
       this.currentmedia = this.getCurrentMedia();
       this.initTorrent();
     },
     audiovisualtype: function audiovisualtype(val) {
-      if (torrentInterval != undefined & this.audiovisualtype == 'Poster') {
-        clearInterval(torrentInterval);
-      }
-      this.initTorrent();
       localStorage.setItem('audioVisualType', this.audiovisualtype);
     },
     audioVisualChangeSeconds: function audioVisualChangeSeconds(val) {
@@ -80105,14 +80108,14 @@ console.log(emptyMedia);
   },
   updated: function updated() {
     this.$nextTick(function () {
-      this.currentmedia = this.getCurrentMedia();
-      this.initTorrent();
       if (this.currentmedia != undefined && this.inited == false) {
+        this.currentmedia = this.getCurrentMedia();
+        this.initTorrent();
         this.mylike = Number(this.currentmedia.myLike);
         this.likes = this.currentmedia.likes;
         this.dislikes = this.currentmedia.dislikes;
-        this.inited = true;
-        if (this.currentmedia.techType == "audio") {}
+        if (this.currentmedia.techType == "audio") {
+        }
       }
     });
   },

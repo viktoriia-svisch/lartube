@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Resources;
 use App\Http\Resources\Comment as CommentResource;
+use App\Http\Resources\Track as TrackResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 class Media extends JsonResource
 {
@@ -34,6 +35,7 @@ class Media extends JsonResource
           'tagsIds' => $tagIds,
           'tagString' => $this->tagString(),
           'user_id' => $this->user_id,
+          'tracks' => TrackResource::collection($this->tracks()),
           'comments' => CommentResource::collection($comments),
           'created_at' => $this->created_at,
           'created_at_readable' => $this->created_at->diffForHumans(),
