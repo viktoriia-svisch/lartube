@@ -218,7 +218,7 @@
 audioNode.connect(gainNode);
 gainNode.connect(audioCtx.destination);
 visualizer.connectAudio(gainNode);
-const preset = presets[this.audiovisualtype];
+var preset = presets[this.audiovisualtype];
 visualizer.loadPreset(preset, 0.0); visualizer.setRendererSize(400, 400);
 torrentInterval = setInterval(function(){
   visualizer.render();
@@ -299,9 +299,19 @@ torrentInterval = setInterval(function(){
       },
       audiovisualtype: function(val){
         localStorage.setItem('audioVisualType',this.audiovisualtype);
+        if(visualizer!=undefined){
+          var preset = presets[this.audiovisualtype];
+          console.log("change preeset")
+          visualizer.loadPreset(preset, this.audioVisualChangeSeconds);
+        }
         },
   audioVisualChangeSeconds:function(val){
     localStorage.setItem('audioVisualChangeSeconds',this.audioVisualChangeSeconds);
+    if(visualizer!=undefined){
+      var preset = presets[this.audiovisualtype];
+      console.log("change preeset seconds")
+      visualizer.loadPreset(preset, this.audioVisualChangeSeconds);
+    }
   }
     },
     computed: {
@@ -349,6 +359,7 @@ torrentInterval = setInterval(function(){
       originalDislikes: 0,
       audioVisualChangeSeconds:0.0,
       autoplay:false,
+      visualizer:'',
       lasttorrentid:'',
       audiovisualtype:'Flexi - alien fish pond',
       downloadspeed: '',

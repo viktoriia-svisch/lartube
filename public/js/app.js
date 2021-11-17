@@ -58483,7 +58483,7 @@ var siteManager = function () {
                             clearTimeout(searchDelay);
                         }
                         searchDelay = setTimeout(function () {
-                            that.receiveMedias("/internal-api/media/search/" + s + that.getIgnoreParam());
+                            that.receiveMedias("/internal-api/medias/search/" + s + that.getIgnoreParam());
                         }, 300);
                     }
                     var so = new __WEBPACK_IMPORTED_MODULE_5__tools__["b" ](s.toString(), that.medias, that.tags, that.users);
@@ -80093,9 +80093,19 @@ console.log(emptyMedia);
     },
     audiovisualtype: function audiovisualtype(val) {
       localStorage.setItem('audioVisualType', this.audiovisualtype);
+      if (visualizer != undefined) {
+        var preset = presets[this.audiovisualtype];
+        console.log("change preeset");
+        visualizer.loadPreset(preset, this.audioVisualChangeSeconds);
+      }
     },
     audioVisualChangeSeconds: function audioVisualChangeSeconds(val) {
       localStorage.setItem('audioVisualChangeSeconds', this.audioVisualChangeSeconds);
+      if (visualizer != undefined) {
+        var preset = presets[this.audiovisualtype];
+        console.log("change preeset seconds");
+        visualizer.loadPreset(preset, this.audioVisualChangeSeconds);
+      }
     }
   },
   computed: {
@@ -80144,6 +80154,7 @@ console.log(emptyMedia);
       originalDislikes: 0,
       audioVisualChangeSeconds: 0.0,
       autoplay: false,
+      visualizer: '',
       lasttorrentid: '',
       audiovisualtype: 'Flexi - alien fish pond',
       downloadspeed: '',
