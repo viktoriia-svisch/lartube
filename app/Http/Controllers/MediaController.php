@@ -4,6 +4,7 @@ use App\Media;
 use App\Http\Resources\Media as MediaResource;
 use App\Comment;
 use App\Like;
+use App\Track;
 use Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -16,6 +17,19 @@ class MediaController extends Controller
       $data = Media::orderBy('id','DESC')->paginate(5);
       return view('medias.index',compact('data'))
           ->with('i', ($request->input('page', 1) - 1) * 5);
+    }
+    public function addTrack(Request $request){
+      $media_id = $request->input("media_id");
+      $lang = $request->input("lang");
+      $file = $request->file('track');
+      $source = $file->store('public/tracks');
+      $extension = $file->getClientOriginalExtension();
+      Track::create(["lang"=>$lang,"source"=>$source,"media_id"=>$media_id,"type"=>$extension]);
+      return "{}";
+    }
+    public function deleteTrack(Request $request,$trackid){
+      Track::find($trackid)->delete();
+      return "{}";
     }
     public function addMedia(Request $request)
     {

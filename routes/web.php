@@ -61,7 +61,7 @@ Route::get('/internal-api/medias/all', function (Request $request) {
 Route::get('/internal-api/medias/search/{title}', function (Request $request,$title) {
     return MediaResource::collection(Media::where('title', 'LIKE' ,'%'.strtoupper($title).'%')->orWhere('title', 'LIKE' ,'%'.strtolower($title).'%')->orWhere('description', 'LIKE' ,'%'.strtoupper($title).'%')->orWhere('description', 'LIKE' ,'%'.strtolower($title).'%')->whereNotIn('id', explode(",",$request->input('i')))->get());
 });
-Route::get('/internal-api/categories', function (Request $request,$title) {
+Route::get('/internal-api/categories', function (Request $request) {
     return CategoryResource::collection(Category::all());
 });
 Route::get('/internal-api/media/{title}', function ($title) {
@@ -70,3 +70,5 @@ Route::get('/internal-api/media/{title}', function ($title) {
 Route::get('/internal-api/medias/by/{user}', function (Request $request,$user) {
     return MediaResource::collection(Media::where('user_id', '=' ,$user)->whereNotIn('id', explode(",",$request->input('i')))->get());
 });
+Route::post('/internal-api/medias/addTrack','MediaController@addTrack');
+Route::post('/internal-api/medias/deleteTrack/{trackid}','MediaController@deleteTrack');

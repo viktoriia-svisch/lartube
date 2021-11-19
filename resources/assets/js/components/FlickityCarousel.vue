@@ -6,17 +6,27 @@
       <option value="likes">By likes</option><option value="likes_reverse">By likes (reverse)</option>
       <option value="dislikes">By dislikes</option><option value="dislikes_reverse">By dislikes (reverse)</option>
     </select></p>
-    <carousel v-bind:medias="medias" v-bind:canloadmore="canloadmore" v-bind:loggeduserid="loggeduserid"></carousel>
-    <gallery v-bind:medias="medias" v-bind:canloadmore="canloadmore" v-bind:loggeduserid="loggeduserid"></gallery>
-  </div>
+<flickity v-if="medias!=undefined"  ref="flickity" :options="flickityOptions">
+        <div v-for="item in medias" class="carousel-cell">
+          Vlaaaa
+        </div>
+    </flickity>
+      <button @click="previous()">Custom Previous Button</button>
+      <button @click="next()">Custom Next Button</button>
+      </div>
 </template>
 <script>
   import { eventBus } from '../eventBus.js';
-  import GalleryComponent from './GalleryComponent'
-  import Carousel from './Carousel'
+  import FlickityVue from 'vue-flickity';
   export default {
     props: ['medias','baseUrl','loggeduserid','canloadmore'],
     methods: {
+      next() {
+  this.$refs.flickity.next();
+},
+previous() {
+  this.$refs.flickity.previous();
+},
       emitRefreshMedias: function() {
         eventBus.$emit('refreshMedias',"");
       },
@@ -29,20 +39,41 @@
       }
     },
   components : {
-      'gallery': GalleryComponent,
-      'carousel': Carousel
+      'flickity' : FlickityVue
   },
   mounted(){
-    this.$nextTick(function () {
-      var cs = localStorage.getItem("choosenSort")
-      this.selectVal = cs;
-      eventBus.$emit('sortBy',cs);
-    })
   },
   data(){
     return {
-      selectVal:"created_at"
+      selectVal:"created_at",
+      flickityOptions: {
+        initialIndex: 0,
+        prevNextButtons: true,
+        pageDots: false,
+        wrapAround: true,
+        groupCells: true
+              }
     }
   }
   }
 </script>
+<style lang="stylus">
+.carousel-cell {
+  width: 28%;
+  height: 200px;
+  margin-right: 10px;
+  background: #8C8;
+  border-radius: 5px;
+  counter-increment: carousel-cell;
+}
+.carousel-cell.is-selected {
+  background: #ED2;
+}
+.carousel-cell:before {
+  display: block;
+  text-align: center;
+  line-height: 200px;
+  font-size: 80px;
+  color: white;
+}
+</style>

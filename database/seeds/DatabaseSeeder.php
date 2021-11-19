@@ -30,9 +30,9 @@ class DatabaseSeeder extends Seeder
      $u->tag('Movie');
      $u->tag('thing');
      $u1->tag('Some');
-     $u1->tag('thing');
-     $u2->tag('Test');
-     $u2->tag('else');
+     $u1->tag('User');
+     $u2->tag('Walulis');
+     $u2->tag('Torrent');
      $u3->tag('Gardening');
      $u->befriend($u1);
      $u->befriend($u3);
@@ -41,30 +41,30 @@ class DatabaseSeeder extends Seeder
      $u2->befriend($u1);
      $u3->acceptFriendRequest($u2);
      $u1->acceptFriendRequest($u2);
-     $m1 = Media::create(['title' => 'Audio test 1', 'source' => 'https:
+     $m1 = Media::create(['title' => 'Audio test 1','category_id' => $c1->id, 'source' => 'https:
      $m1->tag('Gardening');
      $m1->tag('Audio');
      $m1->tag('Test');
-     $m1 = Media::create(['title' => 'Big bucks bunny test', 'source' => 'https:
+     $m1 = Media::create(['title' => 'Big bucks bunny test','category_id' => $c1->id, 'source' => 'https:
      $m1->tag('Some');
      $m1->tag('thing');
      $m1->tag('Movie');
-     $m1 = Media::create(['title' => 'What is peertube', 'source' => 'magnet:?xs=https%3A%2F%2Fframatube.org%2Fstatic%2Ftorrents%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.torrent&xt=urn:btih:dc84b692c4002fec0cae873df0dc7f5d67fc09db&dn=What+is+PeerTube%3F&tr=wss%3A%2F%2Fframatube.org%2Ftracker%2Fsocket&tr=https%3A%2F%2Fframatube.org%2Ftracker%2Fannounce&ws=https%3A%2F%2Fframatube.org%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fpeertube.social%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fvideo.blueline.mg%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Ftube.bootlicker.party%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Ftube.tape.cx%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fpeertube2.cpy.re%2Fstatic%2Fredundancy%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fvideos.tcit.fr%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Ftubercul.es%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fwatching.cypherpunk.observer%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fpeertube.video%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4', 'type' => 'torrentVideo','description' => 'Via webtorrent from peertube.video .','user_id' => 1]);
+     $m1 = Media::create(['title' => 'What is peertube','category_id' => $c1->id, 'source' => 'magnet:?xs=https%3A%2F%2Fframatube.org%2Fstatic%2Ftorrents%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.torrent&xt=urn:btih:dc84b692c4002fec0cae873df0dc7f5d67fc09db&dn=What+is+PeerTube%3F&tr=wss%3A%2F%2Fframatube.org%2Ftracker%2Fsocket&tr=https%3A%2F%2Fframatube.org%2Ftracker%2Fannounce&ws=https%3A%2F%2Fframatube.org%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fpeertube.social%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fvideo.blueline.mg%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Ftube.bootlicker.party%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Ftube.tape.cx%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fpeertube2.cpy.re%2Fstatic%2Fredundancy%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fvideos.tcit.fr%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Ftubercul.es%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fwatching.cypherpunk.observer%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4&ws=https%3A%2F%2Fpeertube.video%2Fstatic%2Fwebseed%2F9c9de5e8-0a1e-484a-b099-e80766180a6d-1080.mp4', 'type' => 'torrentVideo','description' => 'Via webtorrent from peertube.video .','user_id' => 1]);
      $m1->tag('Explain');
      $m1->tag('Torrent');
      $m1->tag('Movie');
-     $m1 = Media::create(['title' => 'Big bucks torrent', 'source' => 'magnet:?xs=https%3A%2F%2Fpeertube2.cpy.re%2Fstatic%2Ftorrents%2F5a6133b8-3e0c-40dc-b859-69d0540c3fe5-1080.torrent&xt=urn:btih:dad4bdc58864f5e54df4805b9e5467e55422e2c9&dn=Big+Buck+Bunny&tr=wss%3A%2F%2Fpeertube2.cpy.re%2Ftracker%2Fsocket&tr=https%3A%2F%2Fpeertube2.cpy.re%2Ftracker%2Fannounce&ws=https%3A%2F%2Fpeertube2.cpy.re%2Fstatic%2Fwebseed%2F5a6133b8-3e0c-40dc-b859-69d0540c3fe5-1080.mp4&ws=https%3A%2F%2Fvideos.tcit.fr%2Fstatic%2Fwebseed%2F5a6133b8-3e0c-40dc-b859-69d0540c3fe5-1080.mp4&ws=https%3A%2F%2Fpeertube.social%2Fstatic%2Fwebseed%2F5a6133b8-3e0c-40dc-b859-69d0540c3fe5-1080.mp4', 'type' => 'torrentVideo','description' => 'Via webtorrent from peertube.video .','user_id' => 1]);
+     $m1 = Media::create(['title' => 'Big bucks torrent','category_id' => $c2->id, 'source' => 'magnet:?xs=https%3A%2F%2Fpeertube2.cpy.re%2Fstatic%2Ftorrents%2F5a6133b8-3e0c-40dc-b859-69d0540c3fe5-1080.torrent&xt=urn:btih:dad4bdc58864f5e54df4805b9e5467e55422e2c9&dn=Big+Buck+Bunny&tr=wss%3A%2F%2Fpeertube2.cpy.re%2Ftracker%2Fsocket&tr=https%3A%2F%2Fpeertube2.cpy.re%2Ftracker%2Fannounce&ws=https%3A%2F%2Fpeertube2.cpy.re%2Fstatic%2Fwebseed%2F5a6133b8-3e0c-40dc-b859-69d0540c3fe5-1080.mp4&ws=https%3A%2F%2Fvideos.tcit.fr%2Fstatic%2Fwebseed%2F5a6133b8-3e0c-40dc-b859-69d0540c3fe5-1080.mp4&ws=https%3A%2F%2Fpeertube.social%2Fstatic%2Fwebseed%2F5a6133b8-3e0c-40dc-b859-69d0540c3fe5-1080.mp4', 'type' => 'torrentVideo','description' => 'Via webtorrent from peertube.video .','user_id' => 1]);
      $m1->tag('Big');
      $m1->tag('Torrent');
      $m1->tag('Movie');
-     $m1 = Media::create(['title' => 'Walulis - Youtube review 2018', 'source' => 'magnet:?xs=https%3A%2F%2Fpeertube.video%2Fstatic%2Ftorrents%2Fea2da85a-0cd7-4e6d-aaf5-ff47592853a7-1080.torrent&xt=urn:btih:cffcacbc092ba06a85f07b0143de58e0f69bfc2a&dn=Rewind+2018%3A+Das+schlechteste+YouTube+Video+ever!%3F+%7C+WALULIS&tr=wss%3A%2F%2Fpeertube.video%3A443%2Ftracker%2Fsocket&tr=https%3A%2F%2Fpeertube.video%2Ftracker%2Fannounce&ws=https%3A%2F%2Fpeertube.video%2Fstatic%2Fwebseed%2Fea2da85a-0cd7-4e6d-aaf5-ff47592853a7-1080.mp4', 'type' => 'torrentVideo','description' => 'Via webtorrent from peertube.video .','user_id' => 1]);
+     $m1 = Media::create(['title' => 'Walulis - Youtube review 2018','category_id' => $c2->id, 'source' => 'magnet:?xs=https%3A%2F%2Fpeertube.video%2Fstatic%2Ftorrents%2Fea2da85a-0cd7-4e6d-aaf5-ff47592853a7-1080.torrent&xt=urn:btih:cffcacbc092ba06a85f07b0143de58e0f69bfc2a&dn=Rewind+2018%3A+Das+schlechteste+YouTube+Video+ever!%3F+%7C+WALULIS&tr=wss%3A%2F%2Fpeertube.video%3A443%2Ftracker%2Fsocket&tr=https%3A%2F%2Fpeertube.video%2Ftracker%2Fannounce&ws=https%3A%2F%2Fpeertube.video%2Fstatic%2Fwebseed%2Fea2da85a-0cd7-4e6d-aaf5-ff47592853a7-1080.mp4', 'type' => 'torrentVideo','description' => 'Via webtorrent from peertube.video .','user_id' => 1]);
      $m1->tag('Walulis');
      $m1->tag('Torrent');
      $m1->tag('Movie');
-     $m1 = Media::create(['title' => 'Hackerethik - eine Einführung', 'source' => 'https:
+     $m1 = Media::create(['title' => 'Hackerethik - eine Einführung','category_id' => $c3->id, 'source' => 'https:
      $m1->tag('35C3');
      $m1->tag('Doku');
-     $m1 = Media::create(['title' => 'Freude ist nur ein Mangel an information', 'source' => 'https:
+     $m1 = Media::create(['title' => 'Freude ist nur ein Mangel an information','category_id' => $c3->id, 'source' => 'https:
      $m1->tag('35C3');
      $m1->tag('Doku');
      $m1 = Media::create(['title' => 'Big bucks bunny test 2', 'source' => 'https:
