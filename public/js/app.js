@@ -7029,9 +7029,10 @@ function copyProps(props) {
  }),
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
- __webpack_require__.d(__webpack_exports__, "c", function() { return User; });
- __webpack_require__.d(__webpack_exports__, "a", function() { return Media; });
- __webpack_require__.d(__webpack_exports__, "b", function() { return Tag; });
+ __webpack_require__.d(__webpack_exports__, "d", function() { return User; });
+ __webpack_require__.d(__webpack_exports__, "b", function() { return Media; });
+ __webpack_require__.d(__webpack_exports__, "c", function() { return Tag; });
+ __webpack_require__.d(__webpack_exports__, "a", function() { return Category; });
 var User = function () {
     function User(id, name, avatar, background, bio, mediaIds, tagString, publicState) {
         this.id = id;
@@ -58500,6 +58501,7 @@ var siteManager = function () {
                 canloadmore: true,
                 medias: this.medias,
                 user: that.currentUser,
+                categories: that.categories,
                 baseUrl: baseUrl
             },
             components: {
@@ -58604,10 +58606,10 @@ var siteManager = function () {
             if (that.users == undefined || forceUpdate) {
                 that.users = [];
                 if (that.loggedUserId == 0) {
-                    that.currentUser = new __WEBPACK_IMPORTED_MODULE_6__models__["c" ](0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "", false);
+                    that.currentUser = new __WEBPACK_IMPORTED_MODULE_6__models__["d" ](0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "", false);
                 }
                 $.each(data.data, function (key, value) {
-                    var u = new __WEBPACK_IMPORTED_MODULE_6__models__["c" ](value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds, value.tagString, value.public);
+                    var u = new __WEBPACK_IMPORTED_MODULE_6__models__["d" ](value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds, value.tagString, value.public);
                     if (u.id == that.loggedUserId) {
                         that.currentUser = u;
                         if (theVue != undefined) {
@@ -58617,6 +58619,7 @@ var siteManager = function () {
                     that.users.push(u);
                 });
                 that.receiveTags();
+                that.receiveCategories();
             }
         });
     };
@@ -58633,17 +58636,17 @@ var siteManager = function () {
         }
         var that = this;
         $.getJSON("/internal-api/categories", function name(data) {
-            if (that.tags == undefined || forceUpdate) {
-                that.tags = [];
+            if (that.categories == undefined || forceUpdate) {
+                that.categories = [];
                 $.each(data.data, function (key, value) {
-                    that.tags.push(new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](value.id, value.name, value.slug, value.count));
+                    console.log("push cat " + value.title);
+                    that.categories.push(new __WEBPACK_IMPORTED_MODULE_6__models__["a" ](value.id, value.title, value.description, value.avatar_source, value.background_source));
                 });
             }
-            this.tags = that.tags;
+            this.categories = that.categories;
             if (theVue != undefined) {
-                theVue.tags = this.tags;
+                theVue.categories = this.categories;
             }
-            that.receiveMedias();
         });
     };
     siteManager.prototype.receiveTags = function (forceUpdate) {
@@ -58655,7 +58658,7 @@ var siteManager = function () {
             if (that.tags == undefined || forceUpdate) {
                 that.tags = [];
                 $.each(data.data, function (key, value) {
-                    that.tags.push(new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](value.id, value.name, value.slug, value.count));
+                    that.tags.push(new __WEBPACK_IMPORTED_MODULE_6__models__["c" ](value.id, value.name, value.slug, value.count));
                 });
             }
             this.tags = that.tags;
@@ -58674,7 +58677,7 @@ var siteManager = function () {
             if (that.tags == undefined || forceUpdate) {
                 that.tags = [];
                 $.each(data.data, function (key, value) {
-                    that.tags.push(new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](value.id, value.name, value.slug, value.count));
+                    that.tags.push(new __WEBPACK_IMPORTED_MODULE_6__models__["c" ](value.id, value.name, value.slug, value.count));
                 });
             }
             this.tags = that.tags;
@@ -58682,7 +58685,7 @@ var siteManager = function () {
                 theVue.tags = this.tags;
             }
             json = json.data;
-            that.medias.unshift(new __WEBPACK_IMPORTED_MODULE_6__models__["a" ](json.id, json.title, json.description, json.source, json.poster_source, json.duration, json.simpleType, json.techType, json.type, that.getUserById(json.user_id), json.user_id, json.created_at, json.updated_at, json.created_at_readable, json.comments, that.getTagsByIdArray(json.tagsIds), json.myLike, json.likes, json.dislikes, json.tracks, json.category_id));
+            that.medias.unshift(new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](json.id, json.title, json.description, json.source, json.poster_source, json.duration, json.simpleType, json.techType, json.type, that.getUserById(json.user_id), json.user_id, json.created_at, json.updated_at, json.created_at_readable, json.comments, that.getTagsByIdArray(json.tagsIds), json.myLike, json.likes, json.dislikes, json.tracks, json.category_id));
             theVue.medias = that.medias;
             theVue.$router.push('/');
         });
@@ -58703,15 +58706,16 @@ var siteManager = function () {
             });
             data = data.data;
             if (that.findMediaByName(mediaName) == undefined) {
-                var m = new __WEBPACK_IMPORTED_MODULE_6__models__["a" ](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
+                var m = new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
                 $.each(m.comments, function (key1, value1) {
+                    m.comments[key1] = that.fillUser(value1);
                     m.comments[key1].user = that.getUserById(value1.user_id);
                 });
                 that.medias.push(m);
                 that.medias = theMediaSorter.sort(that.medias);
                 theVue.medias = that.medias;
             } else {
-                var m = new __WEBPACK_IMPORTED_MODULE_6__models__["a" ](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
+                var m = new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
                 $.each(m.comments, function (key1, value1) {
                     m.comments[key1] = that.fillUser(value1);
                     m.comments[key1].user = that.getUserById(value1.user_id);
@@ -58796,7 +58800,7 @@ var siteManager = function () {
             }
             $.each(data.data, function (key, value) {
                 if (that.findMediaById(value.id) == undefined) {
-                    var m = new __WEBPACK_IMPORTED_MODULE_6__models__["a" ](value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, that.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id);
+                    var m = new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, that.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id);
                     $.each(m.comments, function (key1, value1) {
                         m.comments[key1] = that.fillUser(value1);
                         m.comments[key1].user = that.getUserById(value1.user_id);
@@ -58818,6 +58822,8 @@ var siteManager = function () {
                 theVue.canloadmore = false;
             }
             theVue.users = that.users;
+            theVue.categories = that.categories;
+            console.log(this.categories);
             that.medias = theMediaSorter.sort(that.medias);
             theVue.medias = that.medias;
             if (theVue.$route.params.profileId != undefined) {
@@ -58845,7 +58851,7 @@ var siteManager = function () {
         });
     };
     siteManager.prototype.getUserById = function (id) {
-        var search = new __WEBPACK_IMPORTED_MODULE_6__models__["c" ](0, "None", "/img/404/avatar.png", "/img/404/background.png", "None-profile", {}, "", false);
+        var search = new __WEBPACK_IMPORTED_MODULE_6__models__["d" ](0, "None", "/img/404/avatar.png", "/img/404/background.png", "None-profile", {}, "", false);
         $.each(this.users, function (key, value) {
             if (value.id == id) {
                 search = value;
@@ -79996,7 +80002,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_4_butterchurn___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_butterchurn__);
  var __WEBPACK_IMPORTED_MODULE_5_butterchurn_presets__ = __webpack_require__(483);
  var __WEBPACK_IMPORTED_MODULE_5_butterchurn_presets___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_butterchurn_presets__);
-var emptyMedia = new __WEBPACK_IMPORTED_MODULE_3__models__["a" ](0, "None", "", "", "", "", "", "", "", new __WEBPACK_IMPORTED_MODULE_3__models__["c" ](0, "None", "img/404/avatar.png", "img/404/background.png", "", "", {}, false), "", "", "", "", "", 0, 0, 0, [], 0);
+var emptyMedia = new __WEBPACK_IMPORTED_MODULE_3__models__["b" ](0, "None", "", "", "", "", "", "", "", new __WEBPACK_IMPORTED_MODULE_3__models__["d" ](0, "None", "img/404/avatar.png", "img/404/background.png", "", "", {}, false), "", "", "", "", "", 0, 0, 0, [], 0);
 var WebTorrent = __webpack_require__(87);
 var client = new WebTorrent();
 var theTorrent;
@@ -90435,7 +90441,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
  var __WEBPACK_IMPORTED_MODULE_1__models__ = __webpack_require__(60);
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl'],
+  props: ['medias', 'baseUrl', 'categories'],
   mounted: function mounted() {
     this.$refs.croppieRef.bind({
       url: '/img/404/image.png'
@@ -90455,8 +90461,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   computed: {
     currentmedia: function currentmedia() {
       var m = this.getCurrentMedia();
+      this.catid = m.category_id;
       if (m == undefined) {
-        return new __WEBPACK_IMPORTED_MODULE_1__models__["a" ](0, "None", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, 0, 0, [], 0);
+        return new __WEBPACK_IMPORTED_MODULE_1__models__["b" ](0, "None", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, 0, 0, [], 0);
       }
       return m;
     }
@@ -90582,6 +90589,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       dismisscountdown: 0,
       alertType: 'warning',
       alertMsg: '',
+      catid: '',
       editpicloaded: false,
       showdismissiblealert: false,
       cropped: null
@@ -90673,6 +90681,49 @@ var render = function() {
                 _vm._v("Torrent video")
               ])
             ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group row" }, [
+          _c("label", [_vm._v("Category")]),
+          _vm._v(" "),
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.catid,
+                  expression: "catid"
+                }
+              ],
+              attrs: { name: "category_id" },
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.catid = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            [
+              _c("option", { attrs: { value: "" } }, [_vm._v("None")]),
+              _vm._l(_vm.categories, function(item) {
+                return _c("option", { domProps: { value: item.id } }, [
+                  _vm._v(_vm._s(item.title))
+                ])
+              })
+            ],
+            2
           )
         ]),
         _vm._v(" "),
