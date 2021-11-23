@@ -3,7 +3,7 @@
     <div class="card">
         <div class="card-header">Login</div>
         <div class="card-body">
-            <form method="POST" action="/login" aria-label="The Login">
+            <form method="POST" action="/login" id="loginForm" aria-label="The Login">
                 <div class="form-group row">
                     <label for="email" class="col-sm-4 col-form-label text-md-right">E-Mail Address</label>
                     <div class="col-md-6">
@@ -38,6 +38,9 @@
                     </div>
                 </div>
             </form>
+            <button @click="submitLogin()" class="btn btn-primary">
+                Login via ajax
+            </button>
         </div>
     </div>
 </div>
@@ -45,11 +48,32 @@
 <script>
   import { eventBus } from '../../eventBus.js';
   export default {
-    props: ['medias','baseUrl','user','tags'],
+    props: ['medias','baseUrl','user','tags','csrf'],
     data(){
       return {
-        csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
       }
+    },
+    methods:{
+      submitLogin() {
+        let that = this;
+        $.ajax({
+            url: '/internal-api/login',
+            type: 'POST',
+            data: new FormData($("#loginForm")[0]),
+            cache: false,
+            contentType: false,
+            processData: false,
+            complete : function(res) {
+              if(res.status==200){
+                eventBus.$emit('login',res.responseJSON.data);
+              } else if(res.status==422){
+                eventBus.$emit('loginFailed',"");
+              }
+              console.log("received login")
+                                    }
+        });
+        return false;
+      },
     }
   }
 </script>

@@ -1811,88 +1811,6 @@ function concat() {
   return Array.prototype.concat.apply([], arguments);
 }
  }),
- (function(module, __webpack_exports__, __webpack_require__) {
-"use strict";
- __webpack_require__.d(__webpack_exports__, "a", function() { return eventBus; });
- var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(68);
- var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-var eventBus = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a();
- }),
- (function(module, exports) {
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier 
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-  if (functionalTemplate) {
-    options.functional = true
-  }
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-  var hook
-  if (moduleIdentifier) { 
-    hook = function (context) {
-      context =
-        context || 
-        (this.$vnode && this.$vnode.ssrContext) || 
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) 
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-    if (!functional) {
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      options._injectStyles = hook
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
- }),
  (function(module, exports) {
 function EventEmitter() {
   this._events = this._events || {};
@@ -2103,6 +2021,88 @@ function isObject(arg) {
 }
 function isUndefined(arg) {
   return arg === void 0;
+}
+ }),
+ (function(module, __webpack_exports__, __webpack_require__) {
+"use strict";
+ __webpack_require__.d(__webpack_exports__, "a", function() { return eventBus; });
+ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(68);
+ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+var eventBus = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a();
+ }),
+ (function(module, exports) {
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier 
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+  if (functionalTemplate) {
+    options.functional = true
+  }
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+  var hook
+  if (moduleIdentifier) { 
+    hook = function (context) {
+      context =
+        context || 
+        (this.$vnode && this.$vnode.ssrContext) || 
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) 
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+    if (!functional) {
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      options._injectStyles = hook
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
 }
  }),
  (function(module, __webpack_exports__, __webpack_require__) {
@@ -24887,7 +24887,7 @@ var ToolTip = function () {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(470)
 var __vue_template__ = __webpack_require__(471)
 var __vue_template_functional__ = false
@@ -25100,7 +25100,7 @@ module.exports = Cancel;
  (function(module, exports, __webpack_require__) {
 (function(global, process) {
 const { Buffer } = __webpack_require__(16)
-const { EventEmitter } = __webpack_require__(10)
+const { EventEmitter } = __webpack_require__(8)
 const concat = __webpack_require__(88)
 const createTorrent = __webpack_require__(197)
 const debug = __webpack_require__(39)('webtorrent')
@@ -25472,7 +25472,7 @@ module.exports = Readable;
 var isArray = __webpack_require__(200);
 var Duplex;
 Readable.ReadableState = ReadableState;
-var EE = __webpack_require__(10).EventEmitter;
+var EE = __webpack_require__(8).EventEmitter;
 var EElistenerCount = function (emitter, type) {
   return emitter.listeners(type).length;
 };
@@ -26122,7 +26122,7 @@ function indexOf(xs, x) {
 }.call(exports, __webpack_require__(6), __webpack_require__(0)))
  }),
  (function(module, exports, __webpack_require__) {
-module.exports = __webpack_require__(10).EventEmitter;
+module.exports = __webpack_require__(8).EventEmitter;
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
@@ -26840,7 +26840,7 @@ function toStreams2 (s, opts) {
 module.exports = Readable;
 var Duplex;
 Readable.ReadableState = ReadableState;
-var EE = __webpack_require__(10).EventEmitter;
+var EE = __webpack_require__(8).EventEmitter;
 var EElistenerCount = function EElistenerCount(emitter, type) {
   return emitter.listeners(type).length;
 };
@@ -27507,7 +27507,7 @@ function indexOf(xs, x) {
 }.call(exports, __webpack_require__(6), __webpack_require__(0)))
  }),
  (function(module, exports, __webpack_require__) {
-module.exports = __webpack_require__(10).EventEmitter;
+module.exports = __webpack_require__(8).EventEmitter;
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
@@ -28929,7 +28929,7 @@ exports.PassThrough = __webpack_require__(289);
 module.exports = Readable;
 var Duplex;
 Readable.ReadableState = ReadableState;
-var EE = __webpack_require__(10).EventEmitter;
+var EE = __webpack_require__(8).EventEmitter;
 var EElistenerCount = function EElistenerCount(emitter, type) {
   return emitter.listeners(type).length;
 };
@@ -29596,7 +29596,7 @@ function indexOf(xs, x) {
 }.call(exports, __webpack_require__(6), __webpack_require__(0)))
  }),
  (function(module, exports, __webpack_require__) {
-module.exports = __webpack_require__(10).EventEmitter;
+module.exports = __webpack_require__(8).EventEmitter;
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
@@ -30460,7 +30460,7 @@ function downloadBuffers (bufs, name) {
 module.exports = Readable;
 var Duplex;
 Readable.ReadableState = ReadableState;
-var EE = __webpack_require__(10).EventEmitter;
+var EE = __webpack_require__(8).EventEmitter;
 var EElistenerCount = function EElistenerCount(emitter, type) {
   return emitter.listeners(type).length;
 };
@@ -31127,7 +31127,7 @@ function indexOf(xs, x) {
 }.call(exports, __webpack_require__(6), __webpack_require__(0)))
  }),
  (function(module, exports, __webpack_require__) {
-module.exports = __webpack_require__(10).EventEmitter;
+module.exports = __webpack_require__(8).EventEmitter;
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
@@ -31824,7 +31824,7 @@ exports.decode.bytes = 8
 module.exports = Readable;
 var Duplex;
 Readable.ReadableState = ReadableState;
-var EE = __webpack_require__(10).EventEmitter;
+var EE = __webpack_require__(8).EventEmitter;
 var EElistenerCount = function EElistenerCount(emitter, type) {
   return emitter.listeners(type).length;
 };
@@ -32491,7 +32491,7 @@ function indexOf(xs, x) {
 }.call(exports, __webpack_require__(6), __webpack_require__(0)))
  }),
  (function(module, exports, __webpack_require__) {
-module.exports = __webpack_require__(10).EventEmitter;
+module.exports = __webpack_require__(8).EventEmitter;
  }),
  (function(module, exports, __webpack_require__) {
 "use strict";
@@ -35807,7 +35807,7 @@ var OBSERVER_CONFIG = {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(468)
 var __vue_template__ = __webpack_require__(476)
 var __vue_template_functional__ = false
@@ -35841,7 +35841,7 @@ module.exports = Component.exports
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(469)
 var __vue_template__ = __webpack_require__(472)
 var __vue_template_functional__ = false
@@ -35875,7 +35875,7 @@ module.exports = Component.exports
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(491)
 var __vue_template__ = __webpack_require__(492)
 var __vue_template_functional__ = false
@@ -35909,7 +35909,7 @@ module.exports = Component.exports
  }),
  (function(module, exports, __webpack_require__) {
 __webpack_require__(171);
-module.exports = __webpack_require__(526);
+module.exports = __webpack_require__(523);
  }),
  (function(module, exports, __webpack_require__) {
 __webpack_require__(172);
@@ -49520,7 +49520,7 @@ const BitField = __webpack_require__(55)
 const ChunkStoreWriteStream = __webpack_require__(248)
 const debug = __webpack_require__(39)('webtorrent:torrent')
 const Discovery = __webpack_require__(249)
-const EventEmitter = __webpack_require__(10).EventEmitter
+const EventEmitter = __webpack_require__(8).EventEmitter
 const fs = __webpack_require__(51)
 const FSChunkStore = __webpack_require__(268) 
 const get = __webpack_require__(63)
@@ -50807,7 +50807,7 @@ module.exports = ChunkStoreWriteStream
  (function(module, exports, __webpack_require__) {
 (function(process) {const debug = __webpack_require__(250)('torrent-discovery')
 const DHT = __webpack_require__(253) 
-const EventEmitter = __webpack_require__(10).EventEmitter
+const EventEmitter = __webpack_require__(8).EventEmitter
 const parallel = __webpack_require__(36)
 const Tracker = __webpack_require__(254)
 class Discovery extends EventEmitter {
@@ -51308,7 +51308,7 @@ function plural(ms, msAbs, n, name) {
 (function(process) {module.exports = Client
 var Buffer = __webpack_require__(16).Buffer
 var debug = __webpack_require__(108)('bittorrent-tracker:client')
-var EventEmitter = __webpack_require__(10).EventEmitter
+var EventEmitter = __webpack_require__(8).EventEmitter
 var extend = __webpack_require__(52)
 var inherits = __webpack_require__(4)
 var once = __webpack_require__(22)
@@ -52680,7 +52680,7 @@ function plural(ms, msAbs, n, name) {
  }),
  (function(module, exports, __webpack_require__) {
 module.exports = Tracker
-var EventEmitter = __webpack_require__(10).EventEmitter
+var EventEmitter = __webpack_require__(8).EventEmitter
 var inherits = __webpack_require__(4)
 inherits(Tracker, EventEmitter)
 function Tracker (client, announceUrl) {
@@ -52970,7 +52970,7 @@ var iterate = function (list) {
 module.exports = iterate
  }),
  (function(module, exports, __webpack_require__) {
-(function(Buffer) {const { EventEmitter } = __webpack_require__(10)
+(function(Buffer) {const { EventEmitter } = __webpack_require__(8)
 const bencode = __webpack_require__(48)
 const BitField = __webpack_require__(55)
 const debug = __webpack_require__(277)('ut_metadata')
@@ -53540,7 +53540,7 @@ module.exports.parse = function(str) {
 };
  }),
  (function(module, exports, __webpack_require__) {
-(function(process) {const { EventEmitter } = __webpack_require__(10)
+(function(process) {const { EventEmitter } = __webpack_require__(8)
 const { PassThrough } = __webpack_require__(112)
 const eos = __webpack_require__(111)
 const path = __webpack_require__(27)
@@ -55255,7 +55255,7 @@ VideoStream.prototype.destroy = function () {
  }),
  (function(module, exports, __webpack_require__) {
 (function(Buffer) {var bs = __webpack_require__(306)
-var EventEmitter = __webpack_require__(10).EventEmitter
+var EventEmitter = __webpack_require__(8).EventEmitter
 var inherits = __webpack_require__(4)
 var mp4 = __webpack_require__(307)
 var Box = __webpack_require__(56)
@@ -58348,7 +58348,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_2_bootstrap_vue__ = __webpack_require__(335);
  var __WEBPACK_IMPORTED_MODULE_3_vue_croppie__ = __webpack_require__(449);
  var __WEBPACK_IMPORTED_MODULE_3_vue_croppie___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_vue_croppie__);
- var __WEBPACK_IMPORTED_MODULE_4__eventBus__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_4__eventBus__ = __webpack_require__(9);
  var __WEBPACK_IMPORTED_MODULE_5__tools__ = __webpack_require__(451);
  var __WEBPACK_IMPORTED_MODULE_6__models__ = __webpack_require__(60);
  var __WEBPACK_IMPORTED_MODULE_7_vue_apexcharts__ = __webpack_require__(452);
@@ -58374,7 +58374,8 @@ var siteManager = function () {
         this.usedSearchTerms = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
         this.receiveUsers(true);
-        var that = this;
+        this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        setInterval(this.updateCSRF, 1800000);
     }
     siteManager.prototype.initVue = function () {
         var _this = this;
@@ -58393,11 +58394,11 @@ var siteManager = function () {
         var loginComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('login', __webpack_require__(493));
         var registerComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('register', __webpack_require__(496));
         var uploadComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('upload', __webpack_require__(499));
-        var searchComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('search', __webpack_require__(505));
-        var chartsComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('search', __webpack_require__(511));
-        var editVideoComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('search', __webpack_require__(514));
-        var aboutComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('search', __webpack_require__(517));
-        var sidebarComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('thesidebar', __webpack_require__(519));
+        var searchComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('search', __webpack_require__(502));
+        var chartsComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('search', __webpack_require__(508));
+        var editVideoComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('search', __webpack_require__(511));
+        var aboutComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('search', __webpack_require__(514));
+        var sidebarComp = __WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('thesidebar', __webpack_require__(516));
         var that = this;
         var routes = [{ path: '/', component: overview }, { path: '/media/:currentTitle', component: player }, { path: '/profile/:profileId', component: profileComp }, { path: '/tags', component: tagComp }, { path: '/tags/:tagName', component: tagComp }, { path: '/login', component: loginComp }, { path: '/editprofile', component: editProfileComp }, { path: '/register', component: registerComp }, { path: '/upload', component: uploadComp }, { path: '/search', component: searchComp }, { path: '/charts', component: chartsComp }, { path: '/about', component: aboutComp }, { path: '/mediaedit/:editTitle', component: editVideoComp }];
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('getNewMedias', function (title) {
@@ -58413,10 +58414,33 @@ var siteManager = function () {
             that.catchedTagMedias = [];
             _this.usedSearchTerms = [];
             that.receiveMedias("/internal-api/media" + _this.getIgnoreParam(), true);
+            that.updateCSRF();
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('loadAllMedias', function (title) {
             that.receiveMedias("/internal-api/medias/all" + _this.getIgnoreParam());
             theVue.canloadmore = false;
+            that.updateCSRF();
+        });
+        __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('login', function (settings) {
+            _this.loggedUserId = settings.user_id;
+            theVue.loggeduserid = _this.loggedUserId;
+            that.currentUser = that.getUserById(_this.loggedUserId);
+            theVue.currentuser = that.currentUser;
+            theVue.alert("Welcome back, " + that.getUserById(_this.loggedUserId).name, "success");
+            theVue.$router.push('/');
+            that.updateCSRF();
+        });
+        __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('logout', function (settings) {
+            _this.loggedUserId = 0;
+            theVue.loggeduserid = _this.loggedUserId;
+            that.currentUser = that.getUserById(_this.loggedUserId);
+            theVue.currentuser = that.currentUser;
+            theVue.alert("Logged out", "danger");
+            theVue.$router.push('/');
+            that.updateCSRF();
+        });
+        __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('loginFailed', function (settings) {
+            theVue.alert("Login failed", "danger");
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('loadUserVideos', function (userid) {
             console.log("/internal-api/medias/by/" + userid + _this.getIgnoreParam());
@@ -58432,24 +58456,29 @@ var siteManager = function () {
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('commentCreated', function (json) {
             that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title);
+            that.updateCSRF();
             theVue.alert("Comment created", "success");
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('refreshMedia', function (id) {
             that.receiveMediaByName(that.findMediaById(Number(id)).title);
+            that.updateCSRF();
             theVue.alert("Media refreshed", "success");
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('videoDeleted', function (title) {
             theVue.alert("Video " + title + " deleted", "success");
             that.deleteMediaByName(title);
+            that.updateCSRF();
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('videoCreated', function (json) {
             that.receiveTagsForMedia(json);
             theVue.alert("Video " + json.data.title + " created", "success");
+            that.updateCSRF();
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('videoEdited', function (json) {
             that.deleteMediaByName(json[0]);
             that.receiveTagsForMedia(json[1]);
             theVue.alert("Video " + json[1].data.title + " edited", "success");
+            that.updateCSRF();
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('checkTag', function (tagName) {
             if (tagName == '') {
@@ -58494,6 +58523,7 @@ var siteManager = function () {
                 alertmsg: "",
                 alerttype: "",
                 search: '',
+                csrf: that.csrf,
                 currentuser: that.currentUser,
                 users: this.users,
                 loggeduserid: this.loggedUserId,
@@ -58596,6 +58626,13 @@ var siteManager = function () {
     };
     siteManager.prototype.getCurrentSite = function () {
         return this.currentPage;
+    };
+    siteManager.prototype.updateCSRF = function () {
+        $.get('/internal-api/refresh-csrf').done(function (data) {
+            this.csrf = data;
+            theVue.csrf = data;
+            $('meta[name="csrf-token"]').attr('content', data);
+        });
     };
     siteManager.prototype.receiveUsers = function (forceUpdate) {
         if (forceUpdate === void 0) {
@@ -79303,7 +79340,7 @@ exports.push([module.i, "@keyframes plyr-progress{to{background-position:25px 0}
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  var __WEBPACK_IMPORTED_MODULE_1__GalleryComponent__ = __webpack_require__(168);
  var __WEBPACK_IMPORTED_MODULE_1__GalleryComponent___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__GalleryComponent__);
  var __WEBPACK_IMPORTED_MODULE_2__Carousel__ = __webpack_require__(473);
@@ -79343,7 +79380,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__ = __webpack_require__(80);
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__);
  __webpack_exports__["default"] = ({
@@ -79361,7 +79398,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  __webpack_exports__["default"] = ({
   props: ['item', 'loggeduserid'],
   methods: {
@@ -79563,7 +79600,7 @@ if (false) {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(474)
 var __vue_template__ = __webpack_require__(475)
 var __vue_template_functional__ = false
@@ -79598,7 +79635,7 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  var __WEBPACK_IMPORTED_MODULE_1__GalleryComponent__ = __webpack_require__(168);
  var __WEBPACK_IMPORTED_MODULE_1__GalleryComponent___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__GalleryComponent__);
  __webpack_exports__["default"] = ({
@@ -79957,7 +79994,7 @@ if (false) {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(478)
 var __vue_template__ = __webpack_require__(484)
 var __vue_template_functional__ = false
@@ -79992,7 +80029,7 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__ = __webpack_require__(80);
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__);
  var __WEBPACK_IMPORTED_MODULE_2__Comments__ = __webpack_require__(479);
@@ -80329,7 +80366,7 @@ console.log(emptyMedia);
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(480)
 var __vue_template__ = __webpack_require__(481)
 var __vue_template_functional__ = false
@@ -80364,7 +80401,7 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  __webpack_exports__["default"] = ({
   props: ['commentlist', 'loggeduserid', 'currentmedia', 'level'],
   name: 'comments',
@@ -87937,7 +87974,7 @@ if (false) {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(486)
 var __vue_template__ = __webpack_require__(487)
 var __vue_template_functional__ = false
@@ -87972,7 +88009,7 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  var __WEBPACK_IMPORTED_MODULE_1__OverviewComponent__ = __webpack_require__(167);
  var __WEBPACK_IMPORTED_MODULE_1__OverviewComponent___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__OverviewComponent__);
  __webpack_exports__["default"] = ({
@@ -88045,7 +88082,7 @@ if (false) {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(489)
 var __vue_template__ = __webpack_require__(490)
 var __vue_template_functional__ = false
@@ -88080,10 +88117,10 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  var __WEBPACK_IMPORTED_MODULE_1__models__ = __webpack_require__(60);
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl', 'currentuser'],
+  props: ['medias', 'baseUrl', 'currentuser', 'csrf'],
   mounted: function mounted() {
     this.$refs.croppieAvatarRef.bind({
       url: '/img/404/avatar.png'
@@ -88449,7 +88486,7 @@ if (false) {
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__ = __webpack_require__(80);
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__);
  __webpack_exports__["default"] = ({
@@ -88740,7 +88777,7 @@ if (false) {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(494)
 var __vue_template__ = __webpack_require__(495)
 var __vue_template_functional__ = false
@@ -88775,13 +88812,33 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl', 'user', 'tags'],
+  props: ['medias', 'baseUrl', 'user', 'tags', 'csrf'],
   data: function data() {
-    return {
-      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-    };
+    return {};
+  },
+  methods: {
+    submitLogin: function submitLogin() {
+      var that = this;
+      $.ajax({
+        url: '/internal-api/login',
+        type: 'POST',
+        data: new FormData($("#loginForm")[0]),
+        cache: false,
+        contentType: false,
+        processData: false,
+        complete: function complete(res) {
+          if (res.status == 200) {
+            __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('login', res.responseJSON.data);
+          } else if (res.status == 422) {
+            __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loginFailed', "");
+          }
+          console.log("received login");
+        }
+      });
+      return false;
+    }
   }
 });
  }),
@@ -88801,6 +88858,7 @@ var render = function() {
             attrs: {
               method: "POST",
               action: "/login",
+              id: "loginForm",
               "aria-label": "The Login"
             }
           },
@@ -88841,6 +88899,19 @@ var render = function() {
             _vm._v(" "),
             _vm._m(2)
           ]
+        ),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-primary",
+            on: {
+              click: function($event) {
+                _vm.submitLogin()
+              }
+            }
+          },
+          [_vm._v("\n                Login via ajax\n            ")]
         )
       ])
     ])
@@ -88931,7 +89002,7 @@ if (false) {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(497)
 var __vue_template__ = __webpack_require__(498)
 var __vue_template_functional__ = false
@@ -88966,9 +89037,9 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl', 'user', 'tags'],
+  props: ['medias', 'baseUrl', 'user', 'tags', 'csrf'],
   mounted: function mounted() {
     this.$refs.croppieAvatarRef.bind({
       url: '/img/404/avatar.png'
@@ -88993,7 +89064,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   data: function data() {
     return {
-      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
       avatarCropped: null,
       backgroundCropped: null,
       public: false
@@ -89459,9 +89529,9 @@ if (false) {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = __webpack_require__(500)
-var __vue_template__ = __webpack_require__(504)
+var __vue_template__ = __webpack_require__(501)
 var __vue_template_functional__ = false
 var __vue_styles__ = null
 var __vue_scopeId__ = null
@@ -89494,61 +89564,9 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
- var __WEBPACK_IMPORTED_MODULE_1__GeneralUploadComponent__ = __webpack_require__(501);
- var __WEBPACK_IMPORTED_MODULE_1__GeneralUploadComponent___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__GeneralUploadComponent__);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl'],
-  components: {
-    'generalUpload': __WEBPACK_IMPORTED_MODULE_1__GeneralUploadComponent___default.a
-  },
-  data: function data() {
-    return {
-      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-    };
-  }
-});
- }),
- (function(module, exports, __webpack_require__) {
-var disposed = false
-var normalizeComponent = __webpack_require__(9)
-var __vue_script__ = __webpack_require__(502)
-var __vue_template__ = __webpack_require__(503)
-var __vue_template_functional__ = false
-var __vue_styles__ = null
-var __vue_scopeId__ = null
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/GeneralUploadComponent.vue"
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5926feeb", Component.options)
-  } else {
-    hotAPI.reload("data-v-5926feeb", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-module.exports = Component.exports
- }),
- (function(module, __webpack_exports__, __webpack_require__) {
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
- __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl'],
+  props: ['medias', 'baseUrl', 'csrf'],
   mounted: function mounted() {
     this.$refs.croppieRef.bind({
       url: '/img/404/image.png'
@@ -89845,57 +89863,15 @@ module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5926feeb", module.exports)
-  }
-}
- }),
- (function(module, exports, __webpack_require__) {
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", [_vm._m(0), _vm._v(" "), _c("generalUpload")], 1)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("nav", { staticClass: "nav" }, [
-      _c(
-        "a",
-        {
-          staticClass: "nav-link active",
-          attrs: { href: "#add", "data-toggle": "tab" }
-        },
-        [_vm._v("Add media")]
-      ),
-      _vm._v(" "),
-      _c(
-        "a",
-        {
-          staticClass: "nav-link",
-          attrs: { href: "#upload", "data-toggle": "tab" }
-        },
-        [_vm._v("Direct upload")]
-      )
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-72ff0d15", module.exports)
   }
 }
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
-var __vue_script__ = __webpack_require__(506)
-var __vue_template__ = __webpack_require__(510)
+var normalizeComponent = __webpack_require__(10)
+var __vue_script__ = __webpack_require__(503)
+var __vue_template__ = __webpack_require__(507)
 var __vue_template_functional__ = false
 var __vue_styles__ = null
 var __vue_scopeId__ = null
@@ -89928,10 +89904,10 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  var __WEBPACK_IMPORTED_MODULE_1__TagComponent__ = __webpack_require__(169);
  var __WEBPACK_IMPORTED_MODULE_1__TagComponent___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__TagComponent__);
- var __WEBPACK_IMPORTED_MODULE_2__UserList__ = __webpack_require__(507);
+ var __WEBPACK_IMPORTED_MODULE_2__UserList__ = __webpack_require__(504);
  var __WEBPACK_IMPORTED_MODULE_2__UserList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__UserList__);
  __webpack_exports__["default"] = ({
   props: ['item', 'loggeduserid', 'search', 'medias', 'canloadmore', 'loggeduserid', 'tags', 'users'],
@@ -89971,9 +89947,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
-var __vue_script__ = __webpack_require__(508)
-var __vue_template__ = __webpack_require__(509)
+var normalizeComponent = __webpack_require__(10)
+var __vue_script__ = __webpack_require__(505)
+var __vue_template__ = __webpack_require__(506)
 var __vue_template_functional__ = false
 var __vue_styles__ = null
 var __vue_scopeId__ = null
@@ -90006,7 +89982,7 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  __webpack_exports__["default"] = ({
   props: ['users']
 });
@@ -90227,9 +90203,9 @@ if (false) {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
-var __vue_script__ = __webpack_require__(512)
-var __vue_template__ = __webpack_require__(513)
+var normalizeComponent = __webpack_require__(10)
+var __vue_script__ = __webpack_require__(509)
+var __vue_template__ = __webpack_require__(510)
 var __vue_template_functional__ = false
 var __vue_styles__ = null
 var __vue_scopeId__ = null
@@ -90262,7 +90238,7 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  __webpack_exports__["default"] = ({
   props: ['medias', 'loggeduserid'],
   computed: {
@@ -90403,9 +90379,9 @@ if (false) {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
-var __vue_script__ = __webpack_require__(515)
-var __vue_template__ = __webpack_require__(516)
+var normalizeComponent = __webpack_require__(10)
+var __vue_script__ = __webpack_require__(512)
+var __vue_template__ = __webpack_require__(513)
 var __vue_template_functional__ = false
 var __vue_styles__ = null
 var __vue_scopeId__ = null
@@ -90438,10 +90414,10 @@ module.exports = Component.exports
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  var __WEBPACK_IMPORTED_MODULE_1__models__ = __webpack_require__(60);
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl', 'categories'],
+  props: ['medias', 'baseUrl', 'categories', 'csrf'],
   mounted: function mounted() {
     this.$refs.croppieRef.bind({
       url: '/img/404/image.png'
@@ -90997,9 +90973,9 @@ if (false) {
  }),
  (function(module, exports, __webpack_require__) {
 var disposed = false
-var normalizeComponent = __webpack_require__(9)
+var normalizeComponent = __webpack_require__(10)
 var __vue_script__ = null
-var __vue_template__ = __webpack_require__(518)
+var __vue_template__ = __webpack_require__(515)
 var __vue_template_functional__ = false
 var __vue_styles__ = null
 var __vue_scopeId__ = null
@@ -91094,11 +91070,11 @@ if (false) {
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(520)
+  __webpack_require__(517)
 }
-var normalizeComponent = __webpack_require__(9)
-var __vue_script__ = __webpack_require__(524)
-var __vue_template__ = __webpack_require__(525)
+var normalizeComponent = __webpack_require__(10)
+var __vue_script__ = __webpack_require__(521)
+var __vue_template__ = __webpack_require__(522)
 var __vue_template_functional__ = false
 var __vue_styles__ = injectStyle
 var __vue_scopeId__ = null
@@ -91129,10 +91105,10 @@ if (false) {(function () {
 module.exports = Component.exports
  }),
  (function(module, exports, __webpack_require__) {
-var content = __webpack_require__(521);
+var content = __webpack_require__(518);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
-var update = __webpack_require__(522)("03d9513d", content, false, {});
+var update = __webpack_require__(519)("03d9513d", content, false, {});
 if(false) {
  if(!content.locals) {
    module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1d893ab8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/stylus-loader/index.js!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SidebarComponent.vue", function() {
@@ -91157,7 +91133,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
     "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
   ) }
 }
-var listToStyles = __webpack_require__(523)
+var listToStyles = __webpack_require__(520)
 var stylesInDom = {}
 var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
 var singletonElement = null
@@ -91337,7 +91313,7 @@ module.exports = function listToStyles (parentId, list) {
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
- var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
+ var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(9);
  __webpack_exports__["default"] = ({
   methods: {
     searching: function searching() {
@@ -91349,16 +91325,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     emitRefreshMedias: function emitRefreshMedias() {
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshMedias', "");
     },
+    emitLogout: function emitLogout() {
+      $.ajax({
+        url: '/logout',
+        type: 'POST',
+        data: new FormData($("#logoutForm")[0]),
+        cache: false,
+        contentType: false,
+        processData: false,
+        complete: function complete(res) {
+          if (res.status == 200) {
+            __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('logout', "");
+          }
+        }
+      });
+    },
     emitLoadAllMedias: function emitLoadAllMedias() {
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadAllMedias', "");
     }
   },
-  props: ['currentuser', 'medias', 'users', 'tags'],
+  props: ['currentuser', 'medias', 'users', 'tags', 'csrf'],
+  computed: {
+    csrf1: function csrf1() {
+      document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    }
+  },
   data: function data() {
     return {
       active: false,
-      activeItem: 0,
-      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      activeItem: 0
     };
   }
 });
@@ -91615,11 +91610,14 @@ var render = function() {
                     "vs-button",
                     {
                       attrs: {
-                        onclick:
-                          "document.getElementById('logout-form').submit();",
                         icon: "power_settings_new",
                         color: "danger",
                         type: "flat"
+                      },
+                      on: {
+                        click: function($event) {
+                          _vm.emitLogout()
+                        }
                       }
                     },
                     [_vm._v("Logout")]
@@ -91632,7 +91630,7 @@ var render = function() {
                     {
                       staticStyle: { display: "none" },
                       attrs: {
-                        id: "logout-form",
+                        id: "logoutForm",
                         action: "/logout",
                         method: "POST"
                       }

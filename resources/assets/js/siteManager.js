@@ -24,7 +24,8 @@ var siteManager =  (function () {
         this.usedSearchTerms = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
         this.receiveUsers(true);
-        var that = this;
+        this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        setInterval(this.updateCSRF, 1800000);
     }
     siteManager.prototype.initVue = function () {
         var _this = this;
@@ -77,10 +78,33 @@ var siteManager =  (function () {
             that.catchedTagMedias = [];
             _this.usedSearchTerms = [];
             that.receiveMedias("/internal-api/media" + _this.getIgnoreParam(), true);
+            that.updateCSRF();
         });
         eventBus.$on('loadAllMedias', function (title) {
             that.receiveMedias("/internal-api/medias/all" + _this.getIgnoreParam());
             theVue.canloadmore = false;
+            that.updateCSRF();
+        });
+        eventBus.$on('login', function (settings) {
+            _this.loggedUserId = settings.user_id;
+            theVue.loggeduserid = _this.loggedUserId;
+            that.currentUser = that.getUserById(_this.loggedUserId);
+            theVue.currentuser = that.currentUser;
+            theVue.alert("Welcome back, " + that.getUserById(_this.loggedUserId).name, "success");
+            theVue.$router.push('/');
+            that.updateCSRF();
+        });
+        eventBus.$on('logout', function (settings) {
+            _this.loggedUserId = 0;
+            theVue.loggeduserid = _this.loggedUserId;
+            that.currentUser = that.getUserById(_this.loggedUserId);
+            theVue.currentuser = that.currentUser;
+            theVue.alert("Logged out", "danger");
+            theVue.$router.push('/');
+            that.updateCSRF();
+        });
+        eventBus.$on('loginFailed', function (settings) {
+            theVue.alert("Login failed", "danger");
         });
         eventBus.$on('loadUserVideos', function (userid) {
             console.log("/internal-api/medias/by/" + userid + _this.getIgnoreParam());
@@ -96,24 +120,29 @@ var siteManager =  (function () {
         });
         eventBus.$on('commentCreated', function (json) {
             that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title);
+            that.updateCSRF();
             theVue.alert("Comment created", "success");
         });
         eventBus.$on('refreshMedia', function (id) {
             that.receiveMediaByName(that.findMediaById(Number(id)).title);
+            that.updateCSRF();
             theVue.alert("Media refreshed", "success");
         });
         eventBus.$on('videoDeleted', function (title) {
             theVue.alert("Video " + title + " deleted", "success");
             that.deleteMediaByName(title);
+            that.updateCSRF();
         });
         eventBus.$on('videoCreated', function (json) {
             that.receiveTagsForMedia(json);
             theVue.alert("Video " + json.data.title + " created", "success");
+            that.updateCSRF();
         });
         eventBus.$on('videoEdited', function (json) {
             that.deleteMediaByName(json[0]);
             that.receiveTagsForMedia(json[1]);
             theVue.alert("Video " + json[1].data.title + " edited", "success");
+            that.updateCSRF();
         });
         eventBus.$on('checkTag', function (tagName) {
             if (tagName == '') {
@@ -160,6 +189,7 @@ var siteManager =  (function () {
                 alertmsg: "",
                 alerttype: "",
                 search: '',
+                csrf: that.csrf,
                 currentuser: that.currentUser,
                 users: this.users,
                 loggeduserid: this.loggedUserId,
@@ -262,6 +292,13 @@ var siteManager =  (function () {
     };
     siteManager.prototype.getCurrentSite = function () {
         return this.currentPage;
+    };
+    siteManager.prototype.updateCSRF = function () {
+        $.get('/internal-api/refresh-csrf').done(function (data) {
+            this.csrf = data;
+            theVue.csrf = data;
+            $('meta[name="csrf-token"]').attr('content', data);
+        });
     };
     siteManager.prototype.receiveUsers = function (forceUpdate) {
         if (forceUpdate === void 0) { forceUpdate = false; }
