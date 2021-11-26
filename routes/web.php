@@ -10,7 +10,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/internal-api/info', function () {
-    return view('info');
+    return response()->json(["data"=>["media_count"=>Media::count(),"can_admin"=>Auth::user()->can('admin')]],200);
 });
 Route::get('/home', 'HomeController@index')->name('home');
 Route::group(['middleware' => ['auth']], function() {

@@ -7,7 +7,8 @@ export class User{
   mediaIds:any;
   tagString:string;
   publicState:boolean;
-  constructor(id:number,name:string,avatar:string,background:string,bio:string,mediaIds:any,tagString:string,publicState:boolean){
+  admin:boolean;
+  constructor(id:number,name:string,avatar:string,background:string,bio:string,mediaIds:any,tagString:string,publicState:boolean,admin:boolean=false){
     this.id=id;
     this.name = name;
     this.avatar = avatar;
@@ -16,6 +17,7 @@ export class User{
     this.mediaIds = mediaIds;
     this.tagString = tagString;
     this.publicState = publicState;
+    this.admin = admin;
   }
   toJson(){
     return "{id:"+this.id+",name:'"+this.name+"',avatar:'"+this.avatar+"',background:'"+this.background+"'}"
@@ -98,11 +100,13 @@ export class Category {
   description:string;
   avatar:string;
   background:string;
+  medias:Array<Media>;
   constructor(id:number,title:string,description:string,avatar:string,background:string){
     this.id=id;
     this.title=title;
     this.description=description;
     this.avatar=avatar;
     this.background=background;
+    this.medias = []
   }
 }
