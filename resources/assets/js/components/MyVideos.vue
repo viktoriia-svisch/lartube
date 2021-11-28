@@ -1,24 +1,25 @@
 <template>
+  <div>
+    <h3>My Videos</h3>
     <div class="row text-center text-lg-left" id="profilevideos">
-  <div v-for="cat in categories"  class="">
-    <p>{{ cat.title }}</p>
-    <div class="row text-center">
-    <div v-for="media in cat.medias"  class="col-lg-4 col-md-4 col-xs-6">
-          <singleField v-bind:item="media" v-bind:loggeduserid="loggeduserid"></singleField>
+    <div v-for="item in medias" v-if="item.user_id==loggeduserid"  class="col-lg-4 col-md-4 col-xs-6">
+        <singleField v-bind:item="item" v-bind:loggeduserid="loggeduserid"></singleField>
+    </div>
     </div>
   </div>
-  </div>
-    </div>
 </template>
 <script>
   import { eventBus } from '../eventBus.js';
   import SingleGalleryField from './SingleGalleryField'
   export default {
-    props: ['medias','baseUrl','canloadmore','loggeduserid','categories'],
+    props: ['medias','baseUrl','canloadmore','loggeduserid'],
     methods: {
       emitLoadMore() {
         eventBus.$emit('loadMore','');
       }
+    },
+    mounted(){
+      eventBus.$emit('loadUserVideos',this.loggeduserid);
     },
     components : {
         'singleField': SingleGalleryField
