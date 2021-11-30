@@ -59097,6 +59097,15 @@ var siteManager = function () {
             } else {
                 theVue.alert("Load " + loadCount + " and replace " + replaceCount + " medias.");
             }
+            var d = document.documentElement;
+            var offset = d.scrollTop + window.innerHeight;
+            var height = d.offsetHeight;
+            if (offset > height) {
+                if (that.nextLink != null) {
+                    console.log("receive cause no scroll yet");
+                    that.receiveMedias(that.nextLink);
+                }
+            }
         });
     };
     siteManager.prototype.getUserById = function (id) {
@@ -79558,7 +79567,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_2__Carousel__ = __webpack_require__(474);
  var __WEBPACK_IMPORTED_MODULE_2__Carousel___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Carousel__);
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl', 'loggeduserid', 'canloadmore'],
+  props: ['medias', 'baseUrl', 'loggeduserid', 'canloadmore', 'currentuser'],
   methods: {
     emitRefreshMedias: function emitRefreshMedias() {
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshMedias', "");
@@ -80177,6 +80186,7 @@ var render = function() {
       _c("carousel", {
         attrs: {
           medias: _vm.medias,
+          currentuser: _vm.currentuser,
           canloadmore: _vm.canloadmore,
           loggeduserid: _vm.loggeduserid
         }
@@ -80185,6 +80195,7 @@ var render = function() {
       _c("gallery", {
         attrs: {
           medias: _vm.medias,
+          currentuser: _vm.currentuser,
           canloadmore: _vm.canloadmore,
           loggeduserid: _vm.loggeduserid
         }
