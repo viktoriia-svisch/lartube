@@ -79656,7 +79656,7 @@ var render = function() {
         "router-link",
         {
           staticClass: "d-block h-100",
-          attrs: { to: "/media/" + _vm.item.title }
+          attrs: { to: "/media/" + encodeURIComponent(_vm.item.title) }
         },
         [
           _c("img", {
@@ -80017,7 +80017,9 @@ var render = function() {
                                         attrs: {
                                           icon: "play_circle_filled",
                                           title: "Play",
-                                          to: "/media/" + item.title
+                                          to:
+                                            "/media/" +
+                                            encodeURIComponent(item.title)
                                         }
                                       })
                                     ],
@@ -80447,7 +80449,11 @@ console.log(emptyMedia);
       var that = this;
       var theMedia = emptyMedia;
       this.medias.forEach(function (val, key) {
-        if (val.title == that.$route.params.currentTitle) {
+        console.log(that.$route.params.currentTitle);
+        var t = val.title;
+        if (t.includes("?")) {
+        }
+        if (encodeURIComponent(t) == encodeURIComponent(that.$route.params.currentTitle)) {
           theMedia = val;
         }
       });
@@ -87868,21 +87874,31 @@ var render = function() {
                       attrs: { to: "/profile/" + _vm.currentmedia.user.id }
                     },
                     [
-                      _vm.currentmedia.user.avatar == ""
-                        ? _c("img", {
-                            staticClass: "mx-auto rounded-circle img-fluid",
-                            staticStyle: { "max-height": "20px" },
-                            attrs: { src: "/img/404/avatar.png", alt: "avatar" }
-                          })
-                        : _c("img", {
-                            staticClass: "mx-auto rounded-circle img-fluid",
-                            staticStyle: { "max-height": "20px" },
-                            attrs: {
-                              src: "/" + _vm.currentmedia.user.avatar,
-                              alt: "avatar"
-                            }
-                          })
-                    ]
+                      _c(
+                        "vs-tooltip",
+                        { attrs: { text: _vm.currentmedia.user.name } },
+                        [
+                          _vm.currentmedia.user.avatar == ""
+                            ? _c("img", {
+                                staticClass: "mx-auto rounded-circle img-fluid",
+                                staticStyle: { "max-height": "20px" },
+                                attrs: {
+                                  src: "/img/404/avatar.png",
+                                  alt: "avatar"
+                                }
+                              })
+                            : _c("img", {
+                                staticClass: "mx-auto rounded-circle img-fluid",
+                                staticStyle: { "max-height": "20px" },
+                                attrs: {
+                                  src: "/" + _vm.currentmedia.user.avatar,
+                                  alt: "avatar"
+                                }
+                              })
+                        ]
+                      )
+                    ],
+                    1
                   ),
                   _vm._v(" "),
                   _vm.mylike == 1
@@ -89323,9 +89339,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         contentType: false,
         processData: false,
         complete: function complete(res) {
-          if (res.status == 200) {
-          }
-          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('videoEdited', [that.currentmedia.title, res.responseJSON]);
+          if (res.status == 200) {}
         }
       });
       return false;
@@ -90678,7 +90692,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       var that = this;
       var theMedia;
       this.medias.forEach(function (val, key) {
-        if (val.title == that.$route.params.editTitle) {
+        var t = val.title;
+        if (encodeURIComponent(t) == encodeURIComponent(that.$route.params.editTitle)) {
           theMedia = val;
           that.catid = val.category_id;
           console.log(val.tracks);
@@ -90734,7 +90749,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     submitAction: function submitAction() {
       var that = this;
       $.ajax({
-        url: '/api/media/' + this.currentmedia.title,
+        url: '/internal-api/media/' + this.currentmedia.id,
         type: 'POST',
         data: new FormData($("#theForm")[0]),
         cache: false,

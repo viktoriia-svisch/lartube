@@ -42,10 +42,10 @@
                           <a :href="torrentdownloadurl" v-b-modal.torrentmodal class="mr-1" v-if="torrentdownloadurl!=''&(currentmedia.techType=='torrent')" >Download file</a>
                           <b-btn v-b-modal.torrentmodal class="mr-1" v-if="currentmedia.techType=='torrent'" >Torrent-info</b-btn>
             <span class="btn btn-sm btn-info mr-1">{{ currentmedia.created_at_readable }}</span>
-              <router-link class="btn btn-sm btn-primary" :to="'/profile/'+currentmedia.user.id">
+              <router-link class="btn btn-sm btn-primary" :to="'/profile/'+currentmedia.user.id"><vs-tooltip :text="currentmedia.user.name">
                 <img v-if="currentmedia.user.avatar==''" class="mx-auto rounded-circle img-fluid" src="/img/404/avatar.png" alt="avatar" style="max-height: 20px;" />
                 <img v-else class="mx-auto rounded-circle img-fluid" :src="'/'+currentmedia.user.avatar" alt="avatar" style="max-height: 20px;" />
-              </router-link>
+              </vs-tooltip></router-link>
             <button id="like" v-if="mylike==1" type="button" @click="like(0,'like')" class="btn btn-sm btn-success">
               <vs-icon icon="thumb_up"></vs-icon>
               <span class="ml-1" id="likeCount">{{ likes }}</span>
@@ -294,7 +294,11 @@ torrentInterval = setInterval(function(){
                     let that = this;
           var theMedia = emptyMedia
           this.medias.forEach(function(val,key){
-            if(val.title==that.$route.params.currentTitle){
+            console.log(that.$route.params.currentTitle);
+            var t = val.title;
+            if(t.includes("?")){
+                          }
+            if(encodeURIComponent(t)==encodeURIComponent(that.$route.params.currentTitle)){
                                           theMedia = val;
             }
           });

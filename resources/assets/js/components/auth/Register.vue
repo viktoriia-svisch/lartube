@@ -154,8 +154,7 @@
             complete : function(res) {
               if(res.status==200){
                               }
-              eventBus.$emit('videoEdited',[that.currentmedia.title,res.responseJSON])
-                                    }
+                                                }
         });
         return false;
       },
