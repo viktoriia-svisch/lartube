@@ -88010,7 +88010,9 @@ var render = function() {
                             {
                               staticClass: "btn btn-sm btn-info float-right",
                               attrs: {
-                                to: "/mediaedit/" + _vm.currentmedia.title
+                                to:
+                                  "/mediaedit/" +
+                                  encodeURIComponent(_vm.currentmedia.title)
                               }
                             },
                             [_vm._v("Edit")]

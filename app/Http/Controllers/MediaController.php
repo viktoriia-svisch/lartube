@@ -39,16 +39,7 @@ class MediaController extends Controller
     {
         $getID3 = new \getID3;
         $title = $request->input('title');
-        $poster_source = 'public/media/posters/'.$title.'.png';
         $data = $request->input('poster');
-        if(!empty($data)){
-          list($type, $data) = explode(';', $data);
-          list(, $data)      = explode(',', $data);
-          $data = base64_decode($data);
-          Storage::put('public/media/posters/'.$title.'.png', $data);
-        } else {
-          $poster_source = '';
-        }
         $source = $request->input('source');
         $duration = "0";
         if(empty($source)){
@@ -68,7 +59,18 @@ class MediaController extends Controller
             array_push($tagArray, $tag);
           }
         }
-        $media = Media::create(['title' =>  $request->input('title'),'source' => $source,'poster_source' => $poster_source,'duration' => $duration, 'description' => $request->input('description'), 'type' => $request->input('type'), 'user_id' => Auth::id(),'category_id' =>  $request->input('category_id'),]);
+        $media = Media::create(['title' =>  $request->input('title'),'source' => $source,'poster_source' => '','duration' => $duration, 'description' => $request->input('description'), 'type' => $request->input('type'), 'user_id' => Auth::id(),'category_id' =>  $request->input('category_id'),]);
+        $poster_source = 'public/media/posters/'.$media->id.'.png';
+        if(!empty($data)){
+          list($type, $data) = explode(';', $data);
+          list(, $data)      = explode(',', $data);
+          $data = base64_decode($data);
+          Storage::put('public/media/posters/'.$media->id.'.png', $data);
+        } else {
+          $poster_source = '';
+        }
+        $media->poster_source = $poster_source;
+        $media->save();
         $media->retag($tagArray);
         return new MediaResource($media);
     }
@@ -177,8 +179,8 @@ class MediaController extends Controller
         if(!empty($media->poster_source)){
           Storage::delete($media->poster_source);
         }
-        $media->poster_source = 'public/media/posters/'.$media->title.'.png';
-        Storage::put('public/media/posters/'.$media->title.'.png', $data);
+        $media->poster_source = 'public/media/posters/'.$media->id.'.png';
+        Storage::put('public/media/posters/'.$media->id.'.png', $data);
         $media->save();
         return new MediaResource($media);
     }
