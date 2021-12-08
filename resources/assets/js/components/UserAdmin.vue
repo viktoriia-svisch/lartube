@@ -54,7 +54,7 @@
       </div>
       <div>
         <vs-button vs-type="gradient" size="small" :to="'/profile/'+tr.id" color="success" icon="send"></vs-button>
-        <vs-button vs-type="flat" size="small" color="danger" icon="delete_sweep"></vs-button>
+        <vs-button vs-type="flat" @click="openConfirm(tr.id)" size="small" color="danger" icon="delete_sweep"></vs-button>
       </div>
     </div>
     <vs-list>
@@ -72,10 +72,38 @@
   import SingleGalleryField from './SingleGalleryField'
   export default {
     props: ['users','baseUrl','canloadmore','loggeduserid'],
-    methods: {
-      emitLoadMore() {
-        eventBus.$emit('loadMore','');
+    data(){
+      return {
+        tmpid: 0
       }
+    },
+    methods: {
+      openConfirm(id){
+        this.tmpid = id
+        this.$vs.dialog({
+          type:'confirm',
+          color: 'danger',
+          title: `Delete user?`,
+          text: 'Delete a user can not be reverted. Are you shure?',
+          accept:this.deleteAction
+        })
+      },
+      deleteAction() {
+        let that = this;
+        $.ajax({
+            url: '/internal-api/user/'+this.tmpid,
+            type: 'DELETE',
+            cache: false,
+            contentType: false,
+            processData: false,
+            complete : function(res) {
+              if(res.status==200){
+                eventBus.$emit('userEdited','');
+              }
+            }
+        });
+        return false;
+      },
     },
     components : {
         'singleField': SingleGalleryField

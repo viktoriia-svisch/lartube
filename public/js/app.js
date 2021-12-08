@@ -80634,6 +80634,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   props: ['commentlist', 'loggeduserid', 'currentmedia', 'level'],
   name: 'comments',
   methods: {
+    openConfirm: function openConfirm(id) {
+      this.tmpid = id;
+      this.$vs.dialog({
+        type: 'confirm',
+        color: 'danger',
+        title: 'Delete comment?',
+        text: 'Delete a comment can not be reverted. Are you shure?',
+        accept: this.deleteComment
+      });
+    },
+    deleteComment: function deleteComment() {
+      console.log(this.tmpid);
+      var that = this;
+      $.ajax({
+        url: '/internal-api/comment/' + this.tmpid,
+        type: 'DELETE',
+        cache: false,
+        contentType: false,
+        processData: false,
+        complete: function complete(res) {
+          if (res.status == 200) {
+            __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('commentCreated', res.responseJSON);
+          }
+        }
+      });
+      return false;
+    },
     refreshMedia: function refreshMedia() {
       var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshMedia', this.currentmedia.id);
@@ -80690,6 +80717,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
       });
     }
+  },
+  data: function data() {
+    return {
+      tmpid: 0
+    };
   }
 });
  }),
@@ -80816,7 +80848,12 @@ var render = function() {
                         "span",
                         {
                           staticClass: "float-right btn btn-sm btn-danger",
-                          attrs: { onclick: "" }
+                          attrs: { onclick: "" },
+                          on: {
+                            click: function($event) {
+                              _vm.openConfirm(comment.id)
+                            }
+                          }
                         },
                         [_c("vs-icon", { attrs: { icon: "delete" } })],
                         1
@@ -90675,14 +90712,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   computed: {
     currentmedia: function currentmedia() {
       var m = this.getCurrentMedia();
-      this.catid = m.category_id;
       if (m == undefined) {
         return new __WEBPACK_IMPORTED_MODULE_1__models__["b" ](0, "None", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, 0, 0, [], 0);
+      } else {
+        this.catid = m.category_id;
       }
       return m;
     }
   },
   methods: {
+    openConfirm: function openConfirm() {
+      this.$vs.dialog({
+        type: 'confirm',
+        color: 'danger',
+        title: 'Delete media?',
+        text: 'Delete a media can not be reverted. Are you shure?',
+        accept: this.deleteAction
+      });
+    },
     showModal: function showModal() {
       this.$refs.myModalRef.show();
     },
@@ -90768,7 +90815,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     deleteAction: function deleteAction() {
       var that = this;
       $.ajax({
-        url: '/api/media/' + this.currentmedia.title,
+        url: '/internal-api/media/' + this.currentmedia.id,
         type: 'DELETE',
         cache: false,
         contentType: false,
@@ -90806,6 +90853,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       alertType: 'warning',
       alertMsg: '',
       catid: '',
+      tmpid: 0,
       editpicloaded: false,
       showdismissiblealert: false,
       cropped: null
@@ -91188,10 +91236,10 @@ var render = function() {
       _c(
         "button",
         {
-          staticClass: "btn btn-danger",
+          staticClass: "btn btn-danger float-right",
           on: {
             click: function($event) {
-              _vm.deleteAction()
+              _vm.openConfirm()
             }
           }
         },
@@ -91946,9 +91994,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__);
  __webpack_exports__["default"] = ({
   props: ['users', 'baseUrl', 'canloadmore', 'loggeduserid'],
+  data: function data() {
+    return {
+      tmpid: 0
+    };
+  },
   methods: {
-    emitLoadMore: function emitLoadMore() {
-      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadMore', '');
+    openConfirm: function openConfirm(id) {
+      this.tmpid = id;
+      this.$vs.dialog({
+        type: 'confirm',
+        color: 'danger',
+        title: 'Delete user?',
+        text: 'Delete a user can not be reverted. Are you shure?',
+        accept: this.deleteAction
+      });
+    },
+    deleteAction: function deleteAction() {
+      var that = this;
+      $.ajax({
+        url: '/internal-api/user/' + this.tmpid,
+        type: 'DELETE',
+        cache: false,
+        contentType: false,
+        processData: false,
+        complete: function complete(res) {
+          if (res.status == 200) {
+            __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('userEdited', '');
+          }
+        }
+      });
+      return false;
     }
   },
   components: {
@@ -92090,6 +92166,11 @@ var render = function() {
                                         size: "small",
                                         color: "danger",
                                         icon: "delete_sweep"
+                                      },
+                                      on: {
+                                        click: function($event) {
+                                          _vm.openConfirm(tr.id)
+                                        }
                                       }
                                     })
                                   ],

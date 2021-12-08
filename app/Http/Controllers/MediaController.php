@@ -206,9 +206,9 @@ class MediaController extends Controller
         $medias = Media::withAnyTag($tagArray)->get();
         return view('tags.filter',compact('medias'));
     }
-    public function destroy($title)
+    public function destroy($id)
     {
-        $media = Media::where('title', '=' ,$title)->firstOrFail();
+        $media = Media::where('id', '=' ,$id)->firstOrFail();
         $extension = pathinfo($media->source);
         if(!empty($extension['extension'])){
           $extension = $extension['extension'];
@@ -218,7 +218,6 @@ class MediaController extends Controller
         }
         Storage::delete($media->poster_source);
         $media->delete();
-        return redirect()->route('media')
-                        ->with('success','Media deleted successfully');
+        return response()->json(["data"=>["msg"=>"Media deleted"]],200);
     }
 }
