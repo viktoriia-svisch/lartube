@@ -79652,118 +79652,112 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "div",
-    { staticClass: "card hide-on-hover mb-1" },
+    "vs-tooltip",
+    { attrs: { title: _vm.item.title, text: _vm.item.description } },
     [
       _c(
-        "router-link",
-        {
-          staticClass: "d-block h-100",
-          attrs: { to: "/media/" + encodeURIComponent(_vm.item.title) }
-        },
+        "div",
+        { staticClass: "card hide-on-hover mb-1" },
         [
-          _c("img", {
-            staticClass: "card-img-top",
-            attrs: { src: _vm.item.poster_source, alt: "" }
-          }),
-          _vm._v(" "),
           _c(
-            "div",
+            "router-link",
             {
-              staticClass: "card-img-overlay text-light",
-              staticStyle: { padding: "0", opacity: "0.875", color: "black" }
+              staticClass: "d-block h-100",
+              attrs: { to: "/media/" + encodeURIComponent(_vm.item.title) }
             },
             [
-              _c(
-                "div",
-                {
-                  staticClass: "pr-sm-0 pl-sm-0 ml-sm-0 mr-sm-0 card-header ",
-                  staticStyle: { "padding-bottom": "0px" }
-                },
-                [
-                  _c(
-                    "p",
-                    {
-                      staticClass:
-                        "card-title text-center text-xs-left pl-sm-0 pr-sm-0 pl-md-1 pr-md-1 "
-                    },
-                    [
-                      _c(
-                        "span",
-                        {
-                          staticClass:
-                            "pl-sm-0 pr-sm-0 pl-md-1 pr-md-1 mr-sm-0 ml-sm-0 bg-secondary sgfText",
-                          staticStyle: {
-                            "white-space": "nowrap",
-                            overflow: "hidden"
-                          }
-                        },
-                        [_vm._v(_vm._s(_vm.item.title))]
-                      )
-                    ]
-                  )
-                ]
-              ),
+              _c("img", {
+                staticClass: "card-img-top",
+                attrs: { src: _vm.item.poster_source, alt: "" }
+              }),
               _vm._v(" "),
               _c(
                 "div",
                 {
-                  staticClass: " card-body pl-md-1 pr-md-1 pl-sm-0 pr-sm-0",
-                  staticStyle: { "padding-top": "0px" }
+                  staticClass: "card-img-overlay text-light",
+                  staticStyle: {
+                    padding: "0",
+                    opacity: "0.875",
+                    color: "black"
+                  }
                 },
                 [
                   _c(
                     "div",
-                    { staticClass: "d-none d-md-none d-sm-block d-lg-block " },
+                    {
+                      staticClass:
+                        "pr-sm-0 pl-sm-0 ml-sm-0 mr-sm-0 card-header ",
+                      staticStyle: { "padding-bottom": "0px" }
+                    },
                     [
-                      _c("span", { staticClass: " bg-secondary sgfText" }, [
-                        _vm._v(_vm._s(_vm.shorteneddescription))
-                      ])
+                      _c(
+                        "p",
+                        {
+                          staticClass:
+                            "card-title text-center text-xs-left pl-sm-0 pr-sm-0 pl-md-1 pr-md-1 "
+                        },
+                        [
+                          _c(
+                            "span",
+                            {
+                              staticClass:
+                                "pl-sm-0 pr-sm-0 pl-md-1 pr-md-1 mr-sm-0 ml-sm-0 bg-secondary sgfText",
+                              staticStyle: {
+                                "white-space": "nowrap",
+                                overflow: "hidden"
+                              }
+                            },
+                            [_vm._v(_vm._s(_vm.item.title))]
+                          )
+                        ]
+                      )
                     ]
                   ),
                   _vm._v(" "),
-                  _c("div", { staticClass: "d-none d-lg-block" }, [
-                    _c("span", { staticClass: "bg-secondary sgfText" }, [
-                      _vm._v(
-                        _vm._s(_vm.item.duration) +
-                          " - " +
-                          _vm._s(_vm.item.comments.length) +
-                          " comments"
-                      )
-                    ]),
-                    _c(
-                      "span",
-                      { staticClass: "bg-secondary sgfText float-right" },
-                      [_vm._v(_vm._s(_vm.item.type))]
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("footer", { staticClass: "d-none d-xl-block" }, [
-                    _c(
-                      "span",
-                      { staticClass: "float-left bg-dark sgfText text-info" },
-                      [_vm._v(_vm._s(_vm.shortenedtags))]
-                    ),
-                    _vm._v(" "),
-                    _vm.loggeduserid == _vm.item.user.id
-                      ? _c(
+                  _c(
+                    "div",
+                    {
+                      staticClass: " card-body pl-md-1 pr-md-1 pl-sm-0 pr-sm-0",
+                      staticStyle: { "padding-top": "0px" }
+                    },
+                    [
+                      _c(
+                        "div",
+                        {
+                          staticClass: "d-none d-md-none d-sm-block d-lg-block "
+                        },
+                        [
+                          _c("span", { staticClass: " bg-secondary sgfText" }, [
+                            _vm._v(_vm._s(_vm.shorteneddescription))
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "d-none d-lg-block" }, [
+                        _c("span", { staticClass: "bg-secondary sgfText" }, [
+                          _vm._v(
+                            _vm._s(_vm.item.duration) +
+                              " - " +
+                              _vm._s(_vm.item.comments.length) +
+                              " comments"
+                          )
+                        ]),
+                        _c(
                           "span",
-                          {
-                            staticClass:
-                              "d-none d-xl-block float-right bg-secondary sgfText"
-                          },
-                          [_vm._v("This is your media")]
+                          { staticClass: "bg-secondary sgfText float-right" },
+                          [_vm._v(_vm._s(_vm.item.type))]
                         )
-                      : _vm._e()
-                  ])
+                      ])
+                    ]
+                  )
                 ]
               )
             ]
           )
-        ]
+        ],
+        1
       )
-    ],
-    1
+    ]
   )
 }
 var staticRenderFns = []
@@ -90024,9 +90018,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       };
       reader.readAsDataURL($("#posterUpload")[0].files[0]);
     },
+    uploadProgress: function uploadProgress() {},
     submitAction: function submitAction() {
       var that = this;
       $.ajax({
+        xhr: function xhr() {
+          var xhr = new window.XMLHttpRequest();
+          xhr.upload.addEventListener("progress", function (evt) {
+            if (evt.lengthComputable) {
+              var percentComplete = evt.loaded / evt.total;
+              console.log(percentComplete);
+              that.uploadPercent = percentComplete * 100;
+            }
+          }, false);
+          xhr.addEventListener("progress", function (evt) {
+            if (evt.lengthComputable) {
+              var percentComplete = evt.loaded / evt.total;
+            }
+          }, false);
+          return xhr;
+        },
         url: '/media/create',
         type: 'POST',
         data: new FormData($("#theForm")[0]),
@@ -90061,7 +90072,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   data: function data() {
     return {
       mediaType: '',
-      cropped: null
+      cropped: null,
+      uploadPercent: -1
     };
   }
 });
@@ -90071,180 +90083,197 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "col-xs-12 col-sm-12 col-md-12" }, [
-    _c("h4", [_vm._v("Add media")]),
-    _vm._v(" "),
-    _c("form", { attrs: { id: "theForm" } }, [
-      _c("div", { staticClass: "form-group" }, [
-        _c("label", [_vm._v("Media-type:")]),
+  return _c(
+    "div",
+    { staticClass: "col-xs-12 col-sm-12 col-md-12" },
+    [
+      _c("h4", [_vm._v("Add media")]),
+      _vm._v(" "),
+      _c("form", { attrs: { id: "theForm" } }, [
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", [_vm._v("Media-type:")]),
+          _vm._v(" "),
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.mediaType,
+                  expression: "mediaType"
+                }
+              ],
+              attrs: { name: "type" },
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.mediaType = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            [
+              _c("option", { attrs: { selected: "", value: "localAudio" } }, [
+                _vm._v("Local audio")
+              ]),
+              _c("option", { attrs: { value: "localVideo" } }, [
+                _vm._v("Local video")
+              ]),
+              _c("option", { attrs: { value: "directVideo" } }, [
+                _vm._v("Direct video")
+              ]),
+              _c("option", { attrs: { value: "directAudio" } }, [
+                _vm._v("Direct audio")
+              ]),
+              _c("option", { attrs: { value: "torrentAudio" } }, [
+                _vm._v("Torrent audio")
+              ]),
+              _c("option", { attrs: { value: "torrentVideo" } }, [
+                _vm._v("Torrent video")
+              ])
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        (_vm.mediaType == "localAudio") | (_vm.mediaType == "localVideo")
+          ? _c("div", { staticClass: "form-group" }, [
+              _c("label", [_vm._v("Media-file:")]),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "directMedia",
+                attrs: { id: "directMedia", name: "directMedia", type: "file" }
+              })
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        (_vm.mediaType == "directAudio") | (_vm.mediaType == "directVideo")
+          ? _c("div", { staticClass: "form-group" }, [
+              _c("label", [_vm._v("Media-source:")]),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "form-control",
+                attrs: {
+                  placeholder: "https:
+                  name: "source",
+                  type: "text"
+                }
+              })
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        (_vm.mediaType == "torrentAudio") | (_vm.mediaType == "torrentVideo")
+          ? _c("div", { staticClass: "form-group" }, [
+              _c("label", [_vm._v("Torrent (magnet-link)")]),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "form-control",
+                attrs: {
+                  placeholder: "magnet:
+                  name: "source",
+                  type: "text"
+                }
+              })
+            ])
+          : _vm._e(),
         _vm._v(" "),
         _c(
-          "select",
-          {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.mediaType,
-                expression: "mediaType"
-              }
-            ],
-            attrs: { name: "type" },
-            on: {
-              change: function($event) {
-                var $$selectedVal = Array.prototype.filter
-                  .call($event.target.options, function(o) {
-                    return o.selected
-                  })
-                  .map(function(o) {
-                    var val = "_value" in o ? o._value : o.value
-                    return val
-                  })
-                _vm.mediaType = $event.target.multiple
-                  ? $$selectedVal
-                  : $$selectedVal[0]
-              }
-            }
-          },
+          "div",
+          { staticClass: "form-group" },
           [
-            _c("option", { attrs: { selected: "", value: "localAudio" } }, [
-              _vm._v("Local audio")
-            ]),
-            _c("option", { attrs: { value: "localVideo" } }, [
-              _vm._v("Local video")
-            ]),
-            _c("option", { attrs: { value: "directVideo" } }, [
-              _vm._v("Direct video")
-            ]),
-            _c("option", { attrs: { value: "directAudio" } }, [
-              _vm._v("Direct audio")
-            ]),
-            _c("option", { attrs: { value: "torrentAudio" } }, [
-              _vm._v("Torrent audio")
-            ]),
-            _c("option", { attrs: { value: "torrentVideo" } }, [
-              _vm._v("Torrent video")
-            ])
-          ]
-        )
+            _c("label", [_vm._v("Media-poster:")]),
+            _vm._v(" "),
+            _c("vue-croppie", {
+              ref: "croppieRef",
+              attrs: {
+                enableOrientation: true,
+                enableResize: false,
+                viewport: { width: 700, height: 394, type: "square" },
+                boundary: { width: 700, height: 394 }
+              },
+              on: { result: _vm.result, update: _vm.update }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              attrs: { type: "hidden", id: "posterBase", name: "poster" },
+              domProps: { value: _vm.cropped }
+            }),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                on: {
+                  click: function($event) {
+                    _vm.rotate(-90, $event)
+                  }
+                }
+              },
+              [_vm._v("Rotate Left")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                on: {
+                  click: function($event) {
+                    _vm.rotate(90, $event)
+                  }
+                }
+              },
+              [_vm._v("Rotate Right")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              attrs: { id: "posterUpload", name: "poster", type: "file" },
+              on: {
+                change: function($event) {
+                  _vm.posterChange()
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("div", { attrs: { id: "poster" } })
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _vm._m(0),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _vm._m(2)
       ]),
       _vm._v(" "),
-      (_vm.mediaType == "localAudio") | (_vm.mediaType == "localVideo")
-        ? _c("div", { staticClass: "form-group" }, [
-            _c("label", [_vm._v("Media-file:")]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "directMedia",
-              attrs: { id: "directMedia", name: "directMedia", type: "file" }
-            })
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      (_vm.mediaType == "directAudio") | (_vm.mediaType == "directVideo")
-        ? _c("div", { staticClass: "form-group" }, [
-            _c("label", [_vm._v("Media-source:")]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: {
-                placeholder: "https:
-                name: "source",
-                type: "text"
-              }
-            })
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      (_vm.mediaType == "torrentAudio") | (_vm.mediaType == "torrentVideo")
-        ? _c("div", { staticClass: "form-group" }, [
-            _c("label", [_vm._v("Torrent (magnet-link)")]),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "form-control",
-              attrs: { placeholder: "magnet:
-            })
-          ])
+      _vm.uploadPercent != -1
+        ? _c(
+            "vs-progress",
+            { attrs: { percent: _vm.uploadPercent, color: "primary" } },
+            [_vm._v("primary")]
+          )
         : _vm._e(),
       _vm._v(" "),
       _c(
-        "div",
-        { staticClass: "form-group" },
-        [
-          _c("label", [_vm._v("Media-poster:")]),
-          _vm._v(" "),
-          _c("vue-croppie", {
-            ref: "croppieRef",
-            attrs: {
-              enableOrientation: true,
-              enableResize: false,
-              viewport: { width: 700, height: 394, type: "square" },
-              boundary: { width: 700, height: 394 }
-            },
-            on: { result: _vm.result, update: _vm.update }
-          }),
-          _vm._v(" "),
-          _c("input", {
-            attrs: { type: "hidden", id: "posterBase", name: "poster" },
-            domProps: { value: _vm.cropped }
-          }),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              on: {
-                click: function($event) {
-                  _vm.rotate(-90, $event)
-                }
-              }
-            },
-            [_vm._v("Rotate Left")]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              on: {
-                click: function($event) {
-                  _vm.rotate(90, $event)
-                }
-              }
-            },
-            [_vm._v("Rotate Right")]
-          ),
-          _vm._v(" "),
-          _c("input", {
-            attrs: { id: "posterUpload", name: "poster", type: "file" },
-            on: {
-              change: function($event) {
-                _vm.posterChange()
-              }
+        "button",
+        {
+          on: {
+            click: function($event) {
+              _vm.submitAction()
             }
-          }),
-          _vm._v(" "),
-          _c("div", { attrs: { id: "poster" } })
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _vm._m(0),
-      _vm._v(" "),
-      _vm._m(1),
-      _vm._v(" "),
-      _vm._m(2)
-    ]),
-    _vm._v(" "),
-    _c(
-      "button",
-      {
-        on: {
-          click: function($event) {
-            _vm.submitAction()
           }
-        }
-      },
-      [_vm._v("Submit")]
-    )
-  ])
+        },
+        [_vm._v("Submit")]
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = [
   function() {
@@ -92057,30 +92086,40 @@ var render = function() {
       staticClass: "row text-center text-lg-left",
       attrs: { id: "profilevideos" }
     },
-    _vm._l(_vm.categories, function(cat) {
-      return _c("div", {}, [
-        _c("p", [_vm._v(_vm._s(cat.title))]),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "row text-center" },
-          _vm._l(cat.medias, function(media) {
-            return _c(
+    [
+      _c(
+        "vs-collapse",
+        _vm._l(_vm.categories, function(cat) {
+          return _c("vs-collapse-item", { key: cat.id }, [
+            _c("div", { attrs: { slot: "header" }, slot: "header" }, [
+              _vm._v("\n      " + _vm._s(cat.title) + "\n    ")
+            ]),
+            _vm._v(" "),
+            _c("p", [_vm._v(_vm._s(cat.description))]),
+            _vm._v(" "),
+            _c(
               "div",
-              { staticClass: "col-lg-4 col-md-4 col-xs-6" },
-              [
-                _c("singleField", {
-                  attrs: { item: media, loggeduserid: _vm.loggeduserid }
-                })
-              ],
-              1
+              { staticClass: "row text-center" },
+              _vm._l(cat.medias, function(media) {
+                return _c(
+                  "div",
+                  { staticClass: "col-lg-3 col-md-3 col-xs-6" },
+                  [
+                    _c("singleField", {
+                      attrs: { item: media, loggeduserid: _vm.loggeduserid }
+                    })
+                  ],
+                  1
+                )
+              }),
+              0
             )
-          }),
-          0
-        )
-      ])
-    }),
-    0
+          ])
+        }),
+        1
+      )
+    ],
+    1
   )
 }
 var staticRenderFns = []
