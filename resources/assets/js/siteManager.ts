@@ -150,6 +150,13 @@ class siteManager {
       that.updateCSRF();
       theVue.alert("Media refreshed","success")
     });
+    eventBus.$on('loadMedia', title => {
+      if(theVue!=undefined){
+        that.receiveMediaByName(title)
+        that.updateCSRF();
+      }
+      theVue.alert("Media refreshed","success")
+    });
     eventBus.$on('videoDeleted', title => {
       theVue.alert("Video "+title+" deleted","success")
       that.deleteMediaByName(title);

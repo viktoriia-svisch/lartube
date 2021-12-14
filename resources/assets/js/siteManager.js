@@ -138,6 +138,13 @@ var siteManager =  (function () {
             that.updateCSRF();
             theVue.alert("Media refreshed", "success");
         });
+        eventBus.$on('loadMedia', function (title) {
+            if (theVue != undefined) {
+                that.receiveMediaByName(title);
+                that.updateCSRF();
+            }
+            theVue.alert("Media refreshed", "success");
+        });
         eventBus.$on('videoDeleted', function (title) {
             theVue.alert("Video " + title + " deleted", "success");
             that.deleteMediaByName(title);
