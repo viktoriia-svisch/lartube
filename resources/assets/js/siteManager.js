@@ -344,8 +344,12 @@ var siteManager =  (function () {
             }
         });
     };
-    siteManager.prototype.getIgnoreParam = function () {
-        var content = "?i=0";
+    siteManager.prototype.getIgnoreParam = function (first) {
+        if (first === void 0) { first = true; }
+        var content = "&i=0";
+        if (first) {
+            content = "?i=0";
+        }
         $.each(this.medias, function (key, value) {
             content += "," + value.id;
         });
@@ -543,8 +547,8 @@ var siteManager =  (function () {
                 }
             });
             if (data.links != undefined) {
-                that.nextLink = data.links.next;
-                that.lastLink = data.links.prev;
+                that.nextLink = data.links.next + that.getIgnoreParam(false);
+                that.lastLink = data.links.prev + that.getIgnoreParam(false);
             }
             if (theVue == undefined) {
                 that.initVue();

@@ -350,8 +350,11 @@ if(localStorage.getItem('cookiePolicy')!="read"){
       }
     });
   }
-  getIgnoreParam(){
-    var content = "?i=0";
+  getIgnoreParam(first=true){
+    var content = "&i=0";
+    if(first){
+      content = "?i=0";
+    }
     $.each( this.medias, function( key, value ) {
       content += ","+value.id
     });
@@ -541,8 +544,8 @@ if(localStorage.getItem('cookiePolicy')!="read"){
           }
         });
         if(data.links!=undefined){
-          that.nextLink = data.links.next;
-          that.lastLink = data.links.prev;
+          that.nextLink = data.links.next+that.getIgnoreParam(false);
+          that.lastLink = data.links.prev+that.getIgnoreParam(false);
         }
         if(theVue==undefined){
           that.initVue();

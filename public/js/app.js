@@ -58894,8 +58894,14 @@ var siteManager = function () {
             }
         });
     };
-    siteManager.prototype.getIgnoreParam = function () {
-        var content = "?i=0";
+    siteManager.prototype.getIgnoreParam = function (first) {
+        if (first === void 0) {
+            first = true;
+        }
+        var content = "&i=0";
+        if (first) {
+            content = "?i=0";
+        }
         $.each(this.medias, function (key, value) {
             content += "," + value.id;
         });
@@ -59104,8 +59110,8 @@ var siteManager = function () {
                 }
             });
             if (data.links != undefined) {
-                that.nextLink = data.links.next;
-                that.lastLink = data.links.prev;
+                that.nextLink = data.links.next + that.getIgnoreParam(false);
+                that.lastLink = data.links.prev + that.getIgnoreParam(false);
             }
             if (theVue == undefined) {
                 that.initVue();
@@ -79693,112 +79699,112 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "vs-tooltip",
-    { attrs: { title: _vm.item.title, text: _vm.item.description } },
+    "div",
+    {
+      staticClass: "card hide-on-hover mb-1",
+      attrs: { id: _vm.item.id + "scard" }
+    },
     [
       _c(
-        "div",
-        { staticClass: "card hide-on-hover mb-1" },
+        "router-link",
+        {
+          staticClass: "d-block h-100",
+          attrs: { to: "/media/" + encodeURIComponent(_vm.item.title) }
+        },
         [
+          _c("img", {
+            staticClass: "card-img-top",
+            attrs: { src: _vm.item.poster_source, alt: "" }
+          }),
+          _vm._v(" "),
           _c(
-            "router-link",
+            "div",
             {
-              staticClass: "d-block h-100",
-              attrs: { to: "/media/" + encodeURIComponent(_vm.item.title) }
+              staticClass: "card-img-overlay text-light",
+              staticStyle: { padding: "0", opacity: "0.875", color: "black" }
             },
             [
-              _c("img", {
-                staticClass: "card-img-top",
-                attrs: { src: _vm.item.poster_source, alt: "" }
-              }),
+              _c(
+                "div",
+                {
+                  staticClass: "pr-sm-0 pl-sm-0 ml-sm-0 mr-sm-0 card-header ",
+                  staticStyle: { "padding-bottom": "0px" }
+                },
+                [
+                  _c(
+                    "p",
+                    {
+                      staticClass:
+                        "card-title text-center text-xs-left pl-sm-0 pr-sm-0 pl-md-1 pr-md-1 "
+                    },
+                    [
+                      _c(
+                        "span",
+                        {
+                          staticClass:
+                            "pl-sm-0 pr-sm-0 pl-md-1 pr-md-1 mr-sm-0 ml-sm-0 bg-secondary sgfText",
+                          staticStyle: {
+                            "white-space": "nowrap",
+                            overflow: "hidden"
+                          }
+                        },
+                        [_vm._v(_vm._s(_vm.item.title))]
+                      )
+                    ]
+                  )
+                ]
+              ),
               _vm._v(" "),
               _c(
                 "div",
                 {
-                  staticClass: "card-img-overlay text-light",
-                  staticStyle: {
-                    padding: "0",
-                    opacity: "0.875",
-                    color: "black"
-                  }
+                  staticClass: " card-body pl-md-1 pr-md-1 pl-sm-0 pr-sm-0",
+                  staticStyle: { "padding-top": "0px" }
                 },
                 [
                   _c(
                     "div",
-                    {
-                      staticClass:
-                        "pr-sm-0 pl-sm-0 ml-sm-0 mr-sm-0 card-header ",
-                      staticStyle: { "padding-bottom": "0px" }
-                    },
+                    { staticClass: "d-none d-md-none d-sm-block d-lg-block " },
                     [
-                      _c(
-                        "p",
-                        {
-                          staticClass:
-                            "card-title text-center text-xs-left pl-sm-0 pr-sm-0 pl-md-1 pr-md-1 "
-                        },
-                        [
-                          _c(
-                            "span",
-                            {
-                              staticClass:
-                                "pl-sm-0 pr-sm-0 pl-md-1 pr-md-1 mr-sm-0 ml-sm-0 bg-secondary sgfText",
-                              staticStyle: {
-                                "white-space": "nowrap",
-                                overflow: "hidden"
-                              }
-                            },
-                            [_vm._v(_vm._s(_vm.item.title))]
-                          )
-                        ]
-                      )
+                      _c("span", { staticClass: " bg-secondary sgfText" }, [
+                        _vm._v(_vm._s(_vm.shorteneddescription))
+                      ])
                     ]
                   ),
                   _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass: " card-body pl-md-1 pr-md-1 pl-sm-0 pr-sm-0",
-                      staticStyle: { "padding-top": "0px" }
-                    },
-                    [
-                      _c(
-                        "div",
-                        {
-                          staticClass: "d-none d-md-none d-sm-block d-lg-block "
-                        },
-                        [
-                          _c("span", { staticClass: " bg-secondary sgfText" }, [
-                            _vm._v(_vm._s(_vm.shorteneddescription))
-                          ])
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "d-none d-lg-block" }, [
-                        _c("span", { staticClass: "bg-secondary sgfText" }, [
-                          _vm._v(
-                            _vm._s(_vm.item.duration) +
-                              " - " +
-                              _vm._s(_vm.item.comments.length) +
-                              " comments"
-                          )
-                        ]),
-                        _c(
-                          "span",
-                          { staticClass: "bg-secondary sgfText float-right" },
-                          [_vm._v(_vm._s(_vm.item.type))]
-                        )
-                      ])
-                    ]
-                  )
+                  _c("div", { staticClass: "d-none d-lg-block" }, [
+                    _c("span", { staticClass: "bg-secondary sgfText" }, [
+                      _vm._v(
+                        _vm._s(_vm.item.duration) +
+                          " - " +
+                          _vm._s(_vm.item.comments.length) +
+                          " comments"
+                      )
+                    ]),
+                    _c(
+                      "span",
+                      { staticClass: "bg-secondary sgfText float-right" },
+                      [_vm._v(_vm._s(_vm.item.type))]
+                    )
+                  ])
                 ]
               )
             ]
           )
-        ],
-        1
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "b-tooltip",
+        { attrs: { target: _vm.item.id + "scard", placement: "top" } },
+        [
+          _c("h5", [_vm._v(_vm._s(_vm.item.title))]),
+          _vm._v(" "),
+          _c("p", [_vm._v(_vm._s(_vm.item.description))])
+        ]
       )
-    ]
+    ],
+    1
   )
 }
 var staticRenderFns = []
@@ -80381,7 +80387,7 @@ var presets = __WEBPACK_IMPORTED_MODULE_5_butterchurn_presets___default.a.getPre
       });
       if (theMedia == emptyMedia) {
         console.log("media not there yet, want it!");
-        __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadMedia', that.$route.params.currentTitle);
+        __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadMedia', encodeURIComponent(that.$route.params.currentTitle));
       }
       return theMedia;
     }
@@ -88773,7 +88779,12 @@ var render = function() {
           ),
           _vm._v(" "),
           _c("input", {
-            attrs: { id: "avatarUpload", name: "avatarf", type: "file" },
+            attrs: {
+              id: "avatarUpload",
+              accept: ".png,.jpg,.jpeg",
+              name: "avatarf",
+              type: "file"
+            },
             on: {
               change: function($event) {
                 _vm.avatarChange()
@@ -88835,6 +88846,7 @@ var render = function() {
           _c("input", {
             attrs: {
               id: "backgroundUpload",
+              accept: ".png,.jpg,.jpeg",
               name: "backgroundf",
               type: "file"
             },
@@ -90031,7 +90043,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   methods: {
     testMedia: function testMedia() {
-      this.theTestMedia = new __WEBPACK_IMPORTED_MODULE_1__models__["b" ](0, "None", "", $("#source").val(), "", "", "", "", this.mediaType, new __WEBPACK_IMPORTED_MODULE_1__models__["d" ](0, "None", "img/404/avatar.png", "img/404/background.png", "", "", {}, false), "", "", "", "", "", 0, 0, 0, [], 0);
+      var techType;
+      if (this.mediaType == "localAudio" || this.mediaType == "directAudio") {
+        techType = "audio";
+      } else if (this.mediaType == "localVideo" || this.mediaType == "directVideo") {
+        techType = "video";
+      } else if (this.mediaType == "torrentAudio" || this.mediaType == "torrentVideo") {
+        techType = "torrent";
+      }
+      this.theTestMedia = new __WEBPACK_IMPORTED_MODULE_1__models__["b" ](0, "None", "", $("#source").val(), "", "", "", techType, this.mediaType, new __WEBPACK_IMPORTED_MODULE_1__models__["d" ](0, "None", "img/404/avatar.png", "img/404/background.png", "", "", {}, false), "", "", "", "", "", 0, 0, 0, [], 0);
+    },
+    removeTestMedia: function removeTestMedia() {
+      this.theTestMedia = undefined;
     },
     posterChange: function posterChange() {
       var reader = new FileReader();
@@ -90099,7 +90122,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       mediaType: '',
       cropped: null,
       uploadPercent: -1,
-      theTestMedia: ''
+      theTestMedia: undefined
     };
   }
 });
@@ -90177,10 +90200,13 @@ var render = function() {
             ? _c("div", { staticClass: "form-group" }, [
                 _c("label", [_vm._v("Media-file:")]),
                 _vm._v(" "),
+                _c("p", [_vm._v("Local mean you upload it directly. ")]),
+                _vm._v(" "),
                 _c("input", {
                   staticClass: "directMedia",
                   attrs: {
                     id: "directMedia",
+                    accept: ".mp4,.mp3,.ogg",
                     name: "directMedia",
                     type: "file"
                   }
@@ -90192,6 +90218,12 @@ var render = function() {
             ? _c("div", { staticClass: "form-group" }, [
                 _c("label", [_vm._v("Media-source:")]),
                 _vm._v(" "),
+                _c("p", [
+                  _vm._v(
+                    "Direct mean you put a link from another server here. It needs to be a link, where you get the media, no html."
+                  )
+                ]),
+                _vm._v(" "),
                 _c("input", {
                   staticClass: "form-control",
                   attrs: {
@@ -90200,13 +90232,47 @@ var render = function() {
                     name: "source",
                     type: "text"
                   }
-                })
+                }),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    staticClass: "btn btn-primary",
+                    on: {
+                      click: function($event) {
+                        _vm.testMedia()
+                      }
+                    }
+                  },
+                  [_vm._v("Test link")]
+                ),
+                _vm._v(" "),
+                _vm.theTestMedia != undefined
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "btn btn-primary",
+                        on: {
+                          click: function($event) {
+                            _vm.removeTestMedia()
+                          }
+                        }
+                      },
+                      [_vm._v("Remove test")]
+                    )
+                  : _vm._e()
               ])
             : _vm._e(),
           _vm._v(" "),
           (_vm.mediaType == "torrentAudio") | (_vm.mediaType == "torrentVideo")
             ? _c("div", { staticClass: "form-group" }, [
                 _c("label", [_vm._v("Torrent (magnet-link)")]),
+                _vm._v(" "),
+                _c("p", [
+                  _vm._v(
+                    "A webtorrent magnet-link, for example from peertube-videos"
+                  )
+                ]),
                 _vm._v(" "),
                 _c("input", {
                   staticClass: "form-control",
@@ -90219,7 +90285,7 @@ var render = function() {
                 }),
                 _vm._v(" "),
                 _c(
-                  "button",
+                  "span",
                   {
                     staticClass: "btn btn-primary",
                     on: {
@@ -90229,7 +90295,22 @@ var render = function() {
                     }
                   },
                   [_vm._v("Test link")]
-                )
+                ),
+                _vm._v(" "),
+                _vm.theTestMedia != undefined
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "btn btn-primary",
+                        on: {
+                          click: function($event) {
+                            _vm.removeTestMedia()
+                          }
+                        }
+                      },
+                      [_vm._v("Remove test")]
+                    )
+                  : _vm._e()
               ])
             : _vm._e(),
           _vm._v(" "),
@@ -90282,7 +90363,12 @@ var render = function() {
               ),
               _vm._v(" "),
               _c("input", {
-                attrs: { id: "posterUpload", name: "poster", type: "file" },
+                attrs: {
+                  id: "posterUpload",
+                  accept: ".png,.jpg,.jpeg",
+                  name: "poster",
+                  type: "file"
+                },
                 on: {
                   change: function($event) {
                     _vm.posterChange()
@@ -90941,13 +91027,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  __webpack_exports__["default"] = ({
   props: ['medias', 'baseUrl', 'categories', 'csrf'],
   mounted: function mounted() {
-    this.$refs.croppieRef.bind({
-      url: '/img/404/poster.png'
-    });
   },
   updated: function updated() {
     this.$nextTick(function () {
       if (this.$refs.croppieRef != undefined & this.editpicloaded == false) {
+        this.currentmedia = this.getCurrentMedia();
         this.editpicloaded = true;
         this.$refs.croppieRef.bind({
           url: this.currentmedia.poster_source
@@ -90956,14 +91040,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     });
   },
   computed: {
-    currentmedia: function currentmedia() {
-      var m = this.getCurrentMedia();
-      if (m == undefined) {
-        return new __WEBPACK_IMPORTED_MODULE_1__models__["b" ](0, "None", "", "", "", "", "", "", "", "", "", "", "", "", "", "", 0, 0, 0, [], 0);
-      } else {
-        this.catid = m.category_id;
-      }
-      return m;
+  },
+  watch: {
+    medias: function medias(val) {
+      this.currentmedia = this.getCurrentMedia();
     }
   },
   methods: {
@@ -90990,10 +91070,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var t = val.title;
         if (encodeURIComponent(t) == encodeURIComponent(that.$route.params.editTitle)) {
           theMedia = val;
+          that.mediaType = val.type;
           that.catid = val.category_id;
-          console.log(val.tracks);
         }
       });
+      if (theMedia == undefined) {
+        console.log("media not there for edit yet, want it!");
+        __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadMedia', encodeURIComponent(that.$route.params.editTitle));
+      }
       return theMedia;
     },
     posterChange: function posterChange() {
@@ -91098,6 +91182,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       dismisscountdown: 0,
       alertType: 'warning',
       alertMsg: '',
+      currentmedia: undefined,
       catid: '',
       tmpid: 0,
       editpicloaded: false,
@@ -91112,388 +91197,406 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "col-xs-12 col-sm-12 col-md-12" },
-    [
-      _c("h4", [_vm._v("Edit media")]),
-      _vm._v(" "),
-      _c("form", { attrs: { id: "theForm" } }, [
-        _c("div", { staticClass: "form-group row" }, [
-          _c("label", [_vm._v("Media-title")]),
-          _vm._v(" "),
-          _c("input", {
-            attrs: {
-              type: "hidden",
-              value: "",
-              name: "image",
-              id: "addMediaImage"
-            }
-          }),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "form-control",
-            attrs: { placeholder: "Media-title", name: "title", type: "text" },
-            domProps: { value: _vm.currentmedia.title }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group row" }, [
-          _c("label", [_vm._v("Media-type (only for restore):")]),
-          _vm._v(" "),
-          _c(
-            "select",
-            {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.currentmedia.type,
-                  expression: "currentmedia.type"
-                }
-              ],
-              attrs: { name: "type" },
-              on: {
-                change: function($event) {
-                  var $$selectedVal = Array.prototype.filter
-                    .call($event.target.options, function(o) {
-                      return o.selected
-                    })
-                    .map(function(o) {
-                      var val = "_value" in o ? o._value : o.value
-                      return val
-                    })
-                  _vm.$set(
-                    _vm.currentmedia,
-                    "type",
-                    $event.target.multiple ? $$selectedVal : $$selectedVal[0]
-                  )
-                }
-              }
-            },
-            [
-              _c("option", { attrs: { value: "localAudio" } }, [
-                _vm._v("Local audio")
-              ]),
-              _c("option", { attrs: { value: "localVideo" } }, [
-                _vm._v("Local video")
-              ]),
-              _c("option", { attrs: { value: "directVideo" } }, [
-                _vm._v("Direct video")
-              ]),
-              _c("option", { attrs: { value: "directAudio" } }, [
-                _vm._v("Direct audio")
-              ]),
-              _c("option", { attrs: { value: "torrentAudio" } }, [
-                _vm._v("Torrent audio")
-              ]),
-              _c("option", { attrs: { value: "torrentVideo" } }, [
-                _vm._v("Torrent video")
-              ])
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group row" }, [
-          _c("label", [_vm._v("Category")]),
-          _vm._v(" "),
-          _c(
-            "select",
-            {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.catid,
-                  expression: "catid"
-                }
-              ],
-              attrs: { name: "category_id" },
-              on: {
-                change: function($event) {
-                  var $$selectedVal = Array.prototype.filter
-                    .call($event.target.options, function(o) {
-                      return o.selected
-                    })
-                    .map(function(o) {
-                      var val = "_value" in o ? o._value : o.value
-                      return val
-                    })
-                  _vm.catid = $event.target.multiple
-                    ? $$selectedVal
-                    : $$selectedVal[0]
-                }
-              }
-            },
-            [
-              _c("option", { attrs: { value: "" } }, [_vm._v("None")]),
-              _vm._l(_vm.categories, function(item) {
-                return _c("option", { domProps: { value: item.id } }, [
-                  _vm._v(_vm._s(item.title))
-                ])
-              })
-            ],
-            2
-          )
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group row" }, [
-          _c("label", [_vm._v("Source:")]),
-          _vm._v(" "),
-          _c("p", [_vm._v(_vm._s(_vm.currentmedia.source))])
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "form-group row" },
-          [
-            _c("label", [_vm._v("Media-poster:")]),
-            _vm._v(" "),
-            _c("vue-croppie", {
-              ref: "croppieRef",
-              attrs: {
-                enableOrientation: true,
-                enableResize: false,
-                viewport: { width: 700, height: 394, type: "square" },
-                boundary: { width: 700, height: 394 }
-              },
-              on: { result: _vm.result, update: _vm.update }
-            }),
-            _vm._v(" "),
-            _c("input", {
-              attrs: { type: "hidden", id: "posterBase", name: "poster" },
-              domProps: { value: _vm.cropped }
-            }),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                on: {
-                  click: function($event) {
-                    _vm.rotate(-90, $event)
-                  }
-                }
-              },
-              [_vm._v("Rotate Left")]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                on: {
-                  click: function($event) {
-                    _vm.rotate(90, $event)
-                  }
-                }
-              },
-              [_vm._v("Rotate Right")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              attrs: { id: "posterUpload", name: "poster", type: "file" },
-              on: {
-                change: function($event) {
-                  _vm.posterChange()
-                }
-              }
-            }),
-            _vm._v(" "),
-            _c("div", { attrs: { id: "poster" } })
-          ],
-          1
-        ),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group row" }, [
-          _c("label", [_vm._v("Media-description:")]),
-          _vm._v(" "),
-          _c("textarea", {
-            staticClass: "form-control",
-            attrs: {
-              placeholder: "Media-description",
-              id: "addMediaDescription",
-              name: "description",
-              cols: "50",
-              rows: "10"
-            },
-            domProps: { value: _vm.currentmedia.description }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group row" }, [
-          _c("label", [_vm._v("Tags (separate with spaces):")]),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "form-control",
-            attrs: { id: "tags", type: "text", name: "tags" },
-            domProps: { value: _vm.currentmedia.tagString }
-          })
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "form-group row" },
-          [
-            _c("label", [_vm._v("Subtitle")]),
-            _vm._v(" "),
-            _c(
-              "b-button",
-              { staticClass: "float-right", on: { click: _vm.showModal } },
-              [_vm._v("\n  Manage\n")]
-            )
-          ],
-          1
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "b-modal",
-        {
-          ref: "myModalRef",
-          attrs: { "hide-footer": "", title: "Using Component Methods" }
-        },
+  return _vm.currentmedia != undefined
+    ? _c(
+        "div",
+        { staticClass: "col-xs-12 col-sm-12 col-md-12" },
         [
+          _c("h4", [_vm._v("Edit media")]),
+          _vm._v(" "),
+          _c("form", { attrs: { id: "theForm" } }, [
+            _c("div", { staticClass: "form-group row" }, [
+              _c("label", [_vm._v("Media-title")]),
+              _vm._v(" "),
+              _c("input", {
+                attrs: {
+                  type: "hidden",
+                  value: "",
+                  name: "image",
+                  id: "addMediaImage"
+                }
+              }),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "form-control",
+                attrs: {
+                  placeholder: "Media-title",
+                  name: "title",
+                  type: "text"
+                },
+                domProps: { value: _vm.currentmedia.title }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group row" }, [
+              _c("label", [_vm._v("Media-type (only for restore):")]),
+              _vm._v(" "),
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.mediaType,
+                      expression: "mediaType"
+                    }
+                  ],
+                  attrs: { name: "type" },
+                  on: {
+                    change: function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.mediaType = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    }
+                  }
+                },
+                [
+                  _c("option", { attrs: { value: "localAudio" } }, [
+                    _vm._v("Local audio")
+                  ]),
+                  _c("option", { attrs: { value: "localVideo" } }, [
+                    _vm._v("Local video")
+                  ]),
+                  _c("option", { attrs: { value: "directVideo" } }, [
+                    _vm._v("Direct video")
+                  ]),
+                  _c("option", { attrs: { value: "directAudio" } }, [
+                    _vm._v("Direct audio")
+                  ]),
+                  _c("option", { attrs: { value: "torrentAudio" } }, [
+                    _vm._v("Torrent audio")
+                  ]),
+                  _c("option", { attrs: { value: "torrentVideo" } }, [
+                    _vm._v("Torrent video")
+                  ])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group row" }, [
+              _c("label", [_vm._v("Category")]),
+              _vm._v(" "),
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.catid,
+                      expression: "catid"
+                    }
+                  ],
+                  attrs: { name: "category_id" },
+                  on: {
+                    change: function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.catid = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    }
+                  }
+                },
+                [
+                  _c("option", { attrs: { value: "" } }, [_vm._v("None")]),
+                  _vm._l(_vm.categories, function(item) {
+                    return _c("option", { domProps: { value: item.id } }, [
+                      _vm._v(_vm._s(item.title))
+                    ])
+                  })
+                ],
+                2
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group row" }, [
+              _c("label", [_vm._v("Source:")]),
+              _vm._v(" "),
+              _c("p", [_vm._v(_vm._s(_vm.currentmedia.source))])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "form-group row" },
+              [
+                _c("label", [_vm._v("Media-poster:")]),
+                _vm._v(" "),
+                _c("vue-croppie", {
+                  ref: "croppieRef",
+                  attrs: {
+                    enableOrientation: true,
+                    enableResize: false,
+                    viewport: { width: 700, height: 394, type: "square" },
+                    boundary: { width: 700, height: 394 }
+                  },
+                  on: { result: _vm.result, update: _vm.update }
+                }),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: { type: "hidden", id: "posterBase", name: "poster" },
+                  domProps: { value: _vm.cropped }
+                }),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    on: {
+                      click: function($event) {
+                        _vm.rotate(-90, $event)
+                      }
+                    }
+                  },
+                  [_vm._v("Rotate Left")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    on: {
+                      click: function($event) {
+                        _vm.rotate(90, $event)
+                      }
+                    }
+                  },
+                  [_vm._v("Rotate Right")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    id: "posterUpload",
+                    accept: ".png,.jpg,.jpeg",
+                    name: "poster",
+                    type: "file"
+                  },
+                  on: {
+                    change: function($event) {
+                      _vm.posterChange()
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("div", { attrs: { id: "poster" } })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group row" }, [
+              _c("label", [_vm._v("Media-description:")]),
+              _vm._v(" "),
+              _c("textarea", {
+                staticClass: "form-control",
+                attrs: {
+                  placeholder: "Media-description",
+                  id: "addMediaDescription",
+                  name: "description",
+                  cols: "50",
+                  rows: "10"
+                },
+                domProps: { value: _vm.currentmedia.description }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group row" }, [
+              _c("label", [_vm._v("Tags (separate with spaces):")]),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "form-control",
+                attrs: { id: "tags", type: "text", name: "tags" },
+                domProps: { value: _vm.currentmedia.tagString }
+              })
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "form-group row" },
+              [
+                _c("label", [_vm._v("Subtitles")]),
+                _vm._v(" "),
+                _c(
+                  "b-button",
+                  {
+                    staticClass: "float-right text-right",
+                    on: { click: _vm.showModal }
+                  },
+                  [_vm._v("\n  Manage\n")]
+                )
+              ],
+              1
+            )
+          ]),
+          _vm._v(" "),
           _c(
-            "div",
-            { staticClass: "d-block text-center" },
+            "b-modal",
+            {
+              ref: "myModalRef",
+              attrs: { "hide-footer": "", title: "Using Component Methods" }
+            },
             [
               _vm.currentmedia.tracks.length > 0
                 ? _c("h4", [_vm._v("Existing tracks")])
                 : _vm._e(),
               _vm._v(" "),
-              _vm._l(_vm.currentmedia.tracks, function(track) {
-                return _c("p", [
-                  _c(
-                    "a",
-                    { staticClass: "text-left", attrs: { href: track.source } },
-                    [_vm._v(_vm._s(track.lang))]
-                  ),
+              _c(
+                "ul",
+                _vm._l(_vm.currentmedia.tracks, function(track) {
+                  return _c("li", { staticClass: "mb-3" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "text-left",
+                        attrs: { target: "_blank", href: track.source }
+                      },
+                      [_vm._v(_vm._s(track.lang))]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        staticClass: "btn btn-danger btn-sm float-right",
+                        on: {
+                          click: function($event) {
+                            _vm.deleteTrack(track.id)
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(_vm._s(track.lang) + " "),
+                        _c("vs-icon", { attrs: { icon: "delete" } })
+                      ],
+                      1
+                    )
+                  ])
+                }),
+                0
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-block text-center" }, [
+                _c("h4", [_vm._v("Add track")]),
+                _vm._v(" "),
+                _c("form", { attrs: { id: "addTrackForm" } }, [
+                  _c("div", { staticClass: "form-group row" }, [
+                    _c("label", [_vm._v("Language")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      staticClass: "form-control",
+                      attrs: { type: "text", name: "lang" }
+                    }),
+                    _vm._v(" "),
+                    _c("input", {
+                      staticClass: "form-control",
+                      attrs: { type: "hidden", name: "media_id" },
+                      domProps: { value: _vm.currentmedia.id }
+                    })
+                  ]),
                   _vm._v(" "),
+                  _c("div", { staticClass: "form-group row" }, [
+                    _c("label", [_vm._v("File")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      staticClass: "form-control",
+                      attrs: {
+                        id: "track",
+                        name: "track",
+                        accept: ".srt,.vtt",
+                        type: "file"
+                      }
+                    })
+                  ])
+                ])
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "row" },
+                [
                   _c(
-                    "a",
+                    "b-btn",
                     {
-                      staticClass: "btn btn-primary btn-sm float-right",
+                      staticClass: "mt-3 col-4",
+                      attrs: { variant: "outline-success", block: "" },
                       on: {
                         click: function($event) {
-                          _vm.deleteTrack(track.id)
+                          _vm.submitTrack()
                         }
                       }
                     },
-                    [_vm._v("DELETE " + _vm._s(track.lang))]
+                    [_vm._v("Upload track")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "b-btn",
+                    {
+                      staticClass: "mt-3 col-4",
+                      attrs: { variant: "outline-danger", block: "" },
+                      on: { click: _vm.hideModal }
+                    },
+                    [_vm._v("Upload track and close")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "b-btn",
+                    {
+                      staticClass: "mt-3 col-4",
+                      attrs: { variant: "outline-success", block: "" },
+                      on: {
+                        click: function($event) {
+                          _vm.$refs.myModalRef.hide()
+                        }
+                      }
+                    },
+                    [_vm._v("Cancel")]
                   )
-                ])
-              }),
-              _vm._v(" "),
-              _c("h4", [_vm._v("Add track")]),
-              _vm._v(" "),
-              _c("form", { attrs: { id: "addTrackForm" } }, [
-                _c("div", { staticClass: "form-group row" }, [
-                  _c("label", [_vm._v("Language")]),
-                  _vm._v(" "),
-                  _c("input", {
-                    staticClass: "form-control",
-                    attrs: { type: "text", name: "lang" }
-                  }),
-                  _vm._v(" "),
-                  _c("input", {
-                    staticClass: "form-control",
-                    attrs: { type: "hidden", name: "media_id" },
-                    domProps: { value: _vm.currentmedia.id }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group row" }, [
-                  _c("label", [_vm._v("File")]),
-                  _vm._v(" "),
-                  _c("input", {
-                    staticClass: "form-control",
-                    attrs: {
-                      id: "track",
-                      name: "track",
-                      accept: ".srt,.vtt",
-                      type: "file"
-                    }
-                  })
-                ])
-              ])
-            ],
-            2
+                ],
+                1
+              )
+            ]
           ),
           _vm._v(" "),
           _c(
-            "div",
-            { staticClass: "row" },
-            [
-              _c(
-                "b-btn",
-                {
-                  staticClass: "mt-3 col-4",
-                  attrs: { variant: "outline-success", block: "" },
-                  on: {
-                    click: function($event) {
-                      _vm.submitTrack()
-                    }
-                  }
-                },
-                [_vm._v("Upload track")]
-              ),
-              _vm._v(" "),
-              _c(
-                "b-btn",
-                {
-                  staticClass: "mt-3 col-4",
-                  attrs: { variant: "outline-danger", block: "" },
-                  on: { click: _vm.hideModal }
-                },
-                [_vm._v("Upload track and close")]
-              ),
-              _vm._v(" "),
-              _c(
-                "b-btn",
-                {
-                  staticClass: "mt-3 col-4",
-                  attrs: { variant: "outline-success", block: "" },
-                  on: {
-                    click: function($event) {
-                      _vm.$refs.myModalRef.hide()
-                    }
-                  }
-                },
-                [_vm._v("Cancel")]
-              )
-            ],
-            1
+            "button",
+            {
+              staticClass: "btn btn-success",
+              on: {
+                click: function($event) {
+                  _vm.submitAction()
+                }
+              }
+            },
+            [_vm._v("Save")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-danger float-right",
+              on: {
+                click: function($event) {
+                  _vm.openConfirm()
+                }
+              }
+            },
+            [_vm._v("Delete")]
           )
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-success",
-          on: {
-            click: function($event) {
-              _vm.submitAction()
-            }
-          }
-        },
-        [_vm._v("Save")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "btn btn-danger float-right",
-          on: {
-            click: function($event) {
-              _vm.openConfirm()
-            }
-          }
-        },
-        [_vm._v("Delete")]
+        ],
+        1
       )
-    ],
-    1
-  )
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -91867,10 +91970,10 @@ var render = function() {
           _vm._v(" "),
           _c(
             "vs-navbar-item",
-            { attrs: { index: "2" } },
+            { attrs: { index: "9" } },
             [
-              _c("router-link", { attrs: { to: "/charts" } }, [
-                _vm._v("Charts")
+              _c("router-link", { attrs: { to: "/categories" } }, [
+                _vm._v("Categories")
               ])
             ],
             1
@@ -91880,6 +91983,17 @@ var render = function() {
             "vs-navbar-item",
             { attrs: { index: "3" } },
             [_c("router-link", { attrs: { to: "/tags" } }, [_vm._v("Tags")])],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "vs-navbar-item",
+            { attrs: { index: "2" } },
+            [
+              _c("router-link", { attrs: { to: "/charts" } }, [
+                _vm._v("Charts")
+              ])
+            ],
             1
           ),
           _vm._v(" "),
@@ -92581,11 +92695,22 @@ var render = function() {
         return item.user_id == _vm.loggeduserid
           ? _c(
               "div",
-              { staticClass: "col-lg-4 col-md-4 col-xs-6" },
+              { staticClass: "col-lg-3 col-md-3 col-xs-6" },
               [
                 _c("singleField", {
                   attrs: { item: item, loggeduserid: _vm.loggeduserid }
-                })
+                }),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  {
+                    staticClass: "btn btn-sm btn-info float-right",
+                    attrs: {
+                      to: "/mediaedit/" + encodeURIComponent(item.title)
+                    }
+                  },
+                  [_vm._v("Edit")]
+                )
               ],
               1
             )
