@@ -17,9 +17,10 @@ var searchDelay;
 var theMediaSorter = new MediaSorter();
 var siteManager =  (function () {
     function siteManager(base) {
+        this.maxPage = -1;
+        this.currentPage = 1;
         this.initing = true;
         baseUrl = base + "/";
-        this.currentPage = "overview";
         this.catchedTagMedias = [];
         this.usedSearchTerms = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
@@ -186,8 +187,18 @@ var siteManager =  (function () {
             var offset = d.scrollTop + window.innerHeight;
             var height = d.offsetHeight;
             if (offset >= height) {
-                if (that.nextLink != null) {
-                    that.receiveMedias(that.nextLink);
+                console.log("current page");
+                console.log(that.currentPage);
+                if (that.maxPage >= that.currentPage) {
+                    that.receiveMedias('/internal-api/media?page=' + that.currentPage);
+                    that.currentPage++;
+                    if (that.currentPage > that.maxPage) {
+                        console.log("end reached");
+                        theVue.canloadmore = false;
+                    }
+                }
+                else {
+                    console.log("no more because of link is null");
                 }
             }
         };
@@ -307,9 +318,6 @@ var siteManager =  (function () {
         });
         comment.childs = comment.childs.sort(MediaSorter.byCreatedAtComments);
         return comment;
-    };
-    siteManager.prototype.getCurrentSite = function () {
-        return this.currentPage;
     };
     siteManager.prototype.updateCSRF = function () {
         $.get('/internal-api/refresh-csrf').done(function (data) {
@@ -546,8 +554,17 @@ var siteManager =  (function () {
                 else {
                 }
             });
+            if (data.meta.last_page != null && that.maxPage == -1) {
+                console.log("set maxPage");
+                console.log(data.meta.last_page);
+                that.maxPage = data.meta.last_page;
+            }
             if (data.links != undefined) {
-                that.nextLink = data.links.next + that.getIgnoreParam(false);
+                console.log("d-link");
+                console.log(data.links.next);
+                if (data.links.next != null) {
+                    that.nextLink = data.links.next + that.getIgnoreParam(false);
+                }
                 that.lastLink = data.links.prev + that.getIgnoreParam(false);
             }
             if (theVue == undefined) {
@@ -589,9 +606,13 @@ var siteManager =  (function () {
             var offset = d.scrollTop + window.innerHeight;
             var height = d.offsetHeight;
             if (offset > height) {
-                if (that.nextLink != null) {
-                    console.log("receive cause no scroll yet");
-                    that.receiveMedias(that.nextLink);
+                if (that.maxPage >= that.currentPage) {
+                    that.receiveMedias('/internal-api/media?page=' + that.currentPage);
+                    that.currentPage++;
+                    if (that.currentPage > that.maxPage) {
+                        console.log("end reached");
+                        theVue.canloadmore = false;
+                    }
                 }
             }
         });

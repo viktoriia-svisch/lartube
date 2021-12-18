@@ -58582,9 +58582,10 @@ var searchDelay;
 var theMediaSorter = new __WEBPACK_IMPORTED_MODULE_5__tools__["a" ]();
 var siteManager = function () {
     function siteManager(base) {
+        this.maxPage = -1;
+        this.currentPage = 1;
         this.initing = true;
         baseUrl = base + "/";
-        this.currentPage = "overview";
         this.catchedTagMedias = [];
         this.usedSearchTerms = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
@@ -58732,8 +58733,17 @@ var siteManager = function () {
             var offset = d.scrollTop + window.innerHeight;
             var height = d.offsetHeight;
             if (offset >= height) {
-                if (that.nextLink != null) {
-                    that.receiveMedias(that.nextLink);
+                console.log("current page");
+                console.log(that.currentPage);
+                if (that.maxPage >= that.currentPage) {
+                    that.receiveMedias('/internal-api/media?page=' + that.currentPage);
+                    that.currentPage++;
+                    if (that.currentPage > that.maxPage) {
+                        console.log("end reached");
+                        theVue.canloadmore = false;
+                    }
+                } else {
+                    console.log("no more because of link is null");
                 }
             }
         };
@@ -58855,9 +58865,6 @@ var siteManager = function () {
         });
         comment.childs = comment.childs.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
         return comment;
-    };
-    siteManager.prototype.getCurrentSite = function () {
-        return this.currentPage;
     };
     siteManager.prototype.updateCSRF = function () {
         $.get('/internal-api/refresh-csrf').done(function (data) {
@@ -59109,8 +59116,17 @@ var siteManager = function () {
                 } else {
                 }
             });
+            if (data.meta.last_page != null && that.maxPage == -1) {
+                console.log("set maxPage");
+                console.log(data.meta.last_page);
+                that.maxPage = data.meta.last_page;
+            }
             if (data.links != undefined) {
-                that.nextLink = data.links.next + that.getIgnoreParam(false);
+                console.log("d-link");
+                console.log(data.links.next);
+                if (data.links.next != null) {
+                    that.nextLink = data.links.next + that.getIgnoreParam(false);
+                }
                 that.lastLink = data.links.prev + that.getIgnoreParam(false);
             }
             if (theVue == undefined) {
@@ -59151,9 +59167,13 @@ var siteManager = function () {
             var offset = d.scrollTop + window.innerHeight;
             var height = d.offsetHeight;
             if (offset > height) {
-                if (that.nextLink != null) {
-                    console.log("receive cause no scroll yet");
-                    that.receiveMedias(that.nextLink);
+                if (that.maxPage >= that.currentPage) {
+                    that.receiveMedias('/internal-api/media?page=' + that.currentPage);
+                    that.currentPage++;
+                    if (that.currentPage > that.maxPage) {
+                        console.log("end reached");
+                        theVue.canloadmore = false;
+                    }
                 }
             }
         });
@@ -90849,7 +90869,58 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(8);
  __webpack_exports__["default"] = ({
   props: ['medias', 'loggeduserid'],
+  methods: {},
   computed: {
+    likeOptions: function likeOptions() {
+      var titles = [];
+      this.medias.forEach(function (item, index) {
+        titles.push(item.title);
+      });
+      return {
+        chart: {
+          id: 'vuechart-likes'
+        },
+        xaxis: {
+          categories: titles
+        }
+      };
+    },
+    likeSeries: function likeSeries() {
+      var localVideo = 0,
+          localAudio = 0,
+          directAudio = 0,
+          directVideo = 0,
+          torrentAudio = 0,
+          torrentVideo = 0;
+      var likeArray = [];
+      var dislikeArray = [];
+      this.medias.forEach(function (item, index) {
+        if (item.type == "localVideo") {
+          localVideo++;
+        } else if (item.type == "localAudio") {
+          localAudio++;
+        } else if (item.type == "directAudio") {
+          directAudio++;
+        } else if (item.type == "directVideo") {
+          directVideo++;
+        } else if (item.type == "torrentAudio") {
+          torrentAudio++;
+        } else if (item.type == "torrentVideo") {
+          torrentVideo++;
+        } else {
+          console.warn("Weird type? " + item.type);
+        }
+        likeArray.push(item.likes);
+        dislikeArray.push(item.dislikes);
+      });
+      return [{
+        name: 'Likes',
+        data: likeArray
+      }, {
+        name: 'Dislikes',
+        data: dislikeArray
+      }];
+    },
     chartOptions: function chartOptions() {
       return {
         chart: {
@@ -90885,7 +90956,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
       });
       return [{
-        name: 'series-1',
+        name: 'Medias',
         data: [localVideo, localAudio, directAudio, directVideo, torrentAudio, torrentVideo]
       }];
     },
@@ -90940,34 +91011,60 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "row" }, [
+  return _c("div", {}, [
+    _c("p", [
+      _vm._v(
+        "The numbers on this chart represent only your loaded medias. To see all medias, go to the menu -> Developer options -> Load all medias"
+      )
+    ]),
+    _vm._v(" "),
+    _c("p", [_vm._v("This can take a while / need performance.")]),
+    _vm._v(" "),
+    _c("div", { staticClass: "row" }, [
+      _c(
+        "span",
+        { staticClass: "col-6" },
+        [
+          _c("apexchart", {
+            attrs: {
+              width: "500",
+              type: "bar",
+              options: _vm.chartOptions,
+              series: _vm.series
+            }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "span",
+        { staticClass: "col-6" },
+        [
+          _c("apexchart", {
+            attrs: {
+              width: "500",
+              type: "pie",
+              id: "chart2",
+              options: _vm.chartOptions2,
+              series: _vm.series2
+            }
+          })
+        ],
+        1
+      )
+    ]),
+    _vm._v(" "),
     _c(
       "span",
-      {},
+      { staticClass: "col-6" },
       [
         _c("apexchart", {
           attrs: {
             width: "500",
             type: "bar",
-            options: _vm.chartOptions,
-            series: _vm.series
-          }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "span",
-      {},
-      [
-        _c("apexchart", {
-          attrs: {
-            width: "500",
-            type: "pie",
-            id: "chart2",
-            options: _vm.chartOptions2,
-            series: _vm.series2
+            options: _vm.likeOptions,
+            series: _vm.likeSeries
           }
         })
       ],
