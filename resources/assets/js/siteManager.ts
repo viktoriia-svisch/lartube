@@ -32,7 +32,7 @@ class siteManager {
   csrf:string;
   constructor(base:string){
     this.maxPage=-1;
-    this.currentPage=1;
+    this.currentPage=2;
     this.initing=true;
     baseUrl = base+"/";
     this.catchedTagMedias=[];
@@ -549,6 +549,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
               that.categories[that.getCategoryKey(m.category_id)].medias.push(m)
             }
           } else {
+            replaceCount++;
           }
         });
         if(data.meta.last_page!=null&&that.maxPage==-1){
@@ -596,7 +597,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         if(loadCount==0&&replaceCount==0){
           theVue.alert("All medias are loaded","warning")
         } else {
-          theVue.alert("Load "+loadCount+" and replace "+replaceCount+" medias.")
+          theVue.alert("Load "+loadCount+" and "+replaceCount+" medias already existed.")
         }
         var d = document.documentElement;
         var offset = d.scrollTop + window.innerHeight;

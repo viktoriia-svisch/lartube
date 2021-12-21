@@ -18,7 +18,7 @@ var theMediaSorter = new MediaSorter();
 var siteManager =  (function () {
     function siteManager(base) {
         this.maxPage = -1;
-        this.currentPage = 1;
+        this.currentPage = 2;
         this.initing = true;
         baseUrl = base + "/";
         this.catchedTagMedias = [];
@@ -552,6 +552,7 @@ var siteManager =  (function () {
                     }
                 }
                 else {
+                    replaceCount++;
                 }
             });
             if (data.meta.last_page != null && that.maxPage == -1) {
@@ -600,7 +601,7 @@ var siteManager =  (function () {
                 theVue.alert("All medias are loaded", "warning");
             }
             else {
-                theVue.alert("Load " + loadCount + " and replace " + replaceCount + " medias.");
+                theVue.alert("Load " + loadCount + " and " + replaceCount + " medias already existed.");
             }
             var d = document.documentElement;
             var offset = d.scrollTop + window.innerHeight;

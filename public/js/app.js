@@ -58583,7 +58583,7 @@ var theMediaSorter = new __WEBPACK_IMPORTED_MODULE_5__tools__["a" ]();
 var siteManager = function () {
     function siteManager(base) {
         this.maxPage = -1;
-        this.currentPage = 1;
+        this.currentPage = 2;
         this.initing = true;
         baseUrl = base + "/";
         this.catchedTagMedias = [];
@@ -59114,6 +59114,7 @@ var siteManager = function () {
                         that.categories[that.getCategoryKey(m.category_id)].medias.push(m);
                     }
                 } else {
+                    replaceCount++;
                 }
             });
             if (data.meta.last_page != null && that.maxPage == -1) {
@@ -59161,7 +59162,7 @@ var siteManager = function () {
             if (loadCount == 0 && replaceCount == 0) {
                 theVue.alert("All medias are loaded", "warning");
             } else {
-                theVue.alert("Load " + loadCount + " and replace " + replaceCount + " medias.");
+                theVue.alert("Load " + loadCount + " and " + replaceCount + " medias already existed.");
             }
             var d = document.documentElement;
             var offset = d.scrollTop + window.innerHeight;
