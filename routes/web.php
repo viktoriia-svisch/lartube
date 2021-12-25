@@ -55,7 +55,7 @@ Route::post('/internal-api/profiles/edit/{id}','UserController@update')->name('u
 Route::delete('/internal-api/media/{title}','MediaController@destroy')->name('mediasapi.delete');
 Route::post('/internal-api/media/{title}','MediaController@edit')->name('mediasiapi.edit');
 Route::get('/internal-api/media', function (Request $request) {
-    return MediaResource::collection(Media::orderBy('updated_at', 'desc')->whereNotIn('id', explode(",",$request->input('i')))->paginate(3));
+  return MediaResource::collection(Media::orderBy('updated_at', 'desc')->paginate(3));
 });
 Route::get('/internal-api/medias/all', function (Request $request) {
     return MediaResource::collection(Media::orderBy('created_at', 'desc')->whereNotIn('id', explode(",",$request->input('i')))->get());

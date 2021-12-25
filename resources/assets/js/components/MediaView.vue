@@ -7,25 +7,25 @@
             <img class="img-fluid" :src="currentmedia.poster_source" v-if="currentmedia.type=='directAudio'|(currentmedia.type=='localAudio'&audiovisualtype=='Poster')">
           </p>
           <canvas v-if="currentmedia.type=='localAudio'&audiovisualtype!='Poster'"  class="col-12" height="400" style="height: 400px; width:100%;" id="audioVisual"></canvas>
-          <vue-plyr v-if="currentmedia.type=='localAudio'">
+          <vue-plyr ref="player" v-if="currentmedia.type=='localAudio'">
             <audio class="text-center col-11"  :src="currentmedia.source" id="audioPlayer"  preload autobuffer   controls :poster="currentmedia.poster_source">
               <source id="audioSource" :src="currentmedia.source" type="audio/mp3"></source>
             </audio>
           </vue-plyr>
           <a v-if="currentmedia.type=='localAudio'" class="btn btn-primary col-1 float-right" @click="visualFullScreen()"><vs-icon size="big" icon="fullscreen"></vs-icon></a>
-          <vue-plyr v-if="currentmedia.type=='directAudio'">
+          <vue-plyr ref="player" v-if="currentmedia.type=='directAudio'">
             <audio class="text-center" :src="currentmedia.source" id="audioPlayer222"  preload autobuffer v-if="currentmedia.type=='directAudio'"   controls :poster="currentmedia.poster_source">
               <source id="audioSource" :src="currentmedia.source" type="audio/mp3"></source>
             </audio>
           </vue-plyr>
         </div>
-        <vue-plyr v-if="currentmedia.techType=='video'">
+        <vue-plyr ref="player" v-if="currentmedia.techType=='video'">
           <video controls :src="currentmedia.source" :poster="currentmedia.poster_source" class="col-12" id="videoPlayer"  >
             <source :src="currentmedia.source" type="video/mp4"></source>
             <track v-for="track in currentmedia.tracks" :label="track.title" kind="subtitles" :srclang="track.title" :src="'/'+track.source">
             </video>
         </vue-plyr>
-        <vue-plyr v-if="currentmedia.techType=='torrent'" >
+        <vue-plyr ref="player" v-if="currentmedia.techType=='torrent'" >
           <video class="col-12" id="torrentPlayer" controls :poster="currentmedia.poster_source">
             <track v-for="track in currentmedia.tracks" :label="track.title" kind="subtitles" :srclang="track.title" :src="'/'+track.source">
           </video>
@@ -48,7 +48,7 @@
   var audioCtx, audioNode, gainNode, visualizer;
   const presets = butterchurnPresets.getPresets();
   export default {
-    props: ['medias','baseUrl','loggeduserid','canloadmore','currentuser','currentmedia'],
+    props: ['autoplay','medias','baseUrl','loggeduserid','canloadmore','currentuser','currentmedia'],
     methods: {
       visualFullScreen(){
         if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
@@ -186,11 +186,22 @@ torrentInterval = setInterval(function(){
       },
     },
     computed: {
-          },
+                player () { return this.$refs.player.player }
+    },
     updated: function () {
       this.$nextTick(function () {
     if((this.currentmedia!=undefined)&&(this.inited==false)){
             this.initTorrent()
+      if(this.autoplay){
+        this.player.play();
+      }
+      let that = this;
+      this.player.on('ended', () => {
+        if(that.autoplay){
+          console.log('movie ended')
+                    eventBus.$emit('autoplayNextVideo',that.currentmedia.id);
+        }
+      })
             this.mylike = Number(this.currentmedia.myLike);
       this.likes = this.currentmedia.likes;
       this.dislikes = this.currentmedia.dislikes;

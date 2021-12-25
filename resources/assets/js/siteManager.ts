@@ -105,6 +105,15 @@ class siteManager {
       theVue.canloadmore=false
       that.updateCSRF();
     });
+    eventBus.$on('autoplayNextVideo', id => {
+      console.log("received autoplay")
+      theVue.nextvideos = that.nextVideosList(id)
+      console.log(theVue.nextvideos)
+      if(theVue.nextvideos.length>0){
+        theVue.$router.push('/media/'+encodeURIComponent(theVue.nextvideos[0].title));
+        theVue.nextvideos = that.nextVideosList(that.findMediaByName(theVue.nextvideos[0].id))
+      }
+    });
     eventBus.$on('login', settings => {
       this.initing = false;
       this.loggedUserId = settings.user_id
@@ -191,7 +200,7 @@ class siteManager {
     }
     });
     eventBus.$on('loadMore', title => {
-      that.receiveMedias(that.nextLink)
+      that.loadMorePages();
     });
     window.onscroll = function() {
       var d = document.documentElement;
@@ -201,12 +210,7 @@ class siteManager {
         console.log("current page");
         console.log(that.currentPage)
         if(that.maxPage>=that.currentPage){
-          that.receiveMedias('/internal-api/media?page='+that.currentPage+that.getIgnoreParam(false))
-          that.currentPage++;
-          if(that.currentPage>that.maxPage){
-            console.log("end reached")
-            theVue.canloadmore=false;
-          }
+          that.loadMorePages()
         } else {
           console.log("no more because of link is null")
         }
@@ -227,6 +231,7 @@ class siteManager {
       alertmsg: "",
       alerttype:"",
       search:'',
+      nextvideos:[],
       csrf:that.csrf,
       currentuser:that.currentUser,
       users:this.users,
@@ -278,6 +283,11 @@ class siteManager {
           if(to.params.currentTitle!=undefined){
             if(sm.findMediaByName(to.params.currentTitle)==undefined){
               sm.receiveMediaByName(to.params.currentTitle);
+            }else {
+              this.nextvideos = that.nextVideosList(that.findMediaByName(this.$route.params.currentTitle).id)
+              console.log("after site-change")
+              console.log(this.nextvideos)
+              console.log(that.findMediaByName(this.$route.params.currentTitle).id)
             }
           }
           if(to.params.editTitle!=undefined){
@@ -311,6 +321,16 @@ if(localStorage.getItem('cookiePolicy')!="read"){
     },
   })
 }
+  }
+  loadMorePages(){
+    if(this.maxPage>=this.currentPage){
+      this.receiveMedias('/internal-api/media?page='+this.currentPage+this.getIgnoreParam(false))
+      this.currentPage++;
+      if(this.currentPage>this.maxPage){
+        console.log("end reached")
+        theVue.canloadmore=false;
+      }
+    }
   }
   fillUser(comment){
     let that = this;
@@ -357,6 +377,19 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         }
       }
     });
+  }
+  nextVideosList(id){
+    var nextVideos = []
+    var startAdd = false;
+    $.each( this.medias, function( key, value ) {
+      if(startAdd){
+        nextVideos.push(value)
+      }
+      if(value.id==id){
+        startAdd=true;
+      }
+    });
+    return nextVideos;
   }
   getIgnoreParam(first=true){
     var content = "&i=0";
@@ -584,6 +617,8 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         if(theVue.$route.params.currentTitle!=undefined){
           if(that.findMediaByName(theVue.$route.params.currentTitle)==undefined){
             that.receiveMediaByName(theVue.$route.params.currentTitle);
+          }else {
+            theVue.nextvideos = that.nextVideosList(that.findMediaByName(theVue.$route.params.currentTitle).id)
           }
         }
         if(theVue.$route.params.editTitle!=undefined){
@@ -604,12 +639,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         var height = d.offsetHeight;
         if(offset > height){
           if(that.maxPage>=that.currentPage){
-            that.receiveMedias('/internal-api/media?page='+that.currentPage+that.getIgnoreParam(false))
-            that.currentPage++;
-            if(that.currentPage>that.maxPage){
-              console.log("end reached")
-              theVue.canloadmore=false;
-            }
+            that.loadMorePages()
           }
         }
     });

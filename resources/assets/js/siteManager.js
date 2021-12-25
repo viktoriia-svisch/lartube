@@ -92,6 +92,15 @@ var siteManager =  (function () {
             theVue.canloadmore = false;
             that.updateCSRF();
         });
+        eventBus.$on('autoplayNextVideo', function (id) {
+            console.log("received autoplay");
+            theVue.nextvideos = that.nextVideosList(id);
+            console.log(theVue.nextvideos);
+            if (theVue.nextvideos.length > 0) {
+                theVue.$router.push('/media/' + encodeURIComponent(theVue.nextvideos[0].title));
+                theVue.nextvideos = that.nextVideosList(that.findMediaByName(theVue.nextvideos[0].id));
+            }
+        });
         eventBus.$on('login', function (settings) {
             _this.initing = false;
             _this.loggedUserId = settings.user_id;
@@ -180,7 +189,7 @@ var siteManager =  (function () {
             }
         });
         eventBus.$on('loadMore', function (title) {
-            that.receiveMedias(that.nextLink);
+            that.loadMorePages();
         });
         window.onscroll = function () {
             var d = document.documentElement;
@@ -190,12 +199,7 @@ var siteManager =  (function () {
                 console.log("current page");
                 console.log(that.currentPage);
                 if (that.maxPage >= that.currentPage) {
-                    that.receiveMedias('/internal-api/media?page=' + that.currentPage + that.getIgnoreParam(false));
-                    that.currentPage++;
-                    if (that.currentPage > that.maxPage) {
-                        console.log("end reached");
-                        theVue.canloadmore = false;
-                    }
+                    that.loadMorePages();
                 }
                 else {
                     console.log("no more because of link is null");
@@ -217,6 +221,7 @@ var siteManager =  (function () {
                 alertmsg: "",
                 alerttype: "",
                 search: '',
+                nextvideos: [],
                 csrf: that.csrf,
                 currentuser: that.currentUser,
                 users: this.users,
@@ -271,6 +276,12 @@ var siteManager =  (function () {
                         if (sm.findMediaByName(to.params.currentTitle) == undefined) {
                             sm.receiveMediaByName(to.params.currentTitle);
                         }
+                        else {
+                            this.nextvideos = that.nextVideosList(that.findMediaByName(this.$route.params.currentTitle).id);
+                            console.log("after site-change");
+                            console.log(this.nextvideos);
+                            console.log(that.findMediaByName(this.$route.params.currentTitle).id);
+                        }
                     }
                     if (to.params.editTitle != undefined) {
                         if (sm.findMediaByName(to.params.editTitle) == undefined) {
@@ -303,6 +314,16 @@ var siteManager =  (function () {
                 click: function () {
                 },
             });
+        }
+    };
+    siteManager.prototype.loadMorePages = function () {
+        if (this.maxPage >= this.currentPage) {
+            this.receiveMedias('/internal-api/media?page=' + this.currentPage + this.getIgnoreParam(false));
+            this.currentPage++;
+            if (this.currentPage > this.maxPage) {
+                console.log("end reached");
+                theVue.canloadmore = false;
+            }
         }
     };
     siteManager.prototype.fillUser = function (comment) {
@@ -351,6 +372,19 @@ var siteManager =  (function () {
                 }
             }
         });
+    };
+    siteManager.prototype.nextVideosList = function (id) {
+        var nextVideos = [];
+        var startAdd = false;
+        $.each(this.medias, function (key, value) {
+            if (startAdd) {
+                nextVideos.push(value);
+            }
+            if (value.id == id) {
+                startAdd = true;
+            }
+        });
+        return nextVideos;
     };
     siteManager.prototype.getIgnoreParam = function (first) {
         if (first === void 0) { first = true; }
@@ -588,6 +622,9 @@ var siteManager =  (function () {
                 if (that.findMediaByName(theVue.$route.params.currentTitle) == undefined) {
                     that.receiveMediaByName(theVue.$route.params.currentTitle);
                 }
+                else {
+                    theVue.nextvideos = that.nextVideosList(that.findMediaByName(theVue.$route.params.currentTitle).id);
+                }
             }
             if (theVue.$route.params.editTitle != undefined) {
                 if (that.findMediaByName(theVue.$route.params.editTitle) == undefined) {
@@ -608,12 +645,7 @@ var siteManager =  (function () {
             var height = d.offsetHeight;
             if (offset > height) {
                 if (that.maxPage >= that.currentPage) {
-                    that.receiveMedias('/internal-api/media?page=' + that.currentPage + that.getIgnoreParam(false));
-                    that.currentPage++;
-                    if (that.currentPage > that.maxPage) {
-                        console.log("end reached");
-                        theVue.canloadmore = false;
-                    }
+                    that.loadMorePages();
                 }
             }
         });

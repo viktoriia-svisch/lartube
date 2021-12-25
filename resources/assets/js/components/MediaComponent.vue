@@ -1,6 +1,6 @@
 <template>
   <div v-if="currentmedia!=undefined">
-      <mediaView v-bind:currentmedia="currentmedia"></mediaView>
+      <mediaView v-bind:currentmedia="currentmedia" v-bind:autoplay="autoplay"></mediaView>
       <div class="col-xs-12 col-sm-12 col-md-12"></div>
       <div class="card">
         <div class="card-header">
@@ -65,7 +65,7 @@
         <p>
           <vs-switch v-model="autoplay"/>
           <span for="">Autoplay</span></p>
-            <div v-for="item in medias"  class="" v-if="item.id!=currentmedia.id">
+            <div v-for="item in nextvideos"  class="" v-if="item.id!=currentmedia.id">
               <singleField v-bind:item="item" v-bind:loggeduserid="loggeduserid"></singleField>
             </div>
             <button class="btn btn-block btn-danger" v-if="canloadmore" @click="emitLoadMore()">Load more</button>
@@ -90,7 +90,7 @@
   var emptyMedia = new Media(0,"None","","","","","","","",new User(0,"None","img/404/avatar.png","img/404/background.png","", "", {},false),"","","","","",0,0,0,[],0);
   const presets = butterchurnPresets.getPresets();
   export default {
-    props: ['medias','baseUrl','loggeduserid','canloadmore','currentuser'],
+    props: ['medias','baseUrl','loggeduserid','canloadmore','currentuser','nextvideos'],
     components : {
         'singleField': SingleGalleryField,
         'comments': Comments,
@@ -173,6 +173,9 @@
         }
     },
     watch: {
+      autoplay:function(val){
+        localStorage.setItem('autoplay',String(this.autoplay));
+      },
       '$route.params.currentTitle': function (val) {
         this.inited = false;
         this.currentmedia = this.getCurrentMedia()
@@ -213,7 +216,9 @@
     },
     mounted(){
       let that = this;
-      if(localStorage.getItem("autoplay")!=''){
+      console.log("autoplay-var")
+      console.log(localStorage.getItem("autoplay"))
+      if(localStorage.getItem("autoplay")=='true'){
         this.autoplay=true;
       }
             if(localStorage.getItem('audioVisualType')!=undefined&localStorage.getItem('audioVisualType')!=''){

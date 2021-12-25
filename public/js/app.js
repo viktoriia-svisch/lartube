@@ -58640,6 +58640,15 @@ var siteManager = function () {
             theVue.canloadmore = false;
             that.updateCSRF();
         });
+        __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('autoplayNextVideo', function (id) {
+            console.log("received autoplay");
+            theVue.nextvideos = that.nextVideosList(id);
+            console.log(theVue.nextvideos);
+            if (theVue.nextvideos.length > 0) {
+                theVue.$router.push('/media/' + encodeURIComponent(theVue.nextvideos[0].title));
+                theVue.nextvideos = that.nextVideosList(that.findMediaByName(theVue.nextvideos[0].id));
+            }
+        });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('login', function (settings) {
             _this.initing = false;
             _this.loggedUserId = settings.user_id;
@@ -58726,7 +58735,7 @@ var siteManager = function () {
             }
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('loadMore', function (title) {
-            that.receiveMedias(that.nextLink);
+            that.loadMorePages();
         });
         window.onscroll = function () {
             var d = document.documentElement;
@@ -58736,12 +58745,7 @@ var siteManager = function () {
                 console.log("current page");
                 console.log(that.currentPage);
                 if (that.maxPage >= that.currentPage) {
-                    that.receiveMedias('/internal-api/media?page=' + that.currentPage + that.getIgnoreParam(false));
-                    that.currentPage++;
-                    if (that.currentPage > that.maxPage) {
-                        console.log("end reached");
-                        theVue.canloadmore = false;
-                    }
+                    that.loadMorePages();
                 } else {
                     console.log("no more because of link is null");
                 }
@@ -58762,6 +58766,7 @@ var siteManager = function () {
                 alertmsg: "",
                 alerttype: "",
                 search: '',
+                nextvideos: [],
                 csrf: that.csrf,
                 currentuser: that.currentUser,
                 users: this.users,
@@ -58819,6 +58824,11 @@ var siteManager = function () {
                     if (to.params.currentTitle != undefined) {
                         if (sm.findMediaByName(to.params.currentTitle) == undefined) {
                             sm.receiveMediaByName(to.params.currentTitle);
+                        } else {
+                            this.nextvideos = that.nextVideosList(that.findMediaByName(this.$route.params.currentTitle).id);
+                            console.log("after site-change");
+                            console.log(this.nextvideos);
+                            console.log(that.findMediaByName(this.$route.params.currentTitle).id);
                         }
                     }
                     if (to.params.editTitle != undefined) {
@@ -58850,6 +58860,16 @@ var siteManager = function () {
                 fixed: true,
                 click: function click() {}
             });
+        }
+    };
+    siteManager.prototype.loadMorePages = function () {
+        if (this.maxPage >= this.currentPage) {
+            this.receiveMedias('/internal-api/media?page=' + this.currentPage + this.getIgnoreParam(false));
+            this.currentPage++;
+            if (this.currentPage > this.maxPage) {
+                console.log("end reached");
+                theVue.canloadmore = false;
+            }
         }
     };
     siteManager.prototype.fillUser = function (comment) {
@@ -58900,6 +58920,19 @@ var siteManager = function () {
                 }
             }
         });
+    };
+    siteManager.prototype.nextVideosList = function (id) {
+        var nextVideos = [];
+        var startAdd = false;
+        $.each(this.medias, function (key, value) {
+            if (startAdd) {
+                nextVideos.push(value);
+            }
+            if (value.id == id) {
+                startAdd = true;
+            }
+        });
+        return nextVideos;
     };
     siteManager.prototype.getIgnoreParam = function (first) {
         if (first === void 0) {
@@ -59149,6 +59182,8 @@ var siteManager = function () {
             if (theVue.$route.params.currentTitle != undefined) {
                 if (that.findMediaByName(theVue.$route.params.currentTitle) == undefined) {
                     that.receiveMediaByName(theVue.$route.params.currentTitle);
+                } else {
+                    theVue.nextvideos = that.nextVideosList(that.findMediaByName(theVue.$route.params.currentTitle).id);
                 }
             }
             if (theVue.$route.params.editTitle != undefined) {
@@ -59169,12 +59204,7 @@ var siteManager = function () {
             var height = d.offsetHeight;
             if (offset > height) {
                 if (that.maxPage >= that.currentPage) {
-                    that.receiveMedias('/internal-api/media?page=' + that.currentPage + that.getIgnoreParam(false));
-                    that.currentPage++;
-                    if (that.currentPage > that.maxPage) {
-                        console.log("end reached");
-                        theVue.canloadmore = false;
-                    }
+                    that.loadMorePages();
                 }
             }
         });
@@ -80331,7 +80361,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 var emptyMedia = new __WEBPACK_IMPORTED_MODULE_4__models__["b" ](0, "None", "", "", "", "", "", "", "", new __WEBPACK_IMPORTED_MODULE_4__models__["d" ](0, "None", "img/404/avatar.png", "img/404/background.png", "", "", {}, false), "", "", "", "", "", 0, 0, 0, [], 0);
 var presets = __WEBPACK_IMPORTED_MODULE_5_butterchurn_presets___default.a.getPresets();
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl', 'loggeduserid', 'canloadmore', 'currentuser'],
+  props: ['medias', 'baseUrl', 'loggeduserid', 'canloadmore', 'currentuser', 'nextvideos'],
   components: {
     'singleField': __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default.a,
     'comments': __WEBPACK_IMPORTED_MODULE_2__Comments___default.a,
@@ -80414,6 +80444,9 @@ var presets = __WEBPACK_IMPORTED_MODULE_5_butterchurn_presets___default.a.getPre
     }
   },
   watch: {
+    autoplay: function autoplay(val) {
+      localStorage.setItem('autoplay', String(this.autoplay));
+    },
     '$route.params.currentTitle': function $routeParamsCurrentTitle(val) {
       this.inited = false;
       this.currentmedia = this.getCurrentMedia();
@@ -80454,7 +80487,9 @@ var presets = __WEBPACK_IMPORTED_MODULE_5_butterchurn_presets___default.a.getPre
   },
   mounted: function mounted() {
     var that = this;
-    if (localStorage.getItem("autoplay") != '') {
+    console.log("autoplay-var");
+    console.log(localStorage.getItem("autoplay"));
+    if (localStorage.getItem("autoplay") == 'true') {
       this.autoplay = true;
     }
     if (localStorage.getItem('audioVisualType') != undefined & localStorage.getItem('audioVisualType') != '') {
@@ -81070,7 +81105,7 @@ var torrentInterval;
 var audioCtx, audioNode, gainNode, visualizer;
 var presets = __WEBPACK_IMPORTED_MODULE_3_butterchurn_presets___default.a.getPresets();
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl', 'loggeduserid', 'canloadmore', 'currentuser', 'currentmedia'],
+  props: ['autoplay', 'medias', 'baseUrl', 'loggeduserid', 'canloadmore', 'currentuser', 'currentmedia'],
   methods: {
     visualFullScreen: function visualFullScreen() {
       if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
@@ -81212,11 +81247,24 @@ var presets = __WEBPACK_IMPORTED_MODULE_3_butterchurn_presets___default.a.getPre
     }
   },
   computed: {
+    player: function player() {
+      return this.$refs.player.player;
+    }
   },
   updated: function updated() {
     this.$nextTick(function () {
       if (this.currentmedia != undefined && this.inited == false) {
         this.initTorrent();
+        if (this.autoplay) {
+          this.player.play();
+        }
+        var that = this;
+        this.player.on('ended', function () {
+          if (that.autoplay) {
+            console.log('movie ended');
+            __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('autoplayNextVideo', that.currentmedia.id);
+          }
+        });
         this.mylike = Number(this.currentmedia.myLike);
         this.likes = this.currentmedia.likes;
         this.dislikes = this.currentmedia.dislikes;
@@ -87788,7 +87836,7 @@ var render = function() {
                         : _vm._e(),
                       _vm._v(" "),
                       _vm.currentmedia.type == "localAudio"
-                        ? _c("vue-plyr", [
+                        ? _c("vue-plyr", { ref: "player" }, [
                             _c(
                               "audio",
                               {
@@ -87836,7 +87884,7 @@ var render = function() {
                         : _vm._e(),
                       _vm._v(" "),
                       _vm.currentmedia.type == "directAudio"
-                        ? _c("vue-plyr", [
+                        ? _c("vue-plyr", { ref: "player" }, [
                             _vm.currentmedia.type == "directAudio"
                               ? _c(
                                   "audio",
@@ -87870,7 +87918,7 @@ var render = function() {
                 : _vm._e(),
               _vm._v(" "),
               _vm.currentmedia.techType == "video"
-                ? _c("vue-plyr", [
+                ? _c("vue-plyr", { ref: "player" }, [
                     _c(
                       "video",
                       {
@@ -87907,7 +87955,7 @@ var render = function() {
                 : _vm._e(),
               _vm._v(" "),
               _vm.currentmedia.techType == "torrent"
-                ? _c("vue-plyr", [
+                ? _c("vue-plyr", { ref: "player" }, [
                     _c(
                       "video",
                       {
@@ -87958,7 +88006,9 @@ var render = function() {
     ? _c(
         "div",
         [
-          _c("mediaView", { attrs: { currentmedia: _vm.currentmedia } }),
+          _c("mediaView", {
+            attrs: { currentmedia: _vm.currentmedia, autoplay: _vm.autoplay }
+          }),
           _vm._v(" "),
           _c("div", { staticClass: "col-xs-12 col-sm-12 col-md-12" }),
           _vm._v(" "),
@@ -88351,7 +88401,7 @@ var render = function() {
                 1
               ),
               _vm._v(" "),
-              _vm._l(_vm.medias, function(item) {
+              _vm._l(_vm.nextvideos, function(item) {
                 return item.id != _vm.currentmedia.id
                   ? _c(
                       "div",
@@ -90335,7 +90385,9 @@ var render = function() {
               ])
             : _vm._e(),
           _vm._v(" "),
-          _c("mediaView", { attrs: { currentmedia: _vm.theTestMedia } }),
+          _c("mediaView", {
+            attrs: { currentmedia: _vm.theTestMedia, autoplay: false }
+          }),
           _vm._v(" "),
           _c(
             "div",
