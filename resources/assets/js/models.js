@@ -83,3 +83,14 @@ var Category =  (function () {
     return Category;
 }());
 export { Category };
+var Notification =  (function () {
+    function Notification(id, type, data, read_at, created_at) {
+        this.id = id;
+        this.type = type;
+        this.data = data;
+        this.read_at = read_at;
+        this.created_at = created_at;
+    }
+    return Notification;
+}());
+export { Notification };

@@ -9472,7 +9472,7 @@ a.text-dark:focus {
 #torrentmodal > div > div {
   width: 530px;
 }
-#app2 {
+#app {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -9480,19 +9480,6 @@ a.text-dark:focus {
 }
 .sidebar-spacer {
   margin-left: 250px;
-}
-#sidebar {
-  width: 250px;
-  position: fixed;
-  top: 70px;
-  bottom: 10px;
-  overflow-y: auto;
-  padding-left: 10px;
-  padding-right: 10px;
-  left: 0;
-  z-index: 999;
-  -webkit-transition: all 0.9s;
-  transition: all 0.9s;
 }
 .sgfText {
   padding: 2px;

@@ -22,8 +22,8 @@ header('Access-Control-Allow-Origin: *');
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body class="">
-    <div id="app2" v-cloak >
-  <thesidebar v-bind:csrf="csrf" v-bind:currentuser="currentuser" v-bind:medias="medias" v-bind:users="users" v-bind:tags="tags"></thesidebar>
+    <div id="app" v-cloak >
+  <thesidebar v-bind:notifications="notifications" v-bind:csrf="csrf" v-bind:currentuser="currentuser" v-bind:medias="medias" v-bind:users="users" v-bind:tags="tags"></thesidebar>
         <main class="py-4 mt-5 col-12 mb-3">
           <div class="">
             <div class="d-flex justify-content-center">

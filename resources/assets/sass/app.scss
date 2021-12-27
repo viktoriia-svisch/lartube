@@ -3,13 +3,14 @@
 #torrentmodal > div > div {
   width:530px;
 }
-#app2 {
+#app {
     display: flex;
     width: 100%;
 }
 .sidebar-spacer {
   margin-left: 250px;
 }
+/*
 #sidebar {
     width: 250px;
     position: fixed;
@@ -22,6 +23,7 @@
     z-index: 999;
     transition: all 0.9s;
 }
+*/
 .sgfText {
   padding: 2px;
   border-radius: 5px;
