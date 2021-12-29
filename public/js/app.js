@@ -93009,9 +93009,42 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__);
  __webpack_exports__["default"] = ({
   props: ['medias', 'baseUrl', 'canloadmore', 'loggeduserid'],
+  data: function data() {
+    return {
+      tmpid: 0,
+      tmptitle: ''
+    };
+  },
   methods: {
+    openConfirm: function openConfirm(id, title) {
+      this.tmpid = id;
+      this.tmptitle = title;
+      this.$vs.dialog({
+        type: 'confirm',
+        color: 'danger',
+        title: 'Delete media?',
+        text: 'Delete a media can not be reverted. Are you shure?',
+        accept: this.deleteAction
+      });
+    },
     emitLoadMore: function emitLoadMore() {
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadMore', '');
+    },
+    deleteAction: function deleteAction() {
+      var that = this;
+      $.ajax({
+        url: '/internal-api/media/' + that.tmpid,
+        type: 'DELETE',
+        cache: false,
+        contentType: false,
+        processData: false,
+        complete: function complete(res) {
+          if (res.status == 200) {
+          }
+          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('videoDeleted', that.tmptitle);
+        }
+      });
+      return false;
     }
   },
   mounted: function mounted() {
@@ -93040,7 +93073,7 @@ var render = function() {
         return item.user_id == _vm.loggeduserid
           ? _c(
               "div",
-              { staticClass: "col-lg-3 col-md-3 col-xs-6" },
+              { staticClass: "col-lg-4 col-md-4 col-xs-6" },
               [
                 _c("singleField", {
                   attrs: { item: item, loggeduserid: _vm.loggeduserid }
@@ -93049,12 +93082,25 @@ var render = function() {
                 _c(
                   "router-link",
                   {
-                    staticClass: "btn btn-sm btn-info float-right",
+                    staticClass: "btn btn-sm btn-info float-left",
                     attrs: {
                       to: "/mediaedit/" + encodeURIComponent(item.title)
                     }
                   },
                   [_vm._v("Edit")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-sm btn-danger float-right",
+                    on: {
+                      click: function($event) {
+                        _vm.openConfirm(item.id, item.title)
+                      }
+                    }
+                  },
+                  [_vm._v("Delete")]
                 )
               ],
               1
