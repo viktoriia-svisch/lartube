@@ -30,6 +30,9 @@ class Media extends Model
       $comments = Comment::where('media_id', '=' ,$this->id)->where("parent_id","=","0")->get()->sortByDesc('created_at');
       return $comments;
     }
+    public function likeObjects() {
+      return Like::where('media_id', '=',$this->id)->get();
+    }
     public function myLike($request){
       $like = Like::where('media_id', '=',$this->id)->where('user_id',Auth::id())->first();
       if(empty($like)){

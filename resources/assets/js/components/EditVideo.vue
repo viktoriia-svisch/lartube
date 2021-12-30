@@ -87,7 +87,8 @@
   export default {
     props: ['medias','baseUrl','categories','csrf'],
     mounted: function () {
-                },
+                this.currentmedia=this.getCurrentMedia();
+    },
     updated: function () {
       this.$nextTick(function () {
         if(this.$refs.croppieRef!=undefined&this.editpicloaded==false){
@@ -198,9 +199,9 @@ hideModal () {
             processData: false,
             complete : function(res) {
               if(res.status==200){
-                                                                        }
+              }
               eventBus.$emit('videoEdited',[that.currentmedia.title,res.responseJSON])
-                                    }
+            }
         });
         return false;
       },
@@ -239,10 +240,6 @@ rotate(rotationAngle,event) {
     data(){
       return {
         mediaType: '',
-        dismisssecs: 20,
-        dismisscountdown: 0,
-        alertType: 'warning',
-        alertMsg: '',
         currentmedia:undefined,
         catid:'',
         tmpid:0,

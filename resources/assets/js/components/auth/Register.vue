@@ -153,7 +153,7 @@
             processData: false,
             complete : function(res) {
               if(res.status==200){
-                              }
+              }
                                                 }
         });
         return false;
@@ -168,42 +168,42 @@
             processData: false,
             complete : function(res) {
               if(res.status==200){
-                              }
+              }
               eventBus.$emit('videoDeleted',that.currentmedia.title);
             }
         });
         return false;
       },
-resultAvatar(output) {
-    this.avatarCropped = output;
-},
-resultBackground(output) {
-    this.backgroundCropped = output;
-},
-updateAvatar(val) {
-  let options = {
-      format: 'png'
-  }
-  this.$refs.croppieAvatarRef.result(options, (output) => {
-      this.avatarCropped = output;
-  });
-},
-updateBackground(val) {
-  let options = {
-      format: 'png'
-  }
-  this.$refs.croppieBackgroundRef.result(options, (output) => {
-      this.backgroundCropped = output;
-  });
-},
-rotateAvatar(rotationAngle,event) {
-        if (event) event.preventDefault()
-    this.$refs.croppieAvatarRef.rotate(rotationAngle);
-},
-rotateBackground(rotationAngle,event) {
-        if (event) event.preventDefault()
-    this.$refs.croppieBackgroundRef.rotate(rotationAngle);
-}
+            resultAvatar(output) {
+        this.avatarCropped = output;
+      },
+      resultBackground(output) {
+        this.backgroundCropped = output;
+      },
+      updateAvatar(val) {
+        let options = {
+          format: 'png'
+        }
+        this.$refs.croppieAvatarRef.result(options, (output) => {
+          this.avatarCropped = output;
+        });
+      },
+      updateBackground(val) {
+        let options = {
+          format: 'png'
+        }
+        this.$refs.croppieBackgroundRef.result(options, (output) => {
+          this.backgroundCropped = output;
+        });
+      },
+      rotateAvatar(rotationAngle,event) {
+                if (event) event.preventDefault()
+        this.$refs.croppieAvatarRef.rotate(rotationAngle);
+      },
+      rotateBackground(rotationAngle,event) {
+                if (event) event.preventDefault()
+        this.$refs.croppieBackgroundRef.rotate(rotationAngle);
+      }
     },
   }
 </script>

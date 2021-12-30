@@ -152,15 +152,15 @@
                 width: 400,
                 height: 400
               });
-audioNode.connect(gainNode);
-gainNode.connect(audioCtx.destination);
-visualizer.connectAudio(gainNode);
-var preset = presets[this.audiovisualtype];
-visualizer.loadPreset(preset, 0.0); visualizer.setRendererSize(400, 400);
-torrentInterval = setInterval(function(){
-  visualizer.render();
-}, 100);
-}
+                            audioNode.connect(gainNode);
+              gainNode.connect(audioCtx.destination);
+                            visualizer.connectAudio(gainNode);
+              var preset = presets[this.audiovisualtype];
+                            visualizer.loadPreset(preset, 0.0);                             visualizer.setRendererSize(400, 400);
+                            torrentInterval = setInterval(function(){
+                visualizer.render();
+              }, 100);
+            }
       },
       prettyBytes(num,label=true) {
         var exponent, unit, neg = num < 0, units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -212,7 +212,10 @@ torrentInterval = setInterval(function(){
     },
     destroyed(){
       if(theTorrent!=undefined){
-              }
+                theTorrent.destroy(function(){
+          console.log("torrent destroyed on vue-destroyed-method")
+        });
+      }
     },
     mounted(){
       let that = this;

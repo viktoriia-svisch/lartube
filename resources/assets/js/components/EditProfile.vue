@@ -121,9 +121,9 @@
             processData: false,
             complete : function(res) {
               if(res.status==200){
-                              }
+              }
               eventBus.$emit('userEdited','')
-                                    }
+            }
         });
         return false;
       },
@@ -137,7 +137,7 @@
             processData: false,
             complete : function(res) {
               if(res.status==200){
-                              }
+              }
               eventBus.$emit('videoDeleted',that.currentmedia.title);
             }
         });
@@ -177,10 +177,6 @@ rotateBackground(rotationAngle,event) {
     data(){
       return {
         mediaType: '',
-        dismisssecs: 20,
-        dismisscountdown: 0,
-        alertType: 'warning',
-        alertMsg: '',
         public: false,
         editpicloaded:false,
         showdismissiblealert: false,

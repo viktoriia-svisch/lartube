@@ -86,7 +86,7 @@ import { eventBus } from '../eventBus.js';
                 processData: false,
                 complete : function(res) {
                   if(res.status==200){
-                                        eventBus.$emit('commentCreated',res.responseJSON);
+                    eventBus.$emit('commentCreated',res.responseJSON);
                   }
                 }
             });
@@ -108,7 +108,7 @@ import { eventBus } from '../eventBus.js';
                 processData: false,
                 complete : function(res) {
                   if(res.status==200){
-                                      }
+                  }
                   $("#comment_body"+id).val("")
                   eventBus.$emit('commentCreated',res.responseJSON);
                 }
