@@ -181,7 +181,7 @@
     },
     watch: {
       '$route.params.currentTitle': function (val) {
-                          this.inited = false;
+                            this.inited = false;
               this.initTorrent()
       },
     },
@@ -191,11 +191,11 @@
     updated: function () {
       this.$nextTick(function () {
     if((this.currentmedia!=undefined)&&(this.inited==false)){
-            this.initTorrent()
+            eventBus.$emit('setCurrentMedia',this.currentmedia.id);
+      this.initTorrent()
       if(this.autoplay){
         this.player.play();
-        this.player.fullscreen.enter();
-      }
+            }
       let that = this;
       this.player.on('ended', () => {
         if(that.autoplay){
@@ -211,6 +211,7 @@
   } });
     },
     destroyed(){
+      eventBus.$emit('setCurrentMedia',0);
       if(theTorrent!=undefined){
                 theTorrent.destroy(function(){
           console.log("torrent destroyed on vue-destroyed-method")
@@ -219,6 +220,7 @@
     },
     mounted(){
       let that = this;
+      eventBus.$emit('setCurrentMedia',this.currentmedia.id);
           eventBus.$on('audioVisualType', visArgs => {
         that.audiovisualtype = visArgs[0];
         this.audioVisualChangeSeconds = visArgs[1]

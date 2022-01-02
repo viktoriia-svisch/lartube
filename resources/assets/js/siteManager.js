@@ -18,11 +18,19 @@ var theMediaSorter = new MediaSorter();
 var siteManager =  (function () {
     function siteManager(base) {
         this.maxPage = -1;
+        this.currentMediaId = 0;
         this.currentPage = 2;
         this.initing = true;
         baseUrl = base + "/";
+        if (localStorage.getItem("mediaTypes") != '' && localStorage.getItem("mediaTypes") != null) {
+            this.types = localStorage.getItem("mediaTypes").split(",");
+        }
+        else {
+            this.types = ["audio", "video"];
+        }
         this.catchedTagMedias = [];
         this.usedSearchTerms = [];
+        this.nextMedias = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
         this.receiveUsers(true);
         this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -105,25 +113,29 @@ var siteManager =  (function () {
                 console.log("got values!" + tmpv[0].title);
                 theVue.currentmedia = tmpv[0];
                 theVue.$router.push('/media/' + encodeURIComponent(tmpv[0].title));
-                theVue.nextvideos = that.nextVideosList(tmpv[0].id);
+                that.nextMedias = that.nextVideosList(tmpv[0].id);
+                theVue.nextvideos = that.nextMedias;
                 console.log(theVue.nextvideos);
                 if (theVue.nextvideos == null || theVue.nextvideos) {
                     console.log("do load more");
                     that.loadMorePages(function () {
-                        theVue.nextvideos = that.nextVideosList(id);
+                        that.nextMedias = that.nextVideosList(id);
+                        theVue.nextvideos = that.nextMedias;
                         console.log("received by callback");
                     });
                 }
             }
             else {
                 that.loadMorePages(function () {
-                    theVue.nextvideos = that.nextVideosList(id);
+                    that.nextMedias = that.nextVideosList(id);
+                    theVue.nextvideos = that.nextMedias;
                     theVue.$router.push('/media/' + encodeURIComponent(theVue.nextvideos[0].title));
                     theVue.currentmedia = theVue.nextvideos[0];
                     theVue.nextvideos = that.nextVideosList(theVue.nextvideos[0].id);
                     if (theVue.nextvideos == null || theVue.nextvideos) {
                         that.loadMorePages(function () {
-                            theVue.nextvideos = that.nextVideosList(id);
+                            that.nextMedias = that.nextVideosList(id);
+                            theVue.nextvideos = that.nextMedias;
                         });
                     }
                 });
@@ -164,7 +176,11 @@ var siteManager =  (function () {
                 theVue.search.mediaResult = theMediaSorter.sort(theVue.search.mediaResult);
             }
             that.medias = theMediaSorter.sort(that.medias);
-            theVue.medias = that.medias;
+            if (that.currentMediaId != 0) {
+                that.nextMedias = that.nextVideosList(that.currentMediaId);
+                theVue.nextvideos = that.nextMedias;
+            }
+            theVue.medias = that.getFilteredMedias();
         });
         eventBus.$on('commentCreated', function (json) {
             that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title);
@@ -191,11 +207,16 @@ var siteManager =  (function () {
             theVue.alert("Media load by comment", "success");
         });
         eventBus.$on('loadMedia', function (title) {
-            if (theVue != undefined) {
-                that.receiveMediaByName(title);
+            that.receiveMediaByName(title, function (id) {
                 that.updateCSRF();
-            }
-            theVue.alert("Media load media by title", "success");
+                if (theVue != undefined) {
+                    if (theVue.$route.params.currentTitle != undefined) {
+                        that.currentMediaId = id;
+                        that.nextMedias = that.nextVideosList(id);
+                        theVue.nextvideos = that.nextMedias;
+                    }
+                }
+            });
         });
         eventBus.$on('videoDeleted', function (title) {
             theVue.alert("Video " + title + " deleted", "success");
@@ -217,11 +238,11 @@ var siteManager =  (function () {
         eventBus.$on('checkTag', function (tagName) {
             if (tagName == '') {
                 if ($("#specialAllTag").is(":checked")) {
-                    theVue.medias = that.medias;
+                    theVue.medias = that.getFilteredMedias();
                 }
                 else {
                     theVue.medias = [];
-                    theVue.medias = that.medias;
+                    theVue.medias = that.getFilteredMedias();
                 }
             }
             else {
@@ -251,6 +272,20 @@ var siteManager =  (function () {
         };
         eventBus.$on('refreshSearch', function (title) {
             theVue.searching();
+        });
+        eventBus.$on('filterTypes', function (types) {
+            that.types = types;
+            theVue.medias = that.getFilteredMedias();
+            if (_this.currentMediaId != 0) {
+                that.nextMedias = that.nextVideosList(_this.currentMediaId);
+            }
+            theVue.nextvideos = that.getFilteredMedias(that.nextMedias);
+        });
+        eventBus.$on('setCurrentMedia', function (id) {
+            console.log("set current id");
+            that.currentMediaId = id;
+            that.nextMedias = that.nextVideosList(id);
+            theVue.nextvideos = that.nextMedias;
         });
         theVue = new Vue({
             data: {
@@ -300,7 +335,7 @@ var siteManager =  (function () {
                     }
                     var so = new Search(s.toString(), that.medias, that.tags, that.users);
                     theVue.search = so;
-                    theVue.medias = so.mediaResult;
+                    theVue.medias = that.getFilteredMedias(so.mediaResult);
                     theVue.users = so.userResult;
                 }
             },
@@ -309,8 +344,8 @@ var siteManager =  (function () {
             watch: {
                 $route: function (to, from) {
                     if (to.params.currentTitle != undefined) {
-                        if (sm.findMediaByName(to.params.currentTitle) == undefined) {
-                            sm.receiveMediaByName(to.params.currentTitle);
+                        if (that.findMediaByName(to.params.currentTitle) == undefined) {
+                            that.receiveMediaByName(to.params.currentTitle);
                         }
                         else {
                             this.nextvideos = that.nextVideosList(that.findMediaByName(this.$route.params.currentTitle).id);
@@ -359,6 +394,33 @@ var siteManager =  (function () {
                 theVue.canloadmore = false;
             }
         }
+    };
+    siteManager.prototype.getFilteredMedias = function (myList) {
+        if (myList === void 0) { myList = undefined; }
+        var theMedias = [];
+        var origMedias;
+        if (myList == undefined) {
+            origMedias = this.medias;
+        }
+        else {
+            origMedias = myList;
+        }
+        var that = this;
+        $.each(origMedias, function (key, value) {
+            $.each(that.types, function (key1, type) {
+                if (type == value.simpleType) {
+                    if (theMedias.indexOf(value) == -1) {
+                        theMedias.push(value);
+                    }
+                }
+            });
+            if (value.id == that.currentMediaId) {
+                if (theMedias.indexOf(value) == -1) {
+                    theMedias.push(value);
+                }
+            }
+        });
+        return theMedias;
     };
     siteManager.prototype.fillUser = function (comment) {
         var that = this;
@@ -410,7 +472,7 @@ var siteManager =  (function () {
     siteManager.prototype.nextVideosList = function (id) {
         var nextVideos = [];
         var startAdd = false;
-        $.each(this.medias, function (key, value) {
+        $.each(this.getFilteredMedias(), function (key, value) {
             if (startAdd) {
                 nextVideos.push(value);
             }
@@ -531,7 +593,7 @@ var siteManager =  (function () {
             }
             json = json.data;
             that.medias.unshift(new Media(json.id, json.title, json.description, json.source, json.poster_source, json.duration, json.simpleType, json.techType, json.type, that.getUserById(json.user_id), json.user_id, json.created_at, json.updated_at, json.created_at_readable, json.comments, that.getTagsByIdArray(json.tagsIds), json.myLike, json.likes, json.dislikes, json.tracks, json.category_id));
-            theVue.medias = that.medias;
+            theVue.medias = that.getFilteredMedias();
             theVue.$router.push('/');
         });
     };
@@ -580,7 +642,7 @@ var siteManager =  (function () {
                 });
                 that.medias.push(m);
                 that.medias = theMediaSorter.sort(that.medias);
-                theVue.medias = that.medias;
+                theVue.medias = that.getFilteredMedias();
             }
             else {
                 var m = new Media(data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
@@ -594,7 +656,7 @@ var siteManager =  (function () {
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
-                    theVue.medias = that.medias;
+                    theVue.medias = that.getFilteredMedias();
                 }
             }
             if (callback != undefined) {
@@ -623,7 +685,7 @@ var siteManager =  (function () {
                 });
                 that.medias.push(m);
                 that.medias = theMediaSorter.sort(that.medias);
-                theVue.medias = that.medias;
+                theVue.medias = that.getFilteredMedias();
             }
             else {
                 var m = new Media(data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
@@ -637,7 +699,7 @@ var siteManager =  (function () {
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
-                    theVue.medias = that.medias;
+                    theVue.medias = that.getFilteredMedias();
                 }
             }
             if (callback != undefined) {
@@ -645,8 +707,8 @@ var siteManager =  (function () {
             }
         });
     };
-    siteManager.prototype.receiveMediaByName = function (mediaName, forceUpdate) {
-        if (forceUpdate === void 0) { forceUpdate = false; }
+    siteManager.prototype.receiveMediaByName = function (mediaName, callback) {
+        if (callback === void 0) { callback = undefined; }
         var that = this;
         var theKey;
         var existsAlready = false;
@@ -666,7 +728,7 @@ var siteManager =  (function () {
                 });
                 that.medias.push(m);
                 that.medias = theMediaSorter.sort(that.medias);
-                theVue.medias = that.medias;
+                theVue.medias = that.getFilteredMedias();
             }
             else {
                 var m = new Media(data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
@@ -680,8 +742,11 @@ var siteManager =  (function () {
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
-                    theVue.medias = that.medias;
+                    theVue.medias = that.getFilteredMedias();
                 }
+            }
+            if (callback != undefined) {
+                callback(data.id);
             }
         });
     };
@@ -744,7 +809,7 @@ var siteManager =  (function () {
             }
             i++;
         });
-        theVue.medias = that.medias;
+        theVue.medias = that.getFilteredMedias();
         theVue.$router.push('/');
     };
     siteManager.prototype.receiveMedias = function (url, forceUpdate, callback) {
@@ -790,23 +855,30 @@ var siteManager =  (function () {
             theVue.categories = that.categories;
             console.log(this.categories);
             that.medias = theMediaSorter.sort(that.medias);
-            theVue.medias = that.medias;
+            theVue.medias = that.getFilteredMedias();
             theVue.categories = that.categories;
             if (theVue.$route.params.profileId != undefined) {
-                theVue.user = sm.getUserById(theVue.$route.params.profileId);
-                theVue.medias = sm.getMediasByUser(theVue.$route.params.profileId);
+                theVue.user = that.getUserById(theVue.$route.params.profileId);
+                theVue.medias = that.getFilteredMedias(that.getMediasByUser(theVue.$route.params.profileId));
             }
             if (theVue.$route.params.currentTitle != undefined) {
                 if (that.findMediaByName(theVue.$route.params.currentTitle) == undefined) {
-                    that.receiveMediaByName(theVue.$route.params.currentTitle);
+                    that.receiveMediaByName(theVue.$route.params.currentTitle, function (id) {
+                        that.currentMediaId = id;
+                        that.nextMedias = that.nextVideosList(id);
+                        theVue.nextvideos = that.nextMedias;
+                    });
                 }
                 else {
-                    theVue.nextvideos = that.nextVideosList(that.findMediaByName(theVue.$route.params.currentTitle).id);
+                    that.nextMedias = that.nextVideosList(that.findMediaByName(theVue.$route.params.currentTitle).id);
+                    theVue.nextvideos = that.nextMedias;
                 }
             }
             if (theVue.$route.params.editTitle != undefined) {
                 if (that.findMediaByName(theVue.$route.params.editTitle) == undefined) {
-                    that.receiveMediaByName(theVue.$route.params.editTitle);
+                    that.receiveMediaByName(theVue.$route.params.editTitle, function (id) {
+                        that.currentMediaId = id;
+                    });
                 }
             }
             if ((theVue.$router.currentRoute.path == "/search")) {
