@@ -58757,7 +58757,6 @@ var siteManager = function () {
             theVue.alert("Login failed", "danger", "error");
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('loadUserVideos', function (userid) {
-            console.log("/internal-api/medias/by/" + userid + _this.getIgnoreParam());
             that.receiveMedias("/internal-api/medias/by/" + userid + _this.getIgnoreParam());
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('sortBy', function (sortBy) {
@@ -58867,6 +58866,9 @@ var siteManager = function () {
                 that.nextMedias = that.nextVideosList(_this.currentMediaId);
             }
             theVue.nextvideos = that.getFilteredMedias(that.nextMedias);
+            if (theVue.$router.currentRoute.path == "/search") {
+                theVue.searching();
+            }
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('setCurrentMedia', function (id) {
             console.log("set current id");
@@ -58924,7 +58926,7 @@ var siteManager = function () {
                             that.receiveMedias("/internal-api/medias/search/" + s + that.getIgnoreParam());
                         }, 300);
                     }
-                    var so = new __WEBPACK_IMPORTED_MODULE_5__tools__["b" ](s.toString(), that.medias, that.tags, that.users);
+                    var so = new __WEBPACK_IMPORTED_MODULE_5__tools__["b" ](s.toString(), that.getFilteredMedias(), that.tags, that.users);
                     theVue.search = so;
                     theVue.medias = that.getFilteredMedias(so.mediaResult);
                     theVue.users = so.userResult;
