@@ -4,7 +4,7 @@ header('Access-Control-Allow-Origin: *');
  ?>
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,17 +20,19 @@ header('Access-Control-Allow-Origin: *');
     <script src="{{ asset('js/app.js') }}" defer></script>
     @yield('header')
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-</head>
-<body class="">
+  </head>
+  <body class="">
     <div id="app" v-cloak >
-  <thesidebar v-bind:notifications="notifications" v-bind:csrf="csrf" v-bind:currentuser="currentuser" v-bind:medias="medias" v-bind:users="users" v-bind:tags="tags"></thesidebar>
-        <main class="py-4 mt-5 col-12 mb-3">
-          <div class="">
-            <div class="d-flex justify-content-center">
-              <div class="col-sm-12 col-12 col-lg-10" id="outerContainer">
-            @yield('content')
-          </div></div></div>
-        </main>
+      <thesidebar v-bind:notifications="notifications" v-bind:csrf="csrf" v-bind:currentuser="currentuser" v-bind:medias="medias" v-bind:users="users" v-bind:tags="tags"></thesidebar>
+      <main class="py-4 mt-5 col-12 mb-3">
+        <div class="">
+          <div class="d-flex justify-content-center">
+            <div class="col-sm-12 col-12 col-lg-10" id="outerContainer">
+              @yield('content')
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   </body>
   <footer>

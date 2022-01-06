@@ -23,7 +23,7 @@
          <input placeholder="magnet:         <span class="btn btn-primary" @click="testMedia()">Test link</span>
          <span class="btn btn-primary" v-if="theTestMedia!=undefined" @click="removeTestMedia()">Remove test</span>
     </div>
-    <mediaView v-bind:currentmedia="theTestMedia" v-bind:autoplay="false"></mediaView>
+    <mediaView v-bind:currentmedia="theTestMedia" v-if="theTestMedia!=undefined" v-bind:autoplay="false"></mediaView>
     <div class="form-group">
         <label>Media-poster:</label>
         <vue-croppie
@@ -57,6 +57,7 @@
           </div>
       </div>
     </form>
+    <p v-if="uploadPercent!=-1">Please wait, you will be redirected to startpage after upload</p>
     <vs-progress :percent="uploadPercent" v-if="uploadPercent!=-1" color="primary">primary</vs-progress>
     <button @click="submitAction();" >Submit</button>
     </div>

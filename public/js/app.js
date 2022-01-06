@@ -80617,7 +80617,7 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("h3", [_vm._v("Medias (sort by " + _vm._s(_vm.selectVal) + ")")]),
+      _c("h3", [_vm._v("Medias")]),
       _vm._v(" "),
       _c("p", [_vm._v("Sort by "), _c("sortSelect")], 1),
       _vm._v(" "),
@@ -90655,9 +90655,11 @@ var render = function() {
               ])
             : _vm._e(),
           _vm._v(" "),
-          _c("mediaView", {
-            attrs: { currentmedia: _vm.theTestMedia, autoplay: false }
-          }),
+          _vm.theTestMedia != undefined
+            ? _c("mediaView", {
+                attrs: { currentmedia: _vm.theTestMedia, autoplay: false }
+              })
+            : _vm._e(),
           _vm._v(" "),
           _c(
             "div",
@@ -90732,6 +90734,14 @@ var render = function() {
         ],
         1
       ),
+      _vm._v(" "),
+      _vm.uploadPercent != -1
+        ? _c("p", [
+            _vm._v(
+              "Please wait, you will be redirected to startpage after upload"
+            )
+          ])
+        : _vm._e(),
       _vm._v(" "),
       _vm.uploadPercent != -1
         ? _c(
