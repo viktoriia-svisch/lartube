@@ -59012,7 +59012,9 @@ var siteManager = function () {
                 that.users = [];
                 if (that.loggedUserId == 0) {
                     that.currentUser = new __WEBPACK_IMPORTED_MODULE_6__models__["e" ](0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "", false);
-                    theVue.currentuser = that.currentUser;
+                    if (theVue != undefined) {
+                        theVue.currentuser = that.currentUser;
+                    }
                 }
                 $.each(data.data, function (key, value) {
                     var u = new __WEBPACK_IMPORTED_MODULE_6__models__["e" ](value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds, value.tagString, value.public, value.admin, value.email, value.created_at.date, value.updated_at.date);
