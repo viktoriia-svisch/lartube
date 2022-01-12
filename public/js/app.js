@@ -88531,8 +88531,13 @@ var render = function() {
                     },
                     [
                       _c(
-                        "vs-tooltip",
-                        { attrs: { text: _vm.currentmedia.user.name } },
+                        "div",
+                        {
+                          attrs: {
+                            id: "userAvatar",
+                            text: _vm.currentmedia.user.name
+                          }
+                        },
                         [
                           _vm.currentmedia.user.avatar == ""
                             ? _c("img", {
@@ -88552,6 +88557,12 @@ var render = function() {
                                 }
                               })
                         ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-tooltip",
+                        { attrs: { target: "userAvatar", placement: "top" } },
+                        [_c("h5", [_vm._v(_vm._s(_vm.currentmedia.user.name))])]
                       )
                     ],
                     1
