@@ -88410,7 +88410,8 @@ var render = function() {
                               }
                             }
                           },
-                          [_vm._v("P")]
+                          [_c("vs-icon", { attrs: { icon: "skip_previous" } })],
+                          1
                         ),
                         _vm._v(" "),
                         _c(
@@ -88474,7 +88475,8 @@ var render = function() {
                               }
                             }
                           },
-                          [_vm._v("N")]
+                          [_c("vs-icon", { attrs: { icon: "skip_next" } })],
+                          1
                         )
                       ])
                     : _vm._e(),
