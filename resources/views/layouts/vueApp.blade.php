@@ -17,6 +17,7 @@ header('Access-Control-Allow-Origin: *');
     <title>{{ config('app.name', 'LaraTube') }}</title>
     <script>var baseUrl = "{{ url("/") }}/";</script>
     @yield('header-before-js')
+    <script src="{{ asset('js/app.js') }}" defer></script>
     @yield('header')
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
   </head>

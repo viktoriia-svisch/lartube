@@ -5,7 +5,7 @@
         <singleField v-bind:item="item" v-bind:loggeduserid="loggeduserid"></singleField>
     </div>
     </div>
-<p class="text-center" v-if="canloadmore">Scroll to bottom to load more</p>
+<p class="btn-block btn-sm btn btn-info" @click="emitLoadMore()" v-if="canloadmore">Scroll down or click to load more</p>
   </div>
 </template>
 <script>

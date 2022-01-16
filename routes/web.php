@@ -34,7 +34,7 @@ Route::post('/media/create','MediaController@create')->name('medias.create');
 Route::put('/like','MediaController@like')->name('media.like');
 Route::post('/like','MediaController@like')->name('media222.like');
 Route::get('/like','MediaController@like')->name('media222.like');
-Route::post('/internal-api/profiles/edit/{id}','UserController@update')->name('users.edit');
+Route::post('/internal-api/profiles/edit/{id}','UserController@update')->name('useres.edit');
 Route::delete('/internal-api/media/{title}','MediaController@destroy')->name('mediasapi.delete');
 Route::post('/internal-api/media/{title}','MediaController@edit')->name('mediasiapi.edit');
 Route::get('/internal-api/notifications', function (Request $request) {
@@ -80,6 +80,7 @@ Route::get('/internal-api/medias/byCommentId/{id}', function ($id) {
 Route::post('/internal-api/media/{id}','MediaController@edit')->name('mediasapi.edit');
 Route::delete('/internal-api/media/{id}','MediaController@destroy')->name('mediasapi.delete');
 Route::post('/internal-api/login', 'Auth\LoginController@login');
+Route::post('/internal-api/register', 'Auth\RegisterController@register');
 Route::get('/internal-api/medias/by/{user}', function (Request $request,$user) {
     return MediaResource::collection(Media::where('user_id', '=' ,$user)->whereNotIn('id', explode(",",$request->input('i')))->get());
 });
@@ -89,7 +90,7 @@ Route::get('/internal-api/refresh-csrf', function(){
     return csrf_token();
 });
 Route::get('/internal-api/users', function () {
-    return UserResource::collection(User::where("public","=",1)->get());
+  return UserResource::collection(User::all());
 });
 Route::delete('/internal-api/user/{id}','UserController@destroy');
 Route::delete('/internal-api/comment/{id}','CommentController@destroy');

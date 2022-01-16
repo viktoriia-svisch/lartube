@@ -14,27 +14,9 @@ class UserController extends Controller
   function __construct()
   {
   }
-    public function index(Request $request)
-    {
-        $data = User::orderBy('id','DESC')->paginate(5);
-        return view('users.index',compact('data'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
-    }
-    public function profile()
-    {
-        $users = User::all();
-        $friends = Auth::user()->getAcceptedFriendships();
-        return view('profile.index',compact('users','friends'));
-    }
     public function info(){
       $au = Auth::id();
       return "{ login: ".$au."}";
-    }
-    public function profileview($name)
-    {
-        $user = User::where('name','=',$name)->firstOrFail();
-      $medias = $user->medias;
-        return view('profile.view',compact('user','medias'));
     }
     public function changeFriends(Request $request)
     {
@@ -56,23 +38,41 @@ class UserController extends Controller
         Auth::user()->unfriend($friend);
       }
     }
-    public function create()
-    {
-        $roles = Role::pluck('name','name')->all();
-        return view('users.create',compact('roles'));
-    }
     public function store(Request $request)
     {
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|same:confirm-password',
-            'roles' => 'required'
+            'password' => 'required|same:confirm-password'
         ]);
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
         $user = User::create($input);
-        $user->assignRole($request->input('roles'));
+        $avatar_source = 'public/user/avatars/'.$user->name.'.png';
+        $data = $request->input('avatar');
+        if(!empty($data)){
+          list($type, $data) = explode(';', $data);
+          list(, $data)      = explode(',', $data);
+          $data = base64_decode($data);
+          Storage::put('public/user/avatars/'.$user->name.'.png', $data);
+        } else {
+          $avatar_source = '';
+        }
+        $background_source = 'public/user/backgrounds/'.$user->name.'.png';
+        $data = $request->input('background');
+        if(!empty($data)){
+          list($type, $data) = explode(';', $data);
+          list(, $data)      = explode(',', $data);
+          $data = base64_decode($data);
+          Storage::put('public/user/backgrounds/'.$user->name.'.png', $data);
+        } else {
+          $background_source = '';
+        }
+        $user->avatar_source = $avatar_source;
+        $user->background_source = $background_source;
+        if(!empty($request->input('roles'))){
+          $user->assignRole($request->input('roles'));
+        }
         $tagArrayExtract = explode(' ', $request->input('tags'));
         $tagArray = array();
         foreach($tagArrayExtract as $tag){
@@ -83,30 +83,13 @@ class UserController extends Controller
           }
         }
         $user->retag($tagArray);
-        return redirect()->route('users.index')
-                        ->with('success','User created successfully');
-    }
-    public function show($id)
-    {
-        $user = User::find($id);
-        return view('users.show',compact('user'));
-    }
-    public function edit($id)
-    {
-        $user = User::find($id);
-        $roles = Role::pluck('name','name')->all();
-        $userRole = $user->roles->pluck('name','name')->all();
-        return view('users.edit',compact('user','roles','userRole'));
-    }
-    public function selfEdit(){
-      $user = User::find(Auth::user()->id);
-      return view('users.selfedit',compact('user'));
+        return response()->json(["data"=>["msg"=>"User created"]],200);
     }
     public function update(Request $request, $id)
     {
+      echo "blaaa" . $request->input("bio");
         $this->validate($request, [
             'name' => 'required',
-            'password' => 'same:confirm-password',
         ]);
         $input = $request->all();
         if(!empty($input['password'])){
@@ -153,8 +136,7 @@ class UserController extends Controller
           }
         }
         $user->retag($tagArray);
-        return redirect()->route('profile.view', $user->name)
-                        ->with('success','User updated successfully');
+        return response()->json(["data"=>["msg"=>"User updated"]],200);
     }
     public function destroy($id)
     {

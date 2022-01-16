@@ -58607,7 +58607,7 @@ var siteManager = function () {
         this.usedSearchTerms = [];
         this.nextMedias = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
-        this.receiveUsers(true);
+        this.receiveUsers();
         this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         setInterval(this.updateCSRF, 1800000);
     }
@@ -58641,7 +58641,7 @@ var siteManager = function () {
         var routes = [{ path: '/', component: overview }, { path: '/media/:currentTitle', component: player }, { path: '/profile/:profileId', component: profileComp }, { path: '/tags', component: tagComp }, { path: '/tags/:tagName', component: tagComp }, { path: '/login', component: loginComp }, { path: '/editprofile', component: editProfileComp }, { path: '/register', component: registerComp }, { path: '/upload', component: uploadComp }, { path: '/search', component: searchComp }, { path: '/charts', component: chartsComp }, { path: '/categories', component: catComp }, { path: '/about', component: aboutComp }, { path: '/notifications', component: notiComp }, { path: '/myvideos', component: myVideosComp }, { path: '/admin/users', component: uaComp }, { path: '/mediaedit/:editTitle', component: editVideoComp }];
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('getNotifications', function (url) {
             theVue.alert("Look for new notifications");
-            that.receiveNotifications(url, true);
+            that.receiveNotifications(url);
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('getNewMedias', function (title) {
             theVue.alert("Look for new medias..");
@@ -58649,7 +58649,7 @@ var siteManager = function () {
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('userEdited', function (title) {
             theVue.alert("Look for new users..");
-            that.receiveUsers(true);
+            that.receiveUsers();
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('refreshMedias', function (title) {
             theVue.canloadmore = true;
@@ -58701,11 +58701,10 @@ var siteManager = function () {
             _this.initing = false;
             _this.loggedUserId = settings.user_id;
             theVue.loggeduserid = _this.loggedUserId;
-            that.currentUser = that.getUserById(_this.loggedUserId);
-            theVue.currentuser = that.currentUser;
-            if (that.currentUser.admin) {
-                that.receiveUsers(true);
-            }
+            that.receiveUsers(function () {
+                that.currentUser = that.getUserById(this.loggedUserId);
+                theVue.currentuser = that.currentUser;
+            });
             theVue.alert("Welcome back, " + that.getUserById(_this.loggedUserId).name, "success", "exit_to_app");
             theVue.$router.push('/');
             that.updateCSRF();
@@ -58735,6 +58734,7 @@ var siteManager = function () {
                 that.nextMedias = that.nextVideosList(that.currentMediaId);
                 theVue.nextvideos = that.nextMedias;
             }
+            theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('commentCreated', function (json) {
@@ -58777,7 +58777,6 @@ var siteManager = function () {
             theVue.alert("Video " + title + " deleted", "success");
             that.deleteMediaByName(title);
             that.updateCSRF();
-            that.receiveNotifications(undefined, true);
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('videoCreated', function (json) {
             that.receiveTagsForMedia(json);
@@ -58801,7 +58800,9 @@ var siteManager = function () {
             } else {
                 if (that.catchedTagMedias.includes(tagName) == false) {
                     that.catchedTagMedias.push(tagName);
-                    that.receiveMedias("/api/tags/" + tagName);
+                    that.receiveMedias("/api/tags/" + tagName, false, function () {
+                        theVue.fullmedias = that.medias;
+                    });
                 }
             }
         });
@@ -58827,6 +58828,7 @@ var siteManager = function () {
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('filterTypes', function (types) {
             that.types = types;
+            theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();
             if (_this.currentMediaId != 0) {
                 that.nextMedias = that.nextVideosList(_this.currentMediaId);
@@ -58848,13 +58850,14 @@ var siteManager = function () {
                 search: '',
                 nextvideos: [],
                 notifications: [],
+                fullmedias: that.medias,
                 csrf: that.csrf,
                 currentuser: that.currentUser,
                 users: this.users,
                 loggeduserid: this.loggedUserId,
                 tags: this.tags,
                 canloadmore: true,
-                medias: this.medias,
+                medias: this.getFilteredMedias(),
                 user: that.currentUser,
                 categories: that.categories,
                 baseUrl: baseUrl
@@ -58894,6 +58897,7 @@ var siteManager = function () {
                     }
                     var so = new __WEBPACK_IMPORTED_MODULE_5__tools__["b" ](s.toString(), that.getFilteredMedias(), that.tags, that.users);
                     theVue.search = so;
+                    theVue.fullmedias = that.medias;
                     theVue.medias = that.getFilteredMedias(so.mediaResult);
                     theVue.users = so.userResult;
                 }
@@ -59002,34 +59006,35 @@ var siteManager = function () {
             $('meta[name="csrf-token"]').attr('content', data);
         });
     };
-    siteManager.prototype.receiveUsers = function (forceUpdate) {
-        if (forceUpdate === void 0) {
-            forceUpdate = false;
+    siteManager.prototype.receiveUsers = function (callback) {
+        if (callback === void 0) {
+            callback = undefined;
         }
         var that = this;
         $.getJSON("/internal-api/users", function name(data) {
-            if (that.users == undefined || forceUpdate) {
-                that.users = [];
-                if (that.loggedUserId == 0) {
-                    that.currentUser = new __WEBPACK_IMPORTED_MODULE_6__models__["e" ](0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "", false);
+            that.users = [];
+            if (that.loggedUserId == 0) {
+                that.currentUser = new __WEBPACK_IMPORTED_MODULE_6__models__["e" ](0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "", false);
+                if (theVue != undefined) {
+                    theVue.currentuser = that.currentUser;
+                }
+            }
+            $.each(data.data, function (key, value) {
+                var u = new __WEBPACK_IMPORTED_MODULE_6__models__["e" ](value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds, value.tagString, value.public, value.admin, value.email, value.created_at.date, value.updated_at.date);
+                if (u.id == that.loggedUserId) {
+                    that.currentUser = u;
                     if (theVue != undefined) {
-                        theVue.currentuser = that.currentUser;
+                        theVue.currentuser = u;
                     }
                 }
-                $.each(data.data, function (key, value) {
-                    var u = new __WEBPACK_IMPORTED_MODULE_6__models__["e" ](value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds, value.tagString, value.public, value.admin, value.email, value.created_at.date, value.updated_at.date);
-                    if (u.id == that.loggedUserId) {
-                        that.currentUser = u;
-                        if (theVue != undefined) {
-                            theVue.currentuser = u;
-                        }
-                    }
-                    that.users.push(u);
-                });
-                if (that.initing) {
-                    that.receiveTags();
-                    that.receiveCategories();
-                }
+                that.users.push(u);
+            });
+            if (that.initing) {
+                that.receiveTags();
+                that.receiveCategories();
+            }
+            if (callback != undefined) {
+                callback();
             }
         });
     };
@@ -59078,35 +59083,33 @@ var siteManager = function () {
             }
         });
     };
-    siteManager.prototype.receiveNotifications = function (url, forceUpdate) {
+    siteManager.prototype.receiveNotifications = function (url, callback) {
         if (url === void 0) {
             url = '/internal-api/notifications';
         }
-        if (forceUpdate === void 0) {
-            forceUpdate = false;
+        if (callback === void 0) {
+            callback = undefined;
         }
         var that = this;
         $.getJSON(url, function name(data) {
-            if (that.notifications == undefined || forceUpdate) {
-                that.notifications = [];
-                $.each(data, function (key, value) {
-                    if (value.data.media_id != null && value.data.media_id != 0) {
-                        that.findMediaById(value.data.media_id, function () {
-                            console.log("push media-like-notification " + value.id);
-                            that.notifications.push(new __WEBPACK_IMPORTED_MODULE_6__models__["c" ](value.id, value.type, value.data, value.read_at, value.created_at));
-                            theVue.notifications = that.notifications;
-                        });
-                    }
-                    if (value.data.comment_id != null && value.data.comment_id != 0) {
-                        console.log("load a comment");
-                        that.getCommentById2(value.data.comment_id, function () {
-                            console.log("push comment-like-notification " + value.id);
-                            that.notifications.push(new __WEBPACK_IMPORTED_MODULE_6__models__["c" ](value.id, value.type, value.data, value.read_at, value.created_at));
-                            theVue.notifications = that.notifications;
-                        });
-                    }
-                });
-            }
+            that.notifications = [];
+            $.each(data, function (key, value) {
+                if (value.data.media_id != null && value.data.media_id != 0) {
+                    that.findMediaById(value.data.media_id, function () {
+                        console.log("push media-like-notification " + value.id);
+                        that.notifications.push(new __WEBPACK_IMPORTED_MODULE_6__models__["c" ](value.id, value.type, value.data, value.read_at, value.created_at));
+                        theVue.notifications = that.notifications;
+                    });
+                }
+                if (value.data.comment_id != null && value.data.comment_id != 0) {
+                    console.log("load a comment");
+                    that.getCommentById2(value.data.comment_id, function () {
+                        console.log("push comment-like-notification " + value.id);
+                        that.notifications.push(new __WEBPACK_IMPORTED_MODULE_6__models__["c" ](value.id, value.type, value.data, value.read_at, value.created_at));
+                        theVue.notifications = that.notifications;
+                    });
+                }
+            });
             this.notifications = that.notifications;
             if (theVue != undefined) {
                 console.log("set notifications to vue");
@@ -59169,6 +59172,7 @@ var siteManager = function () {
             }
             json = json.data;
             that.medias.unshift(new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](json.id, json.title, json.description, json.source, json.poster_source, json.duration, json.simpleType, json.techType, json.type, that.getUserById(json.user_id), json.user_id, json.created_at, json.updated_at, json.created_at_readable, json.comments, that.getTagsByIdArray(json.tagsIds), json.myLike, json.likes, json.dislikes, json.tracks, json.category_id));
+            theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();
             theVue.$router.push('/');
         });
@@ -59221,6 +59225,7 @@ var siteManager = function () {
                 });
                 that.medias.push(m);
                 that.medias = theMediaSorter.sort(that.medias);
+                theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias();
             } else {
                 var m = new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
@@ -59234,6 +59239,7 @@ var siteManager = function () {
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
+                    theVue.fullmedias = that.medias;
                     theVue.medias = that.getFilteredMedias();
                 }
             }
@@ -59265,6 +59271,7 @@ var siteManager = function () {
                 });
                 that.medias.push(m);
                 that.medias = theMediaSorter.sort(that.medias);
+                theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias();
             } else {
                 var m = new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
@@ -59278,6 +59285,7 @@ var siteManager = function () {
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
+                    theVue.fullmedias = that.medias;
                     theVue.medias = that.getFilteredMedias();
                 }
             }
@@ -59309,6 +59317,7 @@ var siteManager = function () {
                 });
                 that.medias.push(m);
                 that.medias = theMediaSorter.sort(that.medias);
+                theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias();
             } else {
                 var m = new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
@@ -59322,6 +59331,7 @@ var siteManager = function () {
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
+                    theVue.fullmedias = that.medias;
                     theVue.medias = that.getFilteredMedias();
                 }
             }
@@ -59390,6 +59400,7 @@ var siteManager = function () {
             }
             i++;
         });
+        theVue.fullmedias = that.medias;
         theVue.medias = that.getFilteredMedias();
         theVue.$router.push('/');
     };
@@ -59437,15 +59448,24 @@ var siteManager = function () {
             if (theVue == undefined) {
                 that.initVue();
                 that.receiveNotifications();
+                if (that.notificationTimer != undefined) {
+                    clearInterval(that.notificationTimer);
+                }
+                that.notificationTimer = setInterval(function () {
+                    console.log("check for new notifications");
+                    that.receiveNotifications();
+                }, 120000);
             }
             theVue.users = that.users;
             theVue.categories = that.categories;
             console.log(this.categories);
             that.medias = theMediaSorter.sort(that.medias);
+            theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();
             theVue.categories = that.categories;
             if (theVue.$route.params.profileId != undefined) {
                 theVue.user = that.getUserById(theVue.$route.params.profileId);
+                theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias(that.getMediasByUser(theVue.$route.params.profileId));
             }
             if (theVue.$route.params.currentTitle != undefined) {
@@ -80117,23 +80137,13 @@ var render = function() {
                   staticStyle: { "padding-top": "0px" }
                 },
                 [
-                  _c(
-                    "div",
-                    { staticClass: "d-none d-md-none d-sm-block d-lg-block " },
-                    [
-                      _c("span", { staticClass: " bg-secondary sgfText" }, [
-                        _vm._v(_vm._s(_vm.shorteneddescription))
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
                   _c("div", { staticClass: "d-none d-lg-block" }, [
                     _c("span", { staticClass: "bg-secondary sgfText" }, [
+                      _vm.item.duration != 0
+                        ? _c("span", [_vm._v(_vm._s(_vm.item.duration) + " -")])
+                        : _vm._e(),
                       _vm._v(
-                        _vm._s(_vm.item.duration) +
-                          " - " +
-                          _vm._s(_vm.item.comments.length) +
-                          " comments"
+                        " " + _vm._s(_vm.item.comments.length) + " comments"
                       )
                     ]),
                     _c(
@@ -80200,9 +80210,18 @@ var render = function() {
     ),
     _vm._v(" "),
     _vm.canloadmore
-      ? _c("p", { staticClass: "text-center" }, [
-          _vm._v("Scroll to bottom to load more")
-        ])
+      ? _c(
+          "p",
+          {
+            staticClass: "btn-block btn-sm btn btn-info",
+            on: {
+              click: function($event) {
+                _vm.emitLoadMore()
+              }
+            }
+          },
+          [_vm._v("Scroll down or click to load more")]
+        )
       : _vm._e()
   ])
 }
@@ -81210,7 +81229,7 @@ var render = function() {
                 "div",
                 { staticClass: "comment-body" },
                 [
-                  _c("p", [_vm._v(_vm._s(comment.body))]),
+                  _c("p", { domProps: { innerHTML: _vm._s(comment.body) } }),
                   _vm._v(" "),
                   _c("p"),
                   _c("div", {}, [
@@ -88694,9 +88713,10 @@ var render = function() {
                 1
               ),
               _vm._v(" "),
-              _c("div", { staticClass: "card-body" }, [
-                _vm._v(_vm._s(_vm.currentmedia.description))
-              ]),
+              _c("div", {
+                staticClass: "card-body",
+                domProps: { innerHTML: _vm._s(_vm.currentmedia.description) }
+              }),
               _vm._v(" "),
               _c(
                 "div",
@@ -88968,7 +88988,7 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _c("div", [_vm._v(_vm._s(_vm.user.bio))])
+        _c("div", { domProps: { innerHTML: _vm._s(_vm.user.bio) } })
       ]),
       _vm._v(" "),
       _c("h3", [_vm._v("User's medias")]),
@@ -89057,6 +89077,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   computed: {},
   methods: {
+    rmBr: function rmBr(str) {
+      return str.replace(/<br\s*\/?>/mg, "");
+    },
     avatarChange: function avatarChange() {
       var reader = new FileReader();
       var that = this;
@@ -89352,11 +89375,11 @@ var render = function() {
           attrs: {
             placeholder: "Media-description",
             id: "addMediaDescription",
-            name: "description",
+            name: "bio",
             cols: "50",
             rows: "10"
           },
-          domProps: { value: _vm.currentuser.bio }
+          domProps: { value: _vm.rmBr(_vm.currentuser.bio) }
         })
       ]),
       _vm._v(" "),
@@ -89727,24 +89750,36 @@ var render = function() {
             _vm._v(" "),
             _vm._m(0),
             _vm._v(" "),
-            _vm._m(1),
-            _vm._v(" "),
-            _vm._m(2)
+            _vm._m(1)
           ]
         ),
         _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-primary",
-            on: {
-              click: function($event) {
-                _vm.submitLogin()
-              }
-            }
-          },
-          [_vm._v("\n                Login via ajax\n            ")]
-        )
+        _c("div", { staticClass: "form-group row mb-0" }, [
+          _c("div", { staticClass: "col-md-8 offset-md-4" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                on: {
+                  click: function($event) {
+                    _vm.submitLogin()
+                  }
+                }
+              },
+              [
+                _vm._v(
+                  "\n                          Login via ajax\n                      "
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c("a", { staticClass: "btn btn-link", attrs: { href: "" } }, [
+              _vm._v(
+                "\n                            Forgot Your Password?\n                        "
+              )
+            ])
+          ])
+        ])
       ])
     ])
   ])
@@ -89793,30 +89828,6 @@ var staticRenderFns = [
                 "\n                                Remember Me\n                            "
               )
             ]
-          )
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row mb-0" }, [
-      _c("div", { staticClass: "col-md-8 offset-md-4" }, [
-        _c(
-          "button",
-          { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-          [
-            _vm._v(
-              "\n                            Login\n                        "
-            )
-          ]
-        ),
-        _vm._v(" "),
-        _c("a", { staticClass: "btn btn-link", attrs: { href: "" } }, [
-          _vm._v(
-            "\n                            Forgot Your Password?\n                        "
           )
         ])
       ])
@@ -89884,13 +89895,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     this.$nextTick(function () {
       if (this.$refs.croppieRef != undefined & this.editpicloaded == false) {
         this.editpicloaded = true;
-        console.log("redo picture");
-        this.$refs.croppieAvatarRef.bind({
-          url: this.currentuser.avatar_source
-        });
-        this.$refs.croppieBackgroundRef.bind({
-          url: this.currentuser.background_source
-        });
       }
     });
   },
@@ -89924,8 +89928,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     submitAction: function submitAction() {
       var that = this;
+      console.log("the form");
+      console.log($("#theForm")[0]);
       $.ajax({
-        url: '/internal-api/media/' + this.currentmedia.title,
+        url: '/internal-api/register',
         type: 'POST',
         data: new FormData($("#theForm")[0]),
         cache: false,
@@ -89933,21 +89939,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         processData: false,
         complete: function complete(res) {
           if (res.status == 200) {}
-        }
-      });
-      return false;
-    },
-    deleteAction: function deleteAction() {
-      var that = this;
-      $.ajax({
-        url: '/internal-api/media/' + this.currentmedia.title,
-        type: 'DELETE',
-        cache: false,
-        contentType: false,
-        processData: false,
-        complete: function complete(res) {
-          if (res.status == 200) {}
-          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('videoDeleted', that.currentmedia.title);
+          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('login', res.responseJSON.data);
         }
       });
       return false;
@@ -90003,6 +89995,7 @@ var render = function() {
             {
               attrs: {
                 method: "POST",
+                id: "theForm",
                 action: "/register",
                 "aria-label": "Register"
               }
@@ -90150,6 +90143,8 @@ var render = function() {
               _vm._v(" "),
               _vm._m(0),
               _vm._v(" "),
+              _vm._m(1),
+              _vm._v(" "),
               _c("div", { staticClass: "form-group row" }, [
                 _c(
                   "label",
@@ -90183,8 +90178,6 @@ var render = function() {
                 )
               ]),
               _vm._v(" "),
-              _vm._m(1),
-              _vm._v(" "),
               _vm._m(2),
               _vm._v(" "),
               _vm._m(3),
@@ -90193,7 +90186,24 @@ var render = function() {
               _vm._v(" "),
               _vm._m(5)
             ]
-          )
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group row mb-0" }, [
+            _c("div", { staticClass: "col-md-6 offset-md-4" }, [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-primary",
+                  on: {
+                    click: function($event) {
+                      _vm.submitAction()
+                    }
+                  }
+                },
+                [_vm._v("Register")]
+              )
+            ])
+          ])
         ])
       ])
     ])
@@ -90227,6 +90237,25 @@ var staticRenderFns = [
           }
         })
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group" }, [
+      _c("label", [_vm._v("Biographie:")]),
+      _vm._v(" "),
+      _c("textarea", {
+        staticClass: "form-control",
+        attrs: {
+          placeholder: "Media-description",
+          id: "addMediaDescription",
+          name: "bio",
+          cols: "50",
+          rows: "10"
+        }
+      })
     ])
   },
   function() {
@@ -90329,20 +90358,6 @@ var staticRenderFns = [
             required: ""
           }
         })
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row mb-0" }, [
-      _c("div", { staticClass: "col-md-6 offset-md-4" }, [
-        _c(
-          "button",
-          { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-          [_vm._v("Register")]
-        )
       ])
     ])
   }
@@ -91378,10 +91393,10 @@ var render = function() {
     _vm._v(" "),
     _c("p", [_vm._v("This can take a while / need performance.")]),
     _vm._v(" "),
-    _c("div", { staticClass: "row" }, [
+    _c("div", {}, [
       _c(
         "span",
-        { staticClass: "col-6" },
+        { staticClass: "col-6 col-sm-12" },
         [
           _c("apexchart", {
             attrs: {
@@ -91397,7 +91412,7 @@ var render = function() {
       _vm._v(" "),
       _c(
         "span",
-        { staticClass: "col-6" },
+        { staticClass: "col-6 col-sm-12" },
         [
           _c("apexchart", {
             attrs: {
@@ -91415,7 +91430,7 @@ var render = function() {
     _vm._v(" "),
     _c(
       "span",
-      { staticClass: "col-6" },
+      { staticClass: "col-6 col-sm-12" },
       [
         _c("apexchart", {
           attrs: {
@@ -91503,6 +91518,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     }
   },
   methods: {
+    rmBr: function rmBr(str) {
+      return str.replace(/<br\s*\/?>/mg, "");
+    },
     openConfirm: function openConfirm() {
       this.$vs.dialog({
         type: 'confirm',
@@ -91859,7 +91877,7 @@ var render = function() {
                   cols: "50",
                   rows: "10"
                 },
-                domProps: { value: _vm.currentmedia.description }
+                domProps: { value: _vm.rmBr(_vm.currentmedia.description) }
               })
             ]),
             _vm._v(" "),
@@ -91885,7 +91903,7 @@ var render = function() {
                     staticClass: "float-right text-right",
                     on: { click: _vm.showModal }
                   },
-                  [_vm._v("\n  Manage\n")]
+                  [_vm._v("Manage")]
                 )
               ],
               1
@@ -92246,12 +92264,6 @@ module.exports = function listToStyles (parentId, list) {
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(7);
  __webpack_exports__["default"] = ({
-  watch: {
-    dataTypes: function dataTypes(val) {
-      localStorage.setItem("mediaTypes", val.join());
-      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('filterTypes', val);
-    }
-  },
   mounted: function mounted() {
     var that = this;
     if (localStorage.getItem("mediaTypes") != '' && localStorage.getItem("mediaTypes") != null) {
@@ -92290,25 +92302,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     }
   },
   props: ['notifications', 'currentuser', 'medias', 'users', 'tags', 'csrf'],
-  computed: {
-    csrf1: function csrf1() {
-      document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  computed: {},
+  watch: {
+    dataTypes: function dataTypes(val) {
+      localStorage.setItem("mediaTypes", val.join());
+      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('filterTypes', val);
     },
-    n: function n() {
+    notifications: function notifications(val) {
       var tmpArray = [];
       this.notifications.forEach(function (val, key) {
-        if (val.read_at != null && val.read_at != 0) {
+        console.log("go for notifications");
+        console.log(val.read_at);
+        if (val.read_at == null || val.read_at == 0 || val.read_at == undefined) {
           tmpArray.push(val);
         }
       });
-      return tmpArray.length;
+      this.n = tmpArray.length;
     }
   },
   data: function data() {
     return {
       active: false,
       activeItem: 0,
-      dataTypes: ["audio", "video"]
+      dataTypes: ["audio", "video"],
+      n: 0
     };
   }
 });
@@ -92416,13 +92433,21 @@ var render = function() {
                   slot: "header"
                 },
                 [
-                  _c("vs-avatar", {
-                    attrs: {
-                      badge: _vm.n,
-                      size: "70px",
-                      src: _vm.currentuser.avatar
-                    }
-                  }),
+                  _c(
+                    "router-link",
+                    { attrs: { to: "/notifications" } },
+                    [
+                      _c("vs-avatar", {
+                        attrs: {
+                          badge: _vm.n,
+                          to: "/notifications",
+                          size: "70px",
+                          src: _vm.currentuser.avatar
+                        }
+                      })
+                    ],
+                    1
+                  ),
                   _vm._v(" "),
                   _c(
                     "h4",
@@ -92449,15 +92474,6 @@ var render = function() {
                           attrs: { to: "/upload" }
                         },
                         [_vm._v("Upload")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "router-link",
-                        {
-                          staticClass: "btn btn-sm btn-success",
-                          attrs: { to: "/notifications" }
-                        },
-                        [_vm._v("Notifications")]
                       ),
                       _vm._v(" "),
                       _c(
@@ -93330,8 +93346,19 @@ module.exports = Component.exports
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(7);
  __webpack_exports__["default"] = ({
-  props: ['medias', 'notifications', 'users', 'baseUrl', 'canloadmore', 'loggeduserid'],
+  props: ['fullmedias', 'notifications', 'users', 'baseUrl', 'canloadmore', 'loggeduserid'],
   methods: {
+    getLikeString: function getLikeString(nr) {
+      if (nr == -1) {
+        return "disliked";
+      }
+      if (nr == 0) {
+        return "reseted";
+      }
+      if (nr == 1) {
+        return "liked";
+      }
+    },
     emitLoadMore: function emitLoadMore() {
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadMore', '');
     },
@@ -93344,7 +93371,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return;
       }
       var theMedia = undefined;
-      this.medias.forEach(function (val, key) {
+      this.fullmedias.forEach(function (val, key) {
         if (val.id == id) {
           theMedia = val;
         }
@@ -93359,7 +93386,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return;
       }
       var theMedia = undefined;
-      this.medias.forEach(function (val, key) {
+      this.fullmedias.forEach(function (val, key) {
         val.comments.forEach(function (val2, key2) {
           if (val2.id == id) {
             theMedia = val2;
@@ -93435,6 +93462,8 @@ var render = function() {
           [_vm._v("Delete all notifications")]
         ),
         _vm._v(" "),
+        _c("h4", [_vm._v("Notifications")]),
+        _vm._v(" "),
         _vm._l(_vm.notifications, function(item) {
           return _c("div", { staticClass: "row" }, [
             item.type == "App\\Notifications\\LikeReceived"
@@ -93442,30 +93471,37 @@ var render = function() {
                   _c("h6", [_vm._v(_vm._s(item.created_at))]),
                   _vm._v(" "),
                   item.read_at == null
-                    ? _c("p", [
-                        _vm._v("This is unread! "),
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-sm btn-primary",
-                            on: {
-                              click: function($event) {
-                                _vm.emitMarkNotifications(
-                                  "/internal-api/notifications/markasread/" +
-                                    item.id
-                                )
+                    ? _c(
+                        "p",
+                        {
+                          staticClass: "alert alert-info",
+                          attrs: { role: "alert" }
+                        },
+                        [
+                          _vm._v("This is unread! "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-sm btn-primary float-right",
+                              on: {
+                                click: function($event) {
+                                  _vm.emitMarkNotifications(
+                                    "/internal-api/notifications/markasread/" +
+                                      item.id
+                                  )
+                                }
                               }
-                            }
-                          },
-                          [_vm._v("Mark as read")]
-                        )
-                      ])
+                            },
+                            [_vm._v("Mark as read")]
+                          )
+                        ]
+                      )
                     : _vm._e(),
                   _vm._v(" "),
                   _c(
                     "p",
                     [
-                      _vm._v("By user: "),
+                      _vm._v(" User "),
                       _c(
                         "router-link",
                         { attrs: { to: "/profile/" + item.data.user_id } },
@@ -93474,100 +93510,102 @@ var render = function() {
                             _vm._s(_vm.getUserById(item.data.user_id).name)
                           )
                         ]
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c("p", [_vm._v("Like: " + _vm._s(item.data.like))]),
-                  _vm._v(" "),
-                  item.data.media_id != null && item.data.media_id != 0
-                    ? _c(
-                        "p",
-                        [
-                          _vm._v("\n            Affected "),
-                          _c("b", [_vm._v("media")]),
-                          _vm._v(
-                            ": " + _vm._s(item.data.media_id) + "\n            "
-                          ),
-                          _c("br"),
-                          _vm._v(" "),
-                          _c(
-                            "router-link",
-                            {
-                              staticClass: "btn btn-sm btn-info",
-                              attrs: {
-                                to:
-                                  "/media/" +
-                                  encodeURIComponent(
-                                    _vm.getMediaById2(item.data.media_id).title
-                                  )
-                              }
-                            },
+                      ),
+                      _vm._v(
+                        " " +
+                          _vm._s(_vm.getLikeString(item.data.like)) +
+                          "\n            "
+                      ),
+                      item.data.media_id != null && item.data.media_id != 0
+                        ? _c(
+                            "span",
                             [
+                              _vm._v("\n              your "),
+                              _c("b", [_vm._v("media")]),
                               _vm._v(
-                                _vm._s(
-                                  _vm.getMediaById2(item.data.media_id).title
-                                )
-                              )
-                            ]
-                          )
-                        ],
-                        1
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  item.data.media_id == null || item.data.media_id == 0
-                    ? _c(
-                        "p",
-                        [
-                          _vm._v("\n             Affected "),
-                          _c("b", [_vm._v("comment")]),
-                          _vm._v(
-                            ": " +
-                              _vm._s(
-                                _vm.getCommentById2(item.data.comment_id).body
-                              ) +
-                              "\n             "
-                          ),
-                          _c("br"),
-                          _vm._v(" "),
-                          _vm.getMediaById2(
-                            _vm.getCommentById2(item.data.comment_id).media_id
-                          ) != undefined
-                            ? _c(
+                                " " +
+                                  _vm._s(item.data.media_id) +
+                                  "\n              "
+                              ),
+                              _c(
                                 "router-link",
                                 {
-                                  staticClass: "btn btn-sm btn-info",
                                   attrs: {
                                     to:
                                       "/media/" +
                                       encodeURIComponent(
-                                        _vm.getMediaById2(
-                                          _vm.getCommentById2(
-                                            item.data.comment_id
-                                          ).media_id
-                                        ).title
+                                        _vm.getMediaById2(item.data.media_id)
+                                          .title
                                       )
                                   }
                                 },
                                 [
                                   _vm._v(
                                     _vm._s(
-                                      _vm.getMediaById2(
-                                        _vm.getCommentById2(
-                                          item.data.comment_id
-                                        ).media_id
-                                      ).title
+                                      _vm.getMediaById2(item.data.media_id)
+                                        .title
                                     )
                                   )
                                 ]
                               )
-                            : _vm._e()
-                        ],
-                        1
-                      )
-                    : _vm._e()
+                            ],
+                            1
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      item.data.media_id == null || item.data.media_id == 0
+                        ? _c(
+                            "span",
+                            [
+                              _vm._v("\n               your "),
+                              _c("b", [_vm._v("comment")]),
+                              _vm._v(
+                                ": " +
+                                  _vm._s(
+                                    _vm.getCommentById2(item.data.comment_id)
+                                      .body
+                                  ) +
+                                  " @ media\n               "
+                              ),
+                              _vm.getMediaById2(
+                                _vm.getCommentById2(item.data.comment_id)
+                                  .media_id
+                              ) != undefined
+                                ? _c(
+                                    "router-link",
+                                    {
+                                      attrs: {
+                                        to:
+                                          "/media/" +
+                                          encodeURIComponent(
+                                            _vm.getMediaById2(
+                                              _vm.getCommentById2(
+                                                item.data.comment_id
+                                              ).media_id
+                                            ).title
+                                          )
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        _vm._s(
+                                          _vm.getMediaById2(
+                                            _vm.getCommentById2(
+                                              item.data.comment_id
+                                            ).media_id
+                                          ).title
+                                        )
+                                      )
+                                    ]
+                                  )
+                                : _vm._e()
+                            ],
+                            1
+                          )
+                        : _vm._e()
+                    ],
+                    1
+                  )
                 ])
               : _vm._e()
           ])

@@ -48,7 +48,7 @@
               <router-link class="btn btn-sm btn-info float-right" :to="'/mediaedit/'+encodeURIComponent(currentmedia.title)">Edit</router-link>
             </span>
           </div>
-          <div class="card-body">{{ currentmedia.description }}</div>
+          <div class="card-body" v-html="currentmedia.description"></div>
           <div class="card-footer">
             <span v-for="tag in currentmedia.tags">
               <router-link class=""  :to="'/tags/'+tag.name" >

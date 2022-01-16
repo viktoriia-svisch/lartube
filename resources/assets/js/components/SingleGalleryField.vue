@@ -7,8 +7,7 @@
                 <p class="card-title text-center text-xs-left pl-sm-0 pr-sm-0 pl-md-1 pr-md-1 " ><span style="white-space: nowrap; overflow: hidden;" class="pl-sm-0 pr-sm-0 pl-md-1 pr-md-1 mr-sm-0 ml-sm-0 bg-secondary sgfText">{{ item.title }}</span></p>
               </div>
             <div class=" card-body pl-md-1 pr-md-1 pl-sm-0 pr-sm-0" style="padding-top:0px;">
-              <div class="d-none d-md-none d-sm-block d-lg-block " ><span class=" bg-secondary sgfText">{{ shorteneddescription }}</span></div>
-              <div class="d-none d-lg-block"><span class="bg-secondary sgfText">{{ item.duration }} - {{ item.comments.length }} comments</span><span class="bg-secondary sgfText float-right">{{ item.type }}</span></div>
+              <div class="d-none d-lg-block"><span class="bg-secondary sgfText"><span v-if="item.duration!=0">{{ item.duration }} -</span> {{ item.comments.length }} comments</span><span class="bg-secondary sgfText float-right">{{ item.type }}</span></div>
             </div>
           </div>
           </router-link>

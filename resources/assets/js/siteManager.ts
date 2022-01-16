@@ -31,6 +31,7 @@ class siteManager {
   catchedTagMedias:any;
   initing:boolean;
   csrf:string;
+  notificationTimer:any;
   types:Array<string>;
   currentMediaId:number;
   constructor(base:string){
@@ -48,7 +49,7 @@ class siteManager {
     this.usedSearchTerms=[];
     this.nextMedias=[];
     this.loggedUserId = Number($("#loggedUserId").attr("content"));
-    this.receiveUsers(true);
+    this.receiveUsers();
     this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
     setInterval(this.updateCSRF, 1800000);
   }
@@ -99,7 +100,7 @@ class siteManager {
     ]
     eventBus.$on('getNotifications', url => {
       theVue.alert("Look for new notifications")
-      that.receiveNotifications(url,true)
+      that.receiveNotifications(url)
     });
     eventBus.$on('getNewMedias', title => {
       theVue.alert("Look for new medias..")
@@ -107,7 +108,7 @@ class siteManager {
     });
     eventBus.$on('userEdited', title => {
       theVue.alert("Look for new users..")
-      that.receiveUsers(true)
+      that.receiveUsers()
     });
     eventBus.$on('refreshMedias', title => {
       theVue.canloadmore = true;
@@ -159,11 +160,10 @@ class siteManager {
       this.initing = false;
       this.loggedUserId = settings.user_id
       theVue.loggeduserid = this.loggedUserId
-      that.currentUser = that.getUserById(this.loggedUserId);
-      theVue.currentuser = that.currentUser;
-      if(that.currentUser.admin){
-        that.receiveUsers(true);
-      }
+      that.receiveUsers(function(){
+        that.currentUser = that.getUserById(this.loggedUserId);
+        theVue.currentuser = that.currentUser;
+      });
       theVue.alert("Welcome back, "+that.getUserById(this.loggedUserId).name,"success","exit_to_app")
       theVue.$router.push('/');
       that.updateCSRF();
@@ -193,6 +193,7 @@ class siteManager {
         that.nextMedias = that.nextVideosList(that.currentMediaId);
         theVue.nextvideos = that.nextMedias;
       }
+      theVue.fullmedias = that.medias
       theVue.medias = that.getFilteredMedias()
     });
     eventBus.$on('commentCreated', json => {
@@ -235,7 +236,6 @@ class siteManager {
       theVue.alert("Video "+title+" deleted","success")
       that.deleteMediaByName(title);
       that.updateCSRF();
-      that.receiveNotifications(undefined,true)
     });
     eventBus.$on('videoCreated', json => {
       that.receiveTagsForMedia(json);
@@ -259,7 +259,9 @@ class siteManager {
       } else {
       if(that.catchedTagMedias.includes(tagName)==false){
         that.catchedTagMedias.push(tagName);
-        that.receiveMedias("/api/tags/"+tagName);
+        that.receiveMedias("/api/tags/"+tagName,false,function(){
+          theVue.fullmedias = that.medias
+        });
       }
     }
     });
@@ -285,6 +287,7 @@ class siteManager {
     });
     eventBus.$on('filterTypes', types => {
       that.types = types;
+      theVue.fullmedias = that.medias
       theVue.medias=that.getFilteredMedias();
       if(this.currentMediaId!=0){
         that.nextMedias = that.nextVideosList(this.currentMediaId)
@@ -306,13 +309,14 @@ class siteManager {
       search:'',
       nextvideos:[],
       notifications:[],
+      fullmedias:that.medias,
       csrf:that.csrf,
       currentuser:that.currentUser,
       users:this.users,
       loggeduserid:this.loggedUserId,
       tags:this.tags,
       canloadmore:true,
-      medias:this.medias,
+      medias:this.getFilteredMedias(),
       user:that.currentUser,
       categories:that.categories,
       baseUrl:baseUrl
@@ -346,6 +350,7 @@ class siteManager {
         }
         var so = new Search(s.toString(),that.getFilteredMedias(),that.tags,that.users);
         theVue.search = so;
+        theVue.fullmedias = that.medias
         theVue.medias = that.getFilteredMedias(so.mediaResult);
         theVue.users = so.userResult;
       }
@@ -449,10 +454,9 @@ if(localStorage.getItem('cookiePolicy')!="read"){
       $('meta[name="csrf-token"]').attr('content',data)
 });
   }
-  receiveUsers(forceUpdate=false):void{
+  receiveUsers(callback=undefined):void{
     let that = this;
     $.getJSON("/internal-api/users", function name(data) {
-      if((that.users==undefined)||(forceUpdate)){
       that.users = [];
       if(that.loggedUserId==0){
         that.currentUser = new User(0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "","","",false);
@@ -474,7 +478,9 @@ if(localStorage.getItem('cookiePolicy')!="read"){
           that.receiveTags();
           that.receiveCategories();
         }
-      }
+        if(callback!=undefined){
+          callback();
+        }
     });
   }
   nextVideosList(id){
@@ -516,10 +522,9 @@ if(localStorage.getItem('cookiePolicy')!="read"){
       }
     });
   }
-  receiveNotifications(url='/internal-api/notifications',forceUpdate=false):void{
+  receiveNotifications(url='/internal-api/notifications',callback=undefined):void{
     let that = this;
     $.getJSON(url, function name(data) {
-      if((that.notifications==undefined)||(forceUpdate)){
         that.notifications = [];
         $.each( data, function( key, value ) {
           if(value.data.media_id!=null&&value.data.media_id!=0){
@@ -538,7 +543,6 @@ if(localStorage.getItem('cookiePolicy')!="read"){
             });
           }
         });
-      }
       this.notifications = that.notifications;
       if(theVue!=undefined){
         console.log("set notifications to vue")
@@ -595,6 +599,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
       }
       json = json.data;
       that.medias.unshift(new Media(json.id,json.title,json.description,json.source,json.poster_source,json.duration,json.simpleType,json.techType,json.type,that.getUserById(json.user_id),json.user_id,json.created_at,json.updated_at,json.created_at_readable,json.comments,that.getTagsByIdArray(json.tagsIds),json.myLike,json.likes,json.dislikes,json.tracks,json.category_id))
+      theVue.fullmedias = that.medias
       theVue.medias = that.getFilteredMedias();
       theVue.$router.push('/');
     });
@@ -641,6 +646,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         });
         that.medias.push(m)
         that.medias = theMediaSorter.sort(that.medias)
+        theVue.fullmedias = that.medias
         theVue.medias = that.getFilteredMedias();
       } else {
         var m = new Media(data.id,data.title, data.description, data.source, data.poster_source,data.duration, data.simpleType,data.techType, data.type, that.getUserById(data.user_id),data.user_id,data.created_at,data.updated_at,data.created_at_readable,data.comments,that.getTagsByIdArray(data.tagsIds),data.myLike,data.likes,data.dislikes,data.tracks,data.category_id);
@@ -654,6 +660,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
           that.medias[theKey].tracks = m.tracks;
           that.medias[theKey].updated_at = m.updated_at;
           that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
+          theVue.fullmedias = that.medias
           theVue.medias=that.getFilteredMedias();
         }
       }
@@ -682,6 +689,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         });
         that.medias.push(m)
         that.medias = theMediaSorter.sort(that.medias)
+        theVue.fullmedias = that.medias
         theVue.medias = that.getFilteredMedias();
       } else {
         var m = new Media(data.id,data.title, data.description, data.source, data.poster_source,data.duration, data.simpleType,data.techType, data.type, that.getUserById(data.user_id),data.user_id,data.created_at,data.updated_at,data.created_at_readable,data.comments,that.getTagsByIdArray(data.tagsIds),data.myLike,data.likes,data.dislikes,data.tracks,data.category_id);
@@ -695,6 +703,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
           that.medias[theKey].tracks = m.tracks;
           that.medias[theKey].updated_at = m.updated_at;
           that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
+          theVue.fullmedias = that.medias
           theVue.medias=that.getFilteredMedias();
         }
       }
@@ -723,6 +732,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         });
         that.medias.push(m)
         that.medias = theMediaSorter.sort(that.medias)
+        theVue.fullmedias = that.medias
         theVue.medias = that.getFilteredMedias();
       } else {
         var m = new Media(data.id,data.title, data.description, data.source, data.poster_source,data.duration, data.simpleType,data.techType, data.type, that.getUserById(data.user_id),data.user_id,data.created_at,data.updated_at,data.created_at_readable,data.comments,that.getTagsByIdArray(data.tagsIds),data.myLike,data.likes,data.dislikes,data.tracks,data.category_id);
@@ -736,6 +746,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
           that.medias[theKey].tracks = m.tracks;
           that.medias[theKey].updated_at = m.updated_at;
           that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
+          theVue.fullmedias = that.medias
           theVue.medias=that.getFilteredMedias();
         }
       }
@@ -801,6 +812,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
       }
       i++
     });
+    theVue.fullmedias = that.medias
     theVue.medias = that.getFilteredMedias();
     theVue.$router.push('/');
   }
@@ -838,15 +850,24 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         if(theVue==undefined){
           that.initVue();
           that.receiveNotifications();
+          if(that.notificationTimer!=undefined){
+            clearInterval(that.notificationTimer);
+          }
+          that.notificationTimer = setInterval(function(){
+            console.log("check for new notifications")
+            that.receiveNotifications();
+          }, 120000);
         }
         theVue.users = that.users;
         theVue.categories = that.categories;
         console.log(this.categories)
         that.medias = theMediaSorter.sort(that.medias)
+        theVue.fullmedias = that.medias
         theVue.medias = that.getFilteredMedias();
         theVue.categories = that.categories;
         if(theVue.$route.params.profileId != undefined){
           theVue.user = that.getUserById(theVue.$route.params.profileId)
+          theVue.fullmedias = that.medias
           theVue.medias = that.getFilteredMedias(that.getMediasByUser(theVue.$route.params.profileId))
         }
         if(theVue.$route.params.currentTitle!=undefined){

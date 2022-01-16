@@ -32,7 +32,7 @@ var siteManager =  (function () {
         this.usedSearchTerms = [];
         this.nextMedias = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
-        this.receiveUsers(true);
+        this.receiveUsers();
         this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         setInterval(this.updateCSRF, 1800000);
     }
@@ -84,7 +84,7 @@ var siteManager =  (function () {
         ];
         eventBus.$on('getNotifications', function (url) {
             theVue.alert("Look for new notifications");
-            that.receiveNotifications(url, true);
+            that.receiveNotifications(url);
         });
         eventBus.$on('getNewMedias', function (title) {
             theVue.alert("Look for new medias..");
@@ -92,7 +92,7 @@ var siteManager =  (function () {
         });
         eventBus.$on('userEdited', function (title) {
             theVue.alert("Look for new users..");
-            that.receiveUsers(true);
+            that.receiveUsers();
         });
         eventBus.$on('refreshMedias', function (title) {
             theVue.canloadmore = true;
@@ -145,11 +145,10 @@ var siteManager =  (function () {
             _this.initing = false;
             _this.loggedUserId = settings.user_id;
             theVue.loggeduserid = _this.loggedUserId;
-            that.currentUser = that.getUserById(_this.loggedUserId);
-            theVue.currentuser = that.currentUser;
-            if (that.currentUser.admin) {
-                that.receiveUsers(true);
-            }
+            that.receiveUsers(function () {
+                that.currentUser = that.getUserById(this.loggedUserId);
+                theVue.currentuser = that.currentUser;
+            });
             theVue.alert("Welcome back, " + that.getUserById(_this.loggedUserId).name, "success", "exit_to_app");
             theVue.$router.push('/');
             that.updateCSRF();
@@ -179,6 +178,7 @@ var siteManager =  (function () {
                 that.nextMedias = that.nextVideosList(that.currentMediaId);
                 theVue.nextvideos = that.nextMedias;
             }
+            theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();
         });
         eventBus.$on('commentCreated', function (json) {
@@ -221,7 +221,6 @@ var siteManager =  (function () {
             theVue.alert("Video " + title + " deleted", "success");
             that.deleteMediaByName(title);
             that.updateCSRF();
-            that.receiveNotifications(undefined, true);
         });
         eventBus.$on('videoCreated', function (json) {
             that.receiveTagsForMedia(json);
@@ -247,7 +246,9 @@ var siteManager =  (function () {
             else {
                 if (that.catchedTagMedias.includes(tagName) == false) {
                     that.catchedTagMedias.push(tagName);
-                    that.receiveMedias("/api/tags/" + tagName);
+                    that.receiveMedias("/api/tags/" + tagName, false, function () {
+                        theVue.fullmedias = that.medias;
+                    });
                 }
             }
         });
@@ -274,6 +275,7 @@ var siteManager =  (function () {
         });
         eventBus.$on('filterTypes', function (types) {
             that.types = types;
+            theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();
             if (_this.currentMediaId != 0) {
                 that.nextMedias = that.nextVideosList(_this.currentMediaId);
@@ -295,13 +297,14 @@ var siteManager =  (function () {
                 search: '',
                 nextvideos: [],
                 notifications: [],
+                fullmedias: that.medias,
                 csrf: that.csrf,
                 currentuser: that.currentUser,
                 users: this.users,
                 loggeduserid: this.loggedUserId,
                 tags: this.tags,
                 canloadmore: true,
-                medias: this.medias,
+                medias: this.getFilteredMedias(),
                 user: that.currentUser,
                 categories: that.categories,
                 baseUrl: baseUrl
@@ -337,6 +340,7 @@ var siteManager =  (function () {
                     }
                     var so = new Search(s.toString(), that.getFilteredMedias(), that.tags, that.users);
                     theVue.search = so;
+                    theVue.fullmedias = that.medias;
                     theVue.medias = that.getFilteredMedias(so.mediaResult);
                     theVue.users = so.userResult;
                 }
@@ -445,32 +449,33 @@ var siteManager =  (function () {
             $('meta[name="csrf-token"]').attr('content', data);
         });
     };
-    siteManager.prototype.receiveUsers = function (forceUpdate) {
-        if (forceUpdate === void 0) { forceUpdate = false; }
+    siteManager.prototype.receiveUsers = function (callback) {
+        if (callback === void 0) { callback = undefined; }
         var that = this;
         $.getJSON("/internal-api/users", function name(data) {
-            if ((that.users == undefined) || (forceUpdate)) {
-                that.users = [];
-                if (that.loggedUserId == 0) {
-                    that.currentUser = new User(0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "", false);
+            that.users = [];
+            if (that.loggedUserId == 0) {
+                that.currentUser = new User(0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "", false);
+                if (theVue != undefined) {
+                    theVue.currentuser = that.currentUser;
+                }
+            }
+            $.each(data.data, function (key, value) {
+                var u = new User(value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds, value.tagString, value.public, value.admin, value.email, value.created_at.date, value.updated_at.date);
+                if (u.id == that.loggedUserId) {
+                    that.currentUser = u;
                     if (theVue != undefined) {
-                        theVue.currentuser = that.currentUser;
+                        theVue.currentuser = u;
                     }
                 }
-                $.each(data.data, function (key, value) {
-                    var u = new User(value.id, value.name, value.avatar, value.background, value.bio, value.mediaIds, value.tagString, value.public, value.admin, value.email, value.created_at.date, value.updated_at.date);
-                    if (u.id == that.loggedUserId) {
-                        that.currentUser = u;
-                        if (theVue != undefined) {
-                            theVue.currentuser = u;
-                        }
-                    }
-                    that.users.push(u);
-                });
-                if (that.initing) {
-                    that.receiveTags();
-                    that.receiveCategories();
-                }
+                that.users.push(u);
+            });
+            if (that.initing) {
+                that.receiveTags();
+                that.receiveCategories();
+            }
+            if (callback != undefined) {
+                callback();
             }
         });
     };
@@ -515,31 +520,29 @@ var siteManager =  (function () {
             }
         });
     };
-    siteManager.prototype.receiveNotifications = function (url, forceUpdate) {
+    siteManager.prototype.receiveNotifications = function (url, callback) {
         if (url === void 0) { url = '/internal-api/notifications'; }
-        if (forceUpdate === void 0) { forceUpdate = false; }
+        if (callback === void 0) { callback = undefined; }
         var that = this;
         $.getJSON(url, function name(data) {
-            if ((that.notifications == undefined) || (forceUpdate)) {
-                that.notifications = [];
-                $.each(data, function (key, value) {
-                    if (value.data.media_id != null && value.data.media_id != 0) {
-                        that.findMediaById(value.data.media_id, function () {
-                            console.log("push media-like-notification " + value.id);
-                            that.notifications.push(new Notification(value.id, value.type, value.data, value.read_at, value.created_at));
-                            theVue.notifications = that.notifications;
-                        });
-                    }
-                    if (value.data.comment_id != null && value.data.comment_id != 0) {
-                        console.log("load a comment");
-                        that.getCommentById2(value.data.comment_id, function () {
-                            console.log("push comment-like-notification " + value.id);
-                            that.notifications.push(new Notification(value.id, value.type, value.data, value.read_at, value.created_at));
-                            theVue.notifications = that.notifications;
-                        });
-                    }
-                });
-            }
+            that.notifications = [];
+            $.each(data, function (key, value) {
+                if (value.data.media_id != null && value.data.media_id != 0) {
+                    that.findMediaById(value.data.media_id, function () {
+                        console.log("push media-like-notification " + value.id);
+                        that.notifications.push(new Notification(value.id, value.type, value.data, value.read_at, value.created_at));
+                        theVue.notifications = that.notifications;
+                    });
+                }
+                if (value.data.comment_id != null && value.data.comment_id != 0) {
+                    console.log("load a comment");
+                    that.getCommentById2(value.data.comment_id, function () {
+                        console.log("push comment-like-notification " + value.id);
+                        that.notifications.push(new Notification(value.id, value.type, value.data, value.read_at, value.created_at));
+                        theVue.notifications = that.notifications;
+                    });
+                }
+            });
             this.notifications = that.notifications;
             if (theVue != undefined) {
                 console.log("set notifications to vue");
@@ -598,6 +601,7 @@ var siteManager =  (function () {
             }
             json = json.data;
             that.medias.unshift(new Media(json.id, json.title, json.description, json.source, json.poster_source, json.duration, json.simpleType, json.techType, json.type, that.getUserById(json.user_id), json.user_id, json.created_at, json.updated_at, json.created_at_readable, json.comments, that.getTagsByIdArray(json.tagsIds), json.myLike, json.likes, json.dislikes, json.tracks, json.category_id));
+            theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();
             theVue.$router.push('/');
         });
@@ -647,6 +651,7 @@ var siteManager =  (function () {
                 });
                 that.medias.push(m);
                 that.medias = theMediaSorter.sort(that.medias);
+                theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias();
             }
             else {
@@ -661,6 +666,7 @@ var siteManager =  (function () {
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
+                    theVue.fullmedias = that.medias;
                     theVue.medias = that.getFilteredMedias();
                 }
             }
@@ -690,6 +696,7 @@ var siteManager =  (function () {
                 });
                 that.medias.push(m);
                 that.medias = theMediaSorter.sort(that.medias);
+                theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias();
             }
             else {
@@ -704,6 +711,7 @@ var siteManager =  (function () {
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
+                    theVue.fullmedias = that.medias;
                     theVue.medias = that.getFilteredMedias();
                 }
             }
@@ -733,6 +741,7 @@ var siteManager =  (function () {
                 });
                 that.medias.push(m);
                 that.medias = theMediaSorter.sort(that.medias);
+                theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias();
             }
             else {
@@ -747,6 +756,7 @@ var siteManager =  (function () {
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
+                    theVue.fullmedias = that.medias;
                     theVue.medias = that.getFilteredMedias();
                 }
             }
@@ -814,6 +824,7 @@ var siteManager =  (function () {
             }
             i++;
         });
+        theVue.fullmedias = that.medias;
         theVue.medias = that.getFilteredMedias();
         theVue.$router.push('/');
     };
@@ -855,15 +866,24 @@ var siteManager =  (function () {
             if (theVue == undefined) {
                 that.initVue();
                 that.receiveNotifications();
+                if (that.notificationTimer != undefined) {
+                    clearInterval(that.notificationTimer);
+                }
+                that.notificationTimer = setInterval(function () {
+                    console.log("check for new notifications");
+                    that.receiveNotifications();
+                }, 120000);
             }
             theVue.users = that.users;
             theVue.categories = that.categories;
             console.log(this.categories);
             that.medias = theMediaSorter.sort(that.medias);
+            theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();
             theVue.categories = that.categories;
             if (theVue.$route.params.profileId != undefined) {
                 theVue.user = that.getUserById(theVue.$route.params.profileId);
+                theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias(that.getMediasByUser(theVue.$route.params.profileId));
             }
             if (theVue.$route.params.currentTitle != undefined) {
