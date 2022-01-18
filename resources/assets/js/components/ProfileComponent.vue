@@ -22,8 +22,7 @@
       'sortSelect': SortSelect
   },
   mounted(){
-        console.log("user-id for get videos"+this.user.id)
-    eventBus.$emit('loadUserVideos',this.user.id);
+            eventBus.$emit('loadUserVideos',this.user.id);
   },
   computed: {
         usermedias: function () {

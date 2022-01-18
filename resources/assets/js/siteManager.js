@@ -32,7 +32,8 @@ var siteManager =  (function () {
         this.usedSearchTerms = [];
         this.nextMedias = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
-        this.receiveUsers();
+        this.receiveUsers(function () {
+        });
         this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         setInterval(this.updateCSRF, 1800000);
     }
@@ -90,9 +91,12 @@ var siteManager =  (function () {
             theVue.alert("Look for new medias..");
             that.receiveMedias();
         });
-        eventBus.$on('userEdited', function (title) {
+        eventBus.$on('userEdited', function (id) {
             theVue.alert("Look for new users..");
             that.receiveUsers();
+            if (id != '' && id != undefined) {
+                theVue.$router.push("/profile/" + id);
+            }
         });
         eventBus.$on('refreshMedias', function (title) {
             theVue.canloadmore = true;
@@ -430,10 +434,7 @@ var siteManager =  (function () {
     };
     siteManager.prototype.fillUser = function (comment) {
         var that = this;
-        console.log("start filluser");
-        console.log(comment.childs);
         $.each(comment.childs, function (key, value) {
-            console.log("fill the user");
             if (value.childs.length > 0) {
                 comment.childs[key] = that.fillUser(value);
             }
@@ -510,7 +511,6 @@ var siteManager =  (function () {
             if ((that.categories == undefined) || (forceUpdate)) {
                 that.categories = [];
                 $.each(data.data, function (key, value) {
-                    console.log("push cat " + value.title);
                     that.categories.push(new Category(value.id, value.title, value.description, value.avatar_source, value.background_source));
                 });
             }

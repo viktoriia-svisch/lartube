@@ -58607,7 +58607,7 @@ var siteManager = function () {
         this.usedSearchTerms = [];
         this.nextMedias = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
-        this.receiveUsers();
+        this.receiveUsers(function () {});
         this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         setInterval(this.updateCSRF, 1800000);
     }
@@ -58647,9 +58647,12 @@ var siteManager = function () {
             theVue.alert("Look for new medias..");
             that.receiveMedias();
         });
-        __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('userEdited', function (title) {
+        __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('userEdited', function (id) {
             theVue.alert("Look for new users..");
             that.receiveUsers();
+            if (id != '' && id != undefined) {
+                theVue.$router.push("/profile/" + id);
+            }
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('refreshMedias', function (title) {
             theVue.canloadmore = true;
@@ -58987,10 +58990,7 @@ var siteManager = function () {
     };
     siteManager.prototype.fillUser = function (comment) {
         var that = this;
-        console.log("start filluser");
-        console.log(comment.childs);
         $.each(comment.childs, function (key, value) {
-            console.log("fill the user");
             if (value.childs.length > 0) {
                 comment.childs[key] = that.fillUser(value);
             }
@@ -59073,7 +59073,6 @@ var siteManager = function () {
             if (that.categories == undefined || forceUpdate) {
                 that.categories = [];
                 $.each(data.data, function (key, value) {
-                    console.log("push cat " + value.title);
                     that.categories.push(new __WEBPACK_IMPORTED_MODULE_6__models__["a" ](value.id, value.title, value.description, value.avatar_source, value.background_source));
                 });
             }
@@ -88946,7 +88945,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     'sortSelect': __WEBPACK_IMPORTED_MODULE_2__SortSelect___default.a
   },
   mounted: function mounted() {
-    console.log("user-id for get videos" + this.user.id);
     __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadUserVideos', this.user.id);
   },
   computed: {
@@ -89111,7 +89109,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         processData: false,
         complete: function complete(res) {
           if (res.status == 200) {}
-          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('userEdited', '');
+          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('userEdited', that.currentuser.id);
         }
       });
       return false;
@@ -89280,8 +89278,8 @@ var render = function() {
             attrs: {
               enableOrientation: true,
               enableResize: false,
-              viewport: { width: 700, height: 394, type: "square" },
-              boundary: { width: 700, height: 394 }
+              viewport: { width: 1200, height: 394, type: "square" },
+              boundary: { width: 800, height: 394 }
             },
             on: { result: _vm.resultBackground, update: _vm.updateBackground }
           }),
@@ -90081,8 +90079,8 @@ var render = function() {
                     attrs: {
                       enableOrientation: true,
                       enableResize: false,
-                      viewport: { width: 700, height: 394, type: "square" },
-                      boundary: { width: 700, height: 394 }
+                      viewport: { width: 1200, height: 394, type: "square" },
+                      boundary: { width: 800, height: 394 }
                     },
                     on: {
                       result: _vm.resultBackground,
@@ -91330,7 +91328,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       });
       return [{
         name: 'Medias',
-        data: [localVideo, localAudio, directAudio, directVideo, torrentAudio, torrentVideo]
+        data: [localAudio, localVideo, directAudio, directVideo, torrentAudio, torrentVideo]
       }];
     },
     chartOptions2: function chartOptions2() {

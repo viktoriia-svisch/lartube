@@ -30,8 +30,8 @@
                             :enableOrientation="true"
                             :enableResize="false"
                             @result="resultBackground"
-                            :viewport="{ width: 700, height: 394, type: 'square' }"
-                            :boundary="{ width: 700, height: 394 }"
+                            :viewport="{ width: 1200, height: 394, type: 'square' }"
+                            :boundary="{ width: 800, height: 394 }"
                             @update="updateBackground">
                             </vue-croppie>
                             <input type="hidden" id="backgroundBase" name="background" :value="backgroundCropped" />
