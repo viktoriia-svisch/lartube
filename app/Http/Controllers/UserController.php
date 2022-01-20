@@ -85,9 +85,18 @@ class UserController extends Controller
         $user->retag($tagArray);
         return response()->json(["data"=>["msg"=>"User created"]],200);
     }
+    public function mkAdmin(Request $request, $id){
+        $user = User::find($id);
+        $user->syncPermissions(['admin']);
+      return response()->json(["data"=>["msg"=>"mkAdmin!"]],200);
+    }
+    public function rmAdmin(Request $request, $id){
+        $user = User::find($id);
+        $user->syncPermissions([]);
+      return response()->json(["data"=>["msg"=>"rmAdmin!"]],200);
+    }
     public function update(Request $request, $id)
     {
-      echo "blaaa" . $request->input("bio");
         $this->validate($request, [
             'name' => 'required',
         ]);

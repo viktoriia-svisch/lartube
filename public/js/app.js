@@ -58705,17 +58705,17 @@ var siteManager = function () {
             _this.loggedUserId = settings.user_id;
             theVue.loggeduserid = _this.loggedUserId;
             that.receiveUsers(function () {
-                that.currentUser = that.getUserById(this.loggedUserId);
+                that.currentUser = that.getUserById(that.loggedUserId);
                 theVue.currentuser = that.currentUser;
             });
-            theVue.alert("Welcome back, " + that.getUserById(_this.loggedUserId).name, "success", "exit_to_app");
+            theVue.alert("Welcome back, " + that.getUserById(that.loggedUserId).name, "success", "exit_to_app");
             theVue.$router.push('/');
             that.updateCSRF();
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('logout', function (settings) {
             _this.loggedUserId = 0;
             theVue.loggeduserid = _this.loggedUserId;
-            that.currentUser = that.getUserById(_this.loggedUserId);
+            that.currentUser = that.getUserById(that.loggedUserId);
             theVue.currentuser = that.currentUser;
             theVue.alert("Logged out", "danger", "power_settings_new");
             theVue.$router.push('/');
@@ -92909,8 +92909,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         accept: this.deleteAction
       });
     },
+    mkAdmin: function mkAdmin(id) {
+      $.ajax({
+        url: '/internal-api/users/mkAdmin/' + id,
+        type: 'POST',
+        cache: false,
+        contentType: false,
+        processData: false,
+        complete: function complete(res) {
+          if (res.status == 200) {
+            __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('userEdited', '');
+          }
+        }
+      });
+      return false;
+    },
+    rmAdmin: function rmAdmin(id) {
+      $.ajax({
+        url: '/internal-api/users/rmAdmin/' + id,
+        type: 'POST',
+        cache: false,
+        contentType: false,
+        processData: false,
+        complete: function complete(res) {
+          if (res.status == 200) {
+            __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('userEdited', '');
+          }
+        }
+      });
+      return false;
+    },
     deleteAction: function deleteAction() {
-      var that = this;
       $.ajax({
         url: '/internal-api/user/' + this.tmpid,
         type: 'DELETE',
@@ -92939,19 +92968,6 @@ var render = function() {
   return _c(
     "div",
     [
-      _vm._l(_vm.medias, function(item) {
-        return _c(
-          "div",
-          { staticClass: "col-lg-4 col-md-4 col-xs-6" },
-          [
-            _c("singleField", {
-              attrs: { item: item, loggeduserid: _vm.loggeduserid }
-            })
-          ],
-          1
-        )
-      }),
-      _vm._v(" "),
       _c(
         "vs-table",
         {
@@ -93006,10 +93022,10 @@ var render = function() {
                         ]
                       ),
                       _vm._v(" "),
-                      _c("vs-td", { attrs: { data: data[indextr].id } }, [
+                      _c("vs-td", { attrs: { data: data[indextr].admin } }, [
                         _vm._v(
                           "\n                " +
-                            _vm._s(data[indextr].id) +
+                            _vm._s(data[indextr].admin) +
                             "\n              "
                         )
                       ]),
@@ -93071,7 +93087,47 @@ var render = function() {
                                           _vm.openConfirm(tr.id)
                                         }
                                       }
-                                    })
+                                    }),
+                                    _vm._v(" "),
+                                    tr.admin
+                                      ? _c(
+                                          "vs-button",
+                                          {
+                                            attrs: {
+                                              "vs-type": "flat",
+                                              size: "small",
+                                              color: "danger",
+                                              icon: ""
+                                            },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.rmAdmin(tr.id)
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("Unmake admin")]
+                                        )
+                                      : _vm._e(),
+                                    _vm._v(" "),
+                                    tr.admin == false
+                                      ? _c(
+                                          "vs-button",
+                                          {
+                                            attrs: {
+                                              "vs-type": "flat",
+                                              size: "small",
+                                              color: "danger",
+                                              icon: ""
+                                            },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.mkAdmin(tr.id)
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("Make admin")]
+                                        )
+                                      : _vm._e()
                                   ],
                                   1
                                 )
@@ -93112,25 +93168,21 @@ var render = function() {
             "template",
             { slot: "thead" },
             [
-              _c("vs-th", { attrs: { "sort-key": "name" } }, [
-                _vm._v("\n              Name\n            ")
-              ]),
+              _c("vs-th", { attrs: { "sort-key": "name" } }, [_vm._v("Name")]),
               _vm._v(" "),
               _c("vs-th", { attrs: { "sort-key": "email" } }, [
-                _vm._v("\n              Email\n            ")
+                _vm._v("Email")
               ]),
               _vm._v(" "),
               _c("vs-th", { attrs: { "sort-key": "created_at" } }, [
-                _vm._v("\n              Created\n            ")
+                _vm._v("Created")
               ]),
               _vm._v(" "),
               _c("vs-th", { attrs: { "sort-key": "updated_at" } }, [
-                _vm._v("\n              Updated\n            ")
+                _vm._v("Updated")
               ]),
               _vm._v(" "),
-              _c("vs-th", { attrs: { "sort-key": "id" } }, [
-                _vm._v("\n              Id\n            ")
-              ])
+              _c("vs-th", { attrs: { "sort-key": "admin" } }, [_vm._v("Admin")])
             ],
             1
           )
@@ -93138,7 +93190,7 @@ var render = function() {
         2
       )
     ],
-    2
+    1
   )
 }
 var staticRenderFns = []
