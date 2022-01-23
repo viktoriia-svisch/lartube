@@ -93515,148 +93515,145 @@ var render = function() {
         _c("h4", [_vm._v("Notifications")]),
         _vm._v(" "),
         _vm._l(_vm.notifications, function(item) {
-          return _c("div", { staticClass: "row" }, [
+          return _c("div", { staticClass: "text-center" }, [
             item.type == "App\\Notifications\\LikeReceived"
-              ? _c("div", [
-                  _c("h6", [_vm._v(_vm._s(item.created_at))]),
-                  _vm._v(" "),
-                  item.read_at == null
-                    ? _c(
-                        "p",
-                        {
-                          staticClass: "alert alert-info",
-                          attrs: { role: "alert" }
-                        },
-                        [
-                          _vm._v("This is unread! "),
-                          _c(
-                            "button",
-                            {
-                              staticClass: "btn btn-sm btn-primary float-right",
-                              on: {
-                                click: function($event) {
-                                  _vm.emitMarkNotifications(
-                                    "/internal-api/notifications/markasread/" +
-                                      item.id
-                                  )
-                                }
+              ? _c(
+                  "div",
+                  [
+                    _c("vs-divider", { attrs: { color: "success" } }, [
+                      _vm._v(_vm._s(item.created_at))
+                    ]),
+                    _vm._v(" "),
+                    item.read_at == null
+                      ? _c(
+                          "vs-chip",
+                          {
+                            staticClass: "float-right",
+                            attrs: { color: "warning", closable: "" },
+                            on: {
+                              click: function($event) {
+                                _vm.emitMarkNotifications(
+                                  "/internal-api/notifications/markasread/" +
+                                    item.id
+                                )
                               }
-                            },
-                            [_vm._v("Mark as read")]
-                          )
-                        ]
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c(
-                    "p",
-                    [
-                      _vm._v(" User "),
-                      _c(
-                        "router-link",
-                        { attrs: { to: "/profile/" + item.data.user_id } },
-                        [
-                          _vm._v(
-                            _vm._s(_vm.getUserById(item.data.user_id).name)
-                          )
-                        ]
-                      ),
-                      _vm._v(
-                        " " +
-                          _vm._s(_vm.getLikeString(item.data.like)) +
-                          "\n            "
-                      ),
-                      item.data.media_id != null && item.data.media_id != 0
-                        ? _c(
-                            "span",
-                            [
-                              _vm._v("\n              your "),
-                              _c("b", [_vm._v("media")]),
-                              _vm._v(
-                                " " +
-                                  _vm._s(item.data.media_id) +
-                                  "\n              "
-                              ),
-                              _c(
-                                "router-link",
-                                {
-                                  attrs: {
-                                    to:
-                                      "/media/" +
-                                      encodeURIComponent(
+                            }
+                          },
+                          [
+                            _c("vs-avatar", { attrs: { icon: "markunread" } }),
+                            _vm._v("This is unread!")
+                          ],
+                          1
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c(
+                      "p",
+                      [
+                        _vm._v(" User "),
+                        _c(
+                          "router-link",
+                          { attrs: { to: "/profile/" + item.data.user_id } },
+                          [
+                            _vm._v(
+                              _vm._s(_vm.getUserById(item.data.user_id).name)
+                            )
+                          ]
+                        ),
+                        _vm._v(
+                          " " +
+                            _vm._s(_vm.getLikeString(item.data.like)) +
+                            "\n            "
+                        ),
+                        item.data.media_id != null && item.data.media_id != 0
+                          ? _c(
+                              "span",
+                              [
+                                _vm._v("\n              your "),
+                                _c("b", [_vm._v("media")]),
+                                _vm._v(" "),
+                                _c(
+                                  "router-link",
+                                  {
+                                    attrs: {
+                                      to:
+                                        "/media/" +
+                                        encodeURIComponent(
+                                          _vm.getMediaById2(item.data.media_id)
+                                            .title
+                                        )
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      _vm._s(
                                         _vm.getMediaById2(item.data.media_id)
                                           .title
                                       )
-                                  }
-                                },
-                                [
-                                  _vm._v(
-                                    _vm._s(
-                                      _vm.getMediaById2(item.data.media_id)
-                                        .title
                                     )
-                                  )
-                                ]
-                              )
-                            ],
-                            1
-                          )
-                        : _vm._e(),
-                      _vm._v(" "),
-                      item.data.media_id == null || item.data.media_id == 0
-                        ? _c(
-                            "span",
-                            [
-                              _vm._v("\n               your "),
-                              _c("b", [_vm._v("comment")]),
-                              _vm._v(
-                                ": " +
-                                  _vm._s(
-                                    _vm.getCommentById2(item.data.comment_id)
-                                      .body
-                                  ) +
-                                  " @ media\n               "
-                              ),
-                              _vm.getMediaById2(
-                                _vm.getCommentById2(item.data.comment_id)
-                                  .media_id
-                              ) != undefined
-                                ? _c(
-                                    "router-link",
-                                    {
-                                      attrs: {
-                                        to:
-                                          "/media/" +
-                                          encodeURIComponent(
+                                  ]
+                                )
+                              ],
+                              1
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        item.data.media_id == null || item.data.media_id == 0
+                          ? _c(
+                              "span",
+                              [
+                                _vm._v("\n               your "),
+                                _c("b", [_vm._v("comment")]),
+                                _vm._v(
+                                  ": " +
+                                    _vm._s(
+                                      _vm.getCommentById2(item.data.comment_id)
+                                        .body
+                                    ) +
+                                    " @ media\n               "
+                                ),
+                                _vm.getMediaById2(
+                                  _vm.getCommentById2(item.data.comment_id)
+                                    .media_id
+                                ) != undefined
+                                  ? _c(
+                                      "router-link",
+                                      {
+                                        attrs: {
+                                          to:
+                                            "/media/" +
+                                            encodeURIComponent(
+                                              _vm.getMediaById2(
+                                                _vm.getCommentById2(
+                                                  item.data.comment_id
+                                                ).media_id
+                                              ).title
+                                            )
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          _vm._s(
                                             _vm.getMediaById2(
                                               _vm.getCommentById2(
                                                 item.data.comment_id
                                               ).media_id
                                             ).title
                                           )
-                                      }
-                                    },
-                                    [
-                                      _vm._v(
-                                        _vm._s(
-                                          _vm.getMediaById2(
-                                            _vm.getCommentById2(
-                                              item.data.comment_id
-                                            ).media_id
-                                          ).title
                                         )
-                                      )
-                                    ]
-                                  )
-                                : _vm._e()
-                            ],
-                            1
-                          )
-                        : _vm._e()
-                    ],
-                    1
-                  )
-                ])
+                                      ]
+                                    )
+                                  : _vm._e()
+                              ],
+                              1
+                            )
+                          : _vm._e()
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
               : _vm._e()
           ])
         })
