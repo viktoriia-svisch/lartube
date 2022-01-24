@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use App\Category;
 use Illuminate\Http\Request;
+use Auth;
 class CategoryController extends Controller
 {
     public function create(Request $request)
@@ -9,10 +10,19 @@ class CategoryController extends Controller
         $media = Category::create(['title' =>  $request->input('title'),'description' => $request->input('description'),'parent_id' => $request->input('parent_id')]);
         return;
     }
-    public function destroy(Request $request)
+    public function edit(Request $request,$id)
     {
-        $comment = Category::where('id', '=' ,$request->input('category_id'))->firstOrFail();
-        if(Auth::id()==$comment->users_id){
+        $cat = Category::find($id);
+        $cat->title=$request->input('title');
+        $cat->description = $request->input('description');
+        $cat->parent_id = $request->input('parent_id');
+        $cat->save();
+        return;
+    }
+    public function destroy(Request $request,$id)
+    {
+        $comment = Category::find($id);
+        if(!empty(Auth::id())) {
           $comment->delete();
           return;
         }

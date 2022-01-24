@@ -47,6 +47,10 @@
                <input placeholder="Media-title" class="form-control" name="title" type="text">
       </div>
       <div class="form-group">
+          <label>Category:</label>
+          <treeselect v-model="catid" name="category_id" :multiple="false" :options="treecatptions" />
+      </div>
+      <div class="form-group">
           <label>Media-description:</label>
           <textarea placeholder="Media-description" id="addMediaDescription" class="form-control" name="description" cols="50" rows="10"></textarea>
       </div>
@@ -67,7 +71,7 @@
   import { User, Media, Tag } from '../models';
   import MediaView from './MediaView'
   export default {
-    props: ['medias','baseUrl','csrf'],
+    props: ['medias','baseUrl','csrf','treecatptions'],
     components : {
         'mediaView' : MediaView
     },
@@ -155,6 +159,7 @@ rotate(rotationAngle,event) {
     data(){
       return {
         mediaType: '',
+        catid:0,
         cropped: null,
         uploadPercent:-1,
         theTestMedia:undefined

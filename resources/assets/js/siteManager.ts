@@ -11,6 +11,8 @@ import Vuesax from 'vuesax'
 import 'material-icons/iconfont/material-icons.css';
 import 'vuesax/dist/vuesax.css' 
 import VuePlyr from 'vue-plyr'
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 var app;
 var theVue;
 var searchDelay;
@@ -31,6 +33,7 @@ class siteManager {
   catchedTagMedias:any;
   initing:boolean;
   csrf:string;
+  originalCatJson:any;
   notificationTimer:any;
   types:Array<string>;
   currentMediaId:number;
@@ -61,6 +64,7 @@ class siteManager {
     Vue.use(VueApexCharts)
     Vue.use(Vuesax)
     Vue.use(VuePlyr)
+    Vue.component('treeselect', Treeselect)
     Vue.component('apexchart', VueApexCharts)
     var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
     var player = Vue.component('player', require("./components/MediaComponent.vue"));
@@ -79,6 +83,8 @@ class siteManager {
     var uaComp = Vue.component('thesidebar', require("./components/UserAdmin.vue"));
     var myVideosComp = Vue.component('thesidebar', require("./components/MyVideos.vue"));
     var notiComp = Vue.component('thesidebar', require("./components/Notifications.vue"));
+    var ccComp = Vue.component('thesidebar', require("./components/CreateCategory.vue"));
+    var ceComp = Vue.component('thesidebar', require("./components/EditCategory.vue"));
     let that = this;
     const routes = [
       { path: '/', component: overview },
@@ -93,6 +99,8 @@ class siteManager {
       { path: '/search', component: searchComp },
       { path: '/charts', component: chartsComp },
       { path: '/categories', component: catComp },
+      { path: '/editcat/:catId', component: ceComp },
+      { path: '/newcat', component: ccComp },
       { path: '/about', component: aboutComp },
       { path: '/notifications', component: notiComp },
       { path: '/myvideos', component: myVideosComp },
@@ -135,7 +143,6 @@ class siteManager {
         theVue.$router.push('/media/'+encodeURIComponent(tmpv[0].title));
         that.nextMedias = that.nextVideosList(tmpv[0].id)
         theVue.nextvideos = that.nextMedias
-        console.log(theVue.nextvideos)
         if(theVue.nextvideos==null||theVue.nextvideos){
           console.log("do load more")
           that.loadMorePages(function(){
@@ -246,6 +253,13 @@ class siteManager {
       theVue.alert("Video "+json.data.title+" created","success")
       that.updateCSRF();
     });
+    eventBus.$on('categoriesRefreshed', json => {
+      that.receiveCategories(function(){
+        theVue.alert("Categories refreshed","success")
+        that.updateCSRF();
+        theVue.$router.push("/categories")
+      });
+    });
     eventBus.$on('videoEdited', json => {
       that.deleteMediaByName(json[0]);
       that.receiveTagsForMedia(json[1]);
@@ -313,6 +327,7 @@ class siteManager {
       search:'',
       nextvideos:[],
       notifications:[],
+      originalCatJson:{},
       fullmedias:that.medias,
       csrf:that.csrf,
       currentuser:that.currentUser,
@@ -507,23 +522,44 @@ if(localStorage.getItem('cookiePolicy')!="read"){
     });
     return content
   }
-  receiveCategories(forceUpdate=false):void{
+  mkTreeCat(data,l=0){
+    var result:any = [];
+    if(l==0){
+      result = [{id:0,label:'None'}];
+    }
+    let that = this;
+    $.each( data, function( key, value ) {
+      if(value.children.length>0){
+        result.push({id:value.id,label:value.title,children:that.mkTreeCat(value.children,1)})
+      }else{
+        result.push({id:value.id,label:value.title})
+      }
+      });
+      return result;
+  }
+  receiveCategories(callback=undefined):void{
     let that = this;
     $.getJSON("/internal-api/categories", function name(data) {
-      if((that.categories==undefined)||(forceUpdate)){
         that.categories = [];
         $.each( data.data, function( key, value ) {
-          that.categories.push(new Category(value.id, value.title, value.description, value.avatar_source,value.background_source));
+          that.categories.push(new Category(value.id, value.title, value.description, value.avatar_source,value.background_source,value.parent_id,value.children));
         });
-      }
-      this.categories = that.categories;
+      that.fillMediasToCat();
+      that.originalCatJson = that.mkTreeCat(data.data)
       if(theVue!=undefined){
-        theVue.categories = this.categories;
+        theVue.categories = that.categories;
+        console.log("set originalData")
+        theVue.originalCatJson = that.originalCatJson;
+        console.log(theVue.originalCatJson)
+      }
+      if(callback!=undefined){
+        callback();
       }
     });
   }
   receiveNotifications(url='/internal-api/notifications',callback=undefined):void{
     let that = this;
+    if(this.loggedUserId!=0){
     $.getJSON(url, function name(data) {
         that.notifications = [];
         $.each( data, function( key, value ) {
@@ -549,6 +585,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         theVue.notifications = this.notifications;
       }
     });
+  }
   }
   getCategoryMedias(category_id:number){
     var ma = []
@@ -620,7 +657,9 @@ if(localStorage.getItem('cookiePolicy')!="read"){
     if(theMedia==undefined){
       that.receiveMediaByCommentId(id,callback)
     } else {
-      callback();
+      if(callback!=undefined){
+        callback();
+      }
     }
     return theMedia
   }
@@ -816,6 +855,18 @@ if(localStorage.getItem('cookiePolicy')!="read"){
     theVue.medias = that.getFilteredMedias();
     theVue.$router.push('/');
   }
+  fillMediasToCat(c=undefined){
+    let that = this;
+    if(c==undefined){
+      c = that.categories
+    }
+    $.each( c, function( key1, value ) {
+      value.setMedias(that.medias)
+      if(value.children.length>0){
+        that.fillMediasToCat(value.children)
+      }
+    });
+  }
   receiveMedias(url="/internal-api/media"+this.getIgnoreParam(),forceUpdate=false,callback=undefined):void{
     let that = this;
     var loadCount=0,replaceCount=0;
@@ -833,9 +884,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
             loadCount++;
             m.comments = m.comments.sort(MediaSorter.byCreatedAtComments);
             that.medias.push(m);
-            if(that.getCategoryKey(m.category_id)!=undefined){
-              that.categories[that.getCategoryKey(m.category_id)].medias.push(m)
-            }
+            that.fillMediasToCat()
           } else {
             replaceCount++;
           }
@@ -860,6 +909,11 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         }
         theVue.users = that.users;
         theVue.categories = that.categories;
+        if(that.originalCatJson!=undefined){
+          console.log("set origi again")
+          console.log(that.originalCatJson)
+          theVue.originalCatJson = that.originalCatJson;
+        }
         console.log(this.categories)
         that.medias = theMediaSorter.sort(that.medias)
         theVue.fullmedias = that.medias

@@ -13,7 +13,7 @@
         </div>
         <div class="form-group row">
           <label>Category</label>
-          <select name="category_id" v-model="catid" ><option value="">None</option><option v-for="item in categories" :value="item.id">{{ item.title }}</option></select>
+          <treeselect v-model="catid" name="category_id" :multiple="false" :options="treecatptions" />
         </div>
         <div class="form-group row">
           <label>Source:</label>
@@ -83,7 +83,7 @@
   import { eventBus } from '../eventBus.js';
   import { Media }  from '../models';
   export default {
-    props: ['medias','baseUrl','categories','csrf'],
+    props: ['medias','baseUrl','categories','csrf','treecatptions'],
     mounted: function () {
                 this.currentmedia=this.getCurrentMedia();
     },
