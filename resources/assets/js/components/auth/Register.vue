@@ -1,13 +1,18 @@
 <template>
-  <div class="row justify-content-center">
-      <div class="col-md-8">
+      <div class="">
           <div class="card">
               <div class="card-header">Register</div>
               <div class="card-body">
                   <form method="POST" id="theForm" action="/register" aria-label="Register">
+                    <div class="form-group row">
+                        <label for="name" class="col-md-4 col-form-label text-md-right">Name</label>
+                        <div class="col-md-6">
+                            <input id="name" type="text" class="form-control" name="name" value="" required autofocus>
+                        </div>
+                    </div>
                       <input type="hidden" name="_token" :value="csrf">
                       <div class="form-group row">
-                          <label>Avatar</label>
+                          <label class="col-md-4 col-form-label text-md-right">Avatar</label>
                           <vue-croppie
                             ref="croppieAvatarRef"
                             :enableOrientation="true"
@@ -18,13 +23,15 @@
                             @update="updateAvatar">
                             </vue-croppie>
                             <input type="hidden" id="avatarBase" name="avatar" :value="avatarCropped" />
+                            <div class="col-md-8 col-form-label text-md-right">
                             <button @click="rotateAvatar(-90,$event)">Rotate Left</button>
                             <button @click="rotateAvatar(90,$event)">Rotate Right</button>
-                          <input id="avatarUpload" @change="avatarChange()" name="avatarf" type="file">
+                            <input id="avatarUpload" @change="avatarChange()" name="avatarf" type="file">
+                          </div>
                           <div id="avatar"></div>
                       </div>
                       <div class="form-group row">
-                          <label>Background</label>
+                          <label class="col-md-4 col-form-label text-md-right">Background</label>
                           <vue-croppie
                             ref="croppieBackgroundRef"
                             :enableOrientation="true"
@@ -35,20 +42,18 @@
                             @update="updateBackground">
                             </vue-croppie>
                             <input type="hidden" id="backgroundBase" name="background" :value="backgroundCropped" />
+                            <div class="col-md-8 col-form-label text-md-right">
                             <button @click="rotateBackground(-90,$event)">Rotate Left</button>
                             <button @click="rotateBackground(90,$event)">Rotate Right</button>
                           <input id="backgroundUpload" @change="backgroundChange()" name="backgroundf" type="file">
+                        </div>
                           <div id="background"></div>
                       </div>
-                      <div class="form-group row">
-                          <label for="name" class="col-md-4 col-form-label text-md-right">Name</label>
-                          <div class="col-md-6">
-                              <input id="name" type="text" class="form-control" name="name" value="" required autofocus>
-                          </div>
-                      </div>
                       <div class="form-group">
-                          <label>Biographie:</label>
-                          <textarea placeholder="Media-description" id="addMediaDescription" class="form-control" name="bio" cols="50" rows="10"></textarea>
+                          <label class="col-md-4 col-form-label text-md-right">Biographie:</label>
+                          <div>
+                            <textarea placeholder="Media-description" id="addMediaDescription" class="form-control" name="bio" cols="50" rows="10"></textarea>
+                          </div>
                       </div>
                       <div class="form-group row">
                           <label for="public" class="col-md-4 col-form-label text-md-right">Public</label>
@@ -90,7 +95,6 @@
               </div>
           </div>
       </div>
-  </div>
 </template>
 <script>
   import { eventBus } from '../../eventBus.js';

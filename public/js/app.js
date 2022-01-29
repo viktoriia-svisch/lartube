@@ -93524,7 +93524,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "col-md-8" }, [
+  return _c("div", {}, [
     _c("div", { staticClass: "card" }, [
       _c("div", { staticClass: "card-header" }, [_vm._v("Login")]),
       _vm._v(" "),
@@ -93590,7 +93590,7 @@ var render = function() {
               },
               [
                 _vm._v(
-                  "\n                          Login via ajax\n                      "
+                  "\n                          Login\n                      "
                 )
               ]
             ),
@@ -93612,10 +93612,14 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "form-group row" }, [
-      _c("label", {
-        staticClass: "col-md-4 col-form-label text-md-right",
-        attrs: { for: "password" }
-      }),
+      _c(
+        "label",
+        {
+          staticClass: "col-md-4 col-form-label text-md-right",
+          attrs: { for: "password" }
+        },
+        [_vm._v("Password")]
+      ),
       _vm._v(" "),
       _c("div", { staticClass: "col-md-6" }, [
         _c("input", {
@@ -93806,225 +93810,243 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "row justify-content-center" }, [
-    _c("div", { staticClass: "col-md-8" }, [
-      _c("div", { staticClass: "card" }, [
-        _c("div", { staticClass: "card-header" }, [_vm._v("Register")]),
-        _vm._v(" "),
-        _c("div", { staticClass: "card-body" }, [
-          _c(
-            "form",
-            {
-              attrs: {
-                method: "POST",
-                id: "theForm",
-                action: "/register",
-                "aria-label": "Register"
-              }
-            },
-            [
-              _c("input", {
-                attrs: { type: "hidden", name: "_token" },
-                domProps: { value: _vm.csrf }
-              }),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "form-group row" },
-                [
-                  _c("label", [_vm._v("Avatar")]),
-                  _vm._v(" "),
-                  _c("vue-croppie", {
-                    ref: "croppieAvatarRef",
-                    attrs: {
-                      enableOrientation: true,
-                      enableResize: false,
-                      viewport: { width: 180, height: 180, type: "circle" },
-                      boundary: { width: 200, height: 200 }
-                    },
-                    on: { result: _vm.resultAvatar, update: _vm.updateAvatar }
-                  }),
-                  _vm._v(" "),
-                  _c("input", {
-                    attrs: { type: "hidden", id: "avatarBase", name: "avatar" },
-                    domProps: { value: _vm.avatarCropped }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      on: {
-                        click: function($event) {
-                          _vm.rotateAvatar(-90, $event)
-                        }
-                      }
-                    },
-                    [_vm._v("Rotate Left")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      on: {
-                        click: function($event) {
-                          _vm.rotateAvatar(90, $event)
-                        }
-                      }
-                    },
-                    [_vm._v("Rotate Right")]
-                  ),
-                  _vm._v(" "),
-                  _c("input", {
-                    attrs: {
-                      id: "avatarUpload",
-                      name: "avatarf",
-                      type: "file"
-                    },
-                    on: {
-                      change: function($event) {
-                        _vm.avatarChange()
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("div", { attrs: { id: "avatar" } })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "form-group row" },
-                [
-                  _c("label", [_vm._v("Background")]),
-                  _vm._v(" "),
-                  _c("vue-croppie", {
-                    ref: "croppieBackgroundRef",
-                    attrs: {
-                      enableOrientation: true,
-                      enableResize: false,
-                      viewport: { width: 1200, height: 394, type: "square" },
-                      boundary: { width: 800, height: 394 }
-                    },
-                    on: {
-                      result: _vm.resultBackground,
-                      update: _vm.updateBackground
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("input", {
-                    attrs: {
-                      type: "hidden",
-                      id: "backgroundBase",
-                      name: "background"
-                    },
-                    domProps: { value: _vm.backgroundCropped }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      on: {
-                        click: function($event) {
-                          _vm.rotateBackground(-90, $event)
-                        }
-                      }
-                    },
-                    [_vm._v("Rotate Left")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      on: {
-                        click: function($event) {
-                          _vm.rotateBackground(90, $event)
-                        }
-                      }
-                    },
-                    [_vm._v("Rotate Right")]
-                  ),
-                  _vm._v(" "),
-                  _c("input", {
-                    attrs: {
-                      id: "backgroundUpload",
-                      name: "backgroundf",
-                      type: "file"
-                    },
-                    on: {
-                      change: function($event) {
-                        _vm.backgroundChange()
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("div", { attrs: { id: "background" } })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _vm._m(0),
-              _vm._v(" "),
-              _vm._m(1),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group row" }, [
+  return _c("div", {}, [
+    _c("div", { staticClass: "card" }, [
+      _c("div", { staticClass: "card-header" }, [_vm._v("Register")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card-body" }, [
+        _c(
+          "form",
+          {
+            attrs: {
+              method: "POST",
+              id: "theForm",
+              action: "/register",
+              "aria-label": "Register"
+            }
+          },
+          [
+            _vm._m(0),
+            _vm._v(" "),
+            _c("input", {
+              attrs: { type: "hidden", name: "_token" },
+              domProps: { value: _vm.csrf }
+            }),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "form-group row" },
+              [
                 _c(
                   "label",
-                  {
-                    staticClass: "col-md-4 col-form-label text-md-right",
-                    attrs: { for: "public" }
-                  },
-                  [_vm._v("Public")]
+                  { staticClass: "col-md-4 col-form-label text-md-right" },
+                  [_vm._v("Avatar")]
                 ),
+                _vm._v(" "),
+                _c("vue-croppie", {
+                  ref: "croppieAvatarRef",
+                  attrs: {
+                    enableOrientation: true,
+                    enableResize: false,
+                    viewport: { width: 180, height: 180, type: "circle" },
+                    boundary: { width: 200, height: 200 }
+                  },
+                  on: { result: _vm.resultAvatar, update: _vm.updateAvatar }
+                }),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: { type: "hidden", id: "avatarBase", name: "avatar" },
+                  domProps: { value: _vm.avatarCropped }
+                }),
                 _vm._v(" "),
                 _c(
                   "div",
-                  { staticClass: "col-md-6" },
+                  { staticClass: "col-md-8 col-form-label text-md-right" },
                   [
-                    _c("vs-switch", {
-                      model: {
-                        value: _vm.public,
-                        callback: function($$v) {
-                          _vm.public = $$v
-                        },
-                        expression: "public"
-                      }
-                    }),
+                    _c(
+                      "button",
+                      {
+                        on: {
+                          click: function($event) {
+                            _vm.rotateAvatar(-90, $event)
+                          }
+                        }
+                      },
+                      [_vm._v("Rotate Left")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        on: {
+                          click: function($event) {
+                            _vm.rotateAvatar(90, $event)
+                          }
+                        }
+                      },
+                      [_vm._v("Rotate Right")]
+                    ),
                     _vm._v(" "),
                     _c("input", {
-                      attrs: { type: "hidden", name: "public" },
-                      domProps: { value: Number(_vm.public) }
+                      attrs: {
+                        id: "avatarUpload",
+                        name: "avatarf",
+                        type: "file"
+                      },
+                      on: {
+                        change: function($event) {
+                          _vm.avatarChange()
+                        }
+                      }
                     })
-                  ],
-                  1
-                )
-              ]),
-              _vm._v(" "),
-              _vm._m(2),
-              _vm._v(" "),
-              _vm._m(3),
-              _vm._v(" "),
-              _vm._m(4),
-              _vm._v(" "),
-              _vm._m(5)
-            ]
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-group row mb-0" }, [
-            _c("div", { staticClass: "col-md-6 offset-md-4" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-primary",
+                  ]
+                ),
+                _vm._v(" "),
+                _c("div", { attrs: { id: "avatar" } })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "form-group row" },
+              [
+                _c(
+                  "label",
+                  { staticClass: "col-md-4 col-form-label text-md-right" },
+                  [_vm._v("Background")]
+                ),
+                _vm._v(" "),
+                _c("vue-croppie", {
+                  ref: "croppieBackgroundRef",
+                  attrs: {
+                    enableOrientation: true,
+                    enableResize: false,
+                    viewport: { width: 1200, height: 394, type: "square" },
+                    boundary: { width: 800, height: 394 }
+                  },
                   on: {
-                    click: function($event) {
-                      _vm.submitAction()
-                    }
+                    result: _vm.resultBackground,
+                    update: _vm.updateBackground
                   }
+                }),
+                _vm._v(" "),
+                _c("input", {
+                  attrs: {
+                    type: "hidden",
+                    id: "backgroundBase",
+                    name: "background"
+                  },
+                  domProps: { value: _vm.backgroundCropped }
+                }),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col-md-8 col-form-label text-md-right" },
+                  [
+                    _c(
+                      "button",
+                      {
+                        on: {
+                          click: function($event) {
+                            _vm.rotateBackground(-90, $event)
+                          }
+                        }
+                      },
+                      [_vm._v("Rotate Left")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        on: {
+                          click: function($event) {
+                            _vm.rotateBackground(90, $event)
+                          }
+                        }
+                      },
+                      [_vm._v("Rotate Right")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      attrs: {
+                        id: "backgroundUpload",
+                        name: "backgroundf",
+                        type: "file"
+                      },
+                      on: {
+                        change: function($event) {
+                          _vm.backgroundChange()
+                        }
+                      }
+                    })
+                  ]
+                ),
+                _vm._v(" "),
+                _c("div", { attrs: { id: "background" } })
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _vm._m(1),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group row" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "col-md-4 col-form-label text-md-right",
+                  attrs: { for: "public" }
                 },
-                [_vm._v("Register")]
+                [_vm._v("Public")]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "col-md-6" },
+                [
+                  _c("vs-switch", {
+                    model: {
+                      value: _vm.public,
+                      callback: function($$v) {
+                        _vm.public = $$v
+                      },
+                      expression: "public"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("input", {
+                    attrs: { type: "hidden", name: "public" },
+                    domProps: { value: Number(_vm.public) }
+                  })
+                ],
+                1
               )
-            ])
+            ]),
+            _vm._v(" "),
+            _vm._m(2),
+            _vm._v(" "),
+            _vm._m(3),
+            _vm._v(" "),
+            _vm._m(4),
+            _vm._v(" "),
+            _vm._m(5)
+          ]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group row mb-0" }, [
+          _c("div", { staticClass: "col-md-6 offset-md-4" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                on: {
+                  click: function($event) {
+                    _vm.submitAction()
+                  }
+                }
+              },
+              [_vm._v("Register")]
+            )
           ])
         ])
       ])
@@ -94066,18 +94088,22 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "form-group" }, [
-      _c("label", [_vm._v("Biographie:")]),
+      _c("label", { staticClass: "col-md-4 col-form-label text-md-right" }, [
+        _vm._v("Biographie:")
+      ]),
       _vm._v(" "),
-      _c("textarea", {
-        staticClass: "form-control",
-        attrs: {
-          placeholder: "Media-description",
-          id: "addMediaDescription",
-          name: "bio",
-          cols: "50",
-          rows: "10"
-        }
-      })
+      _c("div", [
+        _c("textarea", {
+          staticClass: "form-control",
+          attrs: {
+            placeholder: "Media-description",
+            id: "addMediaDescription",
+            name: "bio",
+            cols: "50",
+            rows: "10"
+          }
+        })
+      ])
     ])
   },
   function() {
