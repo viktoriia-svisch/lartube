@@ -101,6 +101,7 @@ var siteManager =  (function () {
         eventBus.$on('userEdited', function (id) {
             theVue.alert("Look for new users..");
             that.receiveUsers();
+            that.updateCSRF();
             if (id != '' && id != undefined) {
                 theVue.$router.push("/profile/" + id);
             }

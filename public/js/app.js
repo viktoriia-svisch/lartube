@@ -23613,7 +23613,7 @@ module.exports = bufferFrom
 }.call(exports, __webpack_require__(3).Buffer))
  }),
  (function(module, exports) {
-module.exports = {"_from":"webtorrent@^0.103.0","_id":"webtorrent@0.103.0","_inBundle":false,"_integrity":"sha512-4N8+KQMtQw7KPz8Zjz8Y9S+olkpRA1kdUpbJynQHnSzIkTNJGPL9c6akBTOvtSfTtXs4kETts6eUIZkml6xRoA==","_location":"/webtorrent","_phantomChildren":{"inherits":"2.0.3","safe-buffer":"5.1.2","util-deprecate":"1.0.2"},"_requested":{"type":"range","registry":true,"raw":"webtorrent@^0.103.0","name":"webtorrent","escapedName":"webtorrent","rawSpec":"^0.103.0","saveSpec":null,"fetchSpec":"^0.103.0"},"_requiredBy":["/"],"_resolved":"https:
+module.exports = {"_from":"webtorrent","_id":"webtorrent@0.103.0","_inBundle":false,"_integrity":"sha512-4N8+KQMtQw7KPz8Zjz8Y9S+olkpRA1kdUpbJynQHnSzIkTNJGPL9c6akBTOvtSfTtXs4kETts6eUIZkml6xRoA==","_location":"/webtorrent","_phantomChildren":{"end-of-stream":"1.4.1","inherits":"2.0.3","once":"1.4.0","string_decoder":"1.1.1","util-deprecate":"1.0.2"},"_requested":{"type":"tag","registry":true,"raw":"webtorrent","name":"webtorrent","escapedName":"webtorrent","rawSpec":"","saveSpec":null,"fetchSpec":"latest"},"_requiredBy":["#USER","/"],"_resolved":"https:
  }),
  (function(module, __webpack_exports__, __webpack_require__) {
 "use strict";
@@ -58739,6 +58739,7 @@ var siteManager = function () {
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('userEdited', function (id) {
             theVue.alert("Look for new users..");
             that.receiveUsers();
+            that.updateCSRF();
             if (id != '' && id != undefined) {
                 theVue.$router.push("/profile/" + id);
             }
@@ -93011,6 +93012,11 @@ var render = function() {
         _c("label", [_vm._v("Username")]),
         _vm._v(" "),
         _c("input", {
+          attrs: { type: "hidden", name: "_token" },
+          domProps: { value: _vm.csrf }
+        }),
+        _vm._v(" "),
+        _c("input", {
           attrs: {
             type: "hidden",
             value: "",
@@ -94375,6 +94381,11 @@ var render = function() {
           _c("div", { staticClass: "form-group" }, [
             _c("label", [_vm._v("Media-type:")]),
             _vm._v(" "),
+            _c("input", {
+              attrs: { type: "hidden", name: "_token" },
+              domProps: { value: _vm.csrf }
+            }),
+            _vm._v(" "),
             _c(
               "select",
               {
@@ -95551,6 +95562,11 @@ var render = function() {
               _c("label", [_vm._v("Media-title")]),
               _vm._v(" "),
               _c("input", {
+                attrs: { type: "hidden", name: "_token" },
+                domProps: { value: _vm.csrf }
+              }),
+              _vm._v(" "),
+              _c("input", {
                 attrs: {
                   type: "hidden",
                   value: "",
@@ -95704,7 +95720,7 @@ var render = function() {
                   attrs: {
                     id: "posterUpload",
                     accept: ".png,.jpg,.jpeg",
-                    name: "poster",
+                    name: "unimportant",
                     type: "file"
                   },
                   on: {
@@ -96618,25 +96634,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   props: ['medias', 'baseUrl', 'canloadmore', 'loggeduserid', 'categories', 'catlevel', 'currentuser'],
   name: 'cat',
   methods: {
-    emitLoadMore: function emitLoadMore() {
-      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadMore', '');
-    },
-    editAction: function editAction(id) {
-      var that = this;
-      $.ajax({
-        url: '/internal-api/category/' + this.currentmedia.id,
-        type: 'POST',
-        data: new FormData($("#theForm")[0]),
-        cache: false,
-        contentType: false,
-        processData: false,
-        complete: function complete(res) {
-          if (res.status == 200) {}
-          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('videoEdited', [that.currentmedia.title, res.responseJSON]);
-        }
-      });
-      return false;
-    },
     deleteAction: function deleteAction(id) {
       var that = this;
       $.ajax({
@@ -96874,6 +96871,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       $.ajax({
         url: '/internal-api/users/mkAdmin/' + id,
         type: 'POST',
+        data: new FormData($("#hiddenCSRFForm")[0]),
         cache: false,
         contentType: false,
         processData: false,
@@ -96890,6 +96888,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         url: '/internal-api/users/rmAdmin/' + id,
         type: 'POST',
         cache: false,
+        data: new FormData($("#hiddenCSRFForm")[0]),
         contentType: false,
         processData: false,
         complete: function complete(res) {
@@ -96904,6 +96903,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       $.ajax({
         url: '/internal-api/user/' + this.tmpid,
         type: 'DELETE',
+        data: new FormData($("#hiddenCSRFForm")[0]),
         cache: false,
         contentType: false,
         processData: false,
@@ -97149,7 +97149,14 @@ var render = function() {
           )
         ],
         2
-      )
+      ),
+      _vm._v(" "),
+      _c("form", { staticClass: "d-none", attrs: { id: "hiddenCSRFForm" } }, [
+        _c("input", {
+          attrs: { type: "hidden", name: "_token" },
+          domProps: { value: _vm.csrf }
+        })
+      ])
     ],
     1
   )
@@ -98087,6 +98094,11 @@ var render = function() {
         _c("form", { attrs: { id: "theForm" } }, [
           _c("div", { staticClass: "form-group row" }, [
             _c("label", [_vm._v("Title")]),
+            _vm._v(" "),
+            _c("input", {
+              attrs: { type: "hidden", name: "_token" },
+              domProps: { value: _vm.csrf }
+            }),
             _vm._v(" "),
             _c("input", {
               attrs: {

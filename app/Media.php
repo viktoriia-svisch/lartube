@@ -40,6 +40,21 @@ class Media extends Model
       }
       return $like->count;
     }
+    function formatedDuration(){
+        $duration = $this->duration;
+        if($duration==0){
+          return "00:00:00";
+        }
+        if(strlen($duration) == 4){
+            return "00:0" . $duration;
+        }
+        else if(strlen($duration) == 5){
+            return "00:" . $duration;
+        }   
+        else if(strlen($duration) == 7){
+            return "0" . $duration;
+        }
+    }
     public function likes(){
       $likes = Like::where('media_id', '=',$this->id)->get();
       $counter = 0;

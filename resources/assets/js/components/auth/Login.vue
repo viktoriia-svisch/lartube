@@ -8,7 +8,7 @@
                     <label for="email" class="col-sm-4 col-form-label text-md-right">E-Mail Address</label>
                     <div class="col-md-6">
                       <input type="hidden" name="_token" :value="csrf">
-                        <input id="email" type="email" class="form-control" name="email" value="" required autofocus>
+                      <input id="email" type="email" class="form-control" name="email" value="" required autofocus>
                     </div>
                 </div>
                 <div class="form-group row">

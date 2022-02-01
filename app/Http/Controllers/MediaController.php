@@ -33,7 +33,6 @@ class MediaController extends Controller
     {
         $getID3 = new \getID3;
         $title = $request->input('title');
-        $data = $request->input('poster');
         $source = $request->input('source');
         $duration = "0";
         if(empty($source)){
@@ -54,34 +53,21 @@ class MediaController extends Controller
           }
         }
         $media = Media::create(['title' =>  $request->input('title'),'source' => $source,'poster_source' => '','duration' => $duration, 'description' => $request->input('description'), 'type' => $request->input('type'), 'user_id' => Auth::id(),'category_id' =>  $request->input('category_id'),]);
-        $poster_source = 'public/media/posters/'.$media->id.'.png';
-        if(!empty($data)){
-          list($type, $data) = explode(';', $data);
-          list(, $data)      = explode(',', $data);
-          $data = base64_decode($data);
-          Storage::put('public/media/posters/'.$media->id.'.png', $data);
-        } else {
-          $poster_source = '';
-        }
-        $media->poster_source = $poster_source;
+        $media->poster_source = $this->processPoster($media->id,$request->input('poster'));
         $media->save();
         $media->retag($tagArray);
         return new MediaResource($media);
     }
-    function format_duration($duration){
-        if(strlen($duration) == 4){
-            return "00:0" . $duration;
-        }
-        else if(strlen($duration) == 5){
-            return "00:" . $duration;
-        }   
-        else if(strlen($duration) == 7){
-            return "0" . $duration;
-        }
-    }
-    public function tags(Request $request){
-      $tags = Media::existingTags();
-      return view('tags.index',compact('tags'));
+    private function processPoster($id, $data){
+      if(!empty($data)){
+        list($type, $data) = explode(';', $data);
+        list(, $data)      = explode(',', $data);
+        $data = base64_decode($data);
+        Storage::put('public/media/posters/'.$id.'.png', $data);
+        return 'public/media/posters/'.$id.'.png';
+      } else {
+        return '';
+      }
     }
     public function like(Request $request){
       $notifyId = 0;
@@ -97,15 +83,8 @@ class MediaController extends Controller
         User::find($notifyId)->notify(new LikeReceived($like));
       return "OK";
     }
-    public function store(Request $request)
-    {
-    }
     public function edit(Request $request, $title)
     {
-        $data = $request->input('poster');
-        list($type, $data) = explode(';', $data);
-        list(, $data)      = explode(',', $data);
-        $data = base64_decode($data);
         $media = Media::where('id', '=' ,$title)->firstOrFail();
         $media->title = $request->input('title');
         $media->category_id = $request->input('category_id');
@@ -123,30 +102,9 @@ class MediaController extends Controller
         if(!empty($request->input('type'))){
           $media->type = $request->input('type');
         }
-        if(!empty($media->poster_source)){
-          Storage::delete($media->poster_source);
-        }
-        $media->poster_source = 'public/media/posters/'.$media->id.'.png';
-        Storage::put('public/media/posters/'.$media->id.'.png', $data);
+        $media->poster_source = $this->processPoster($media->id,$request->input('poster'));
         $media->save();
         return new MediaResource($media);
-    }
-    public function update(Request $request, $id)
-    {
-    }
-    public function tagsFilter(Request $request, $tags)
-    {
-        $tagArrayExtract = explode(' ', $tags);
-        $tagArray = array();
-        foreach($tagArrayExtract as $tag){
-          if(starts_with($tag, '#')){
-            array_push($tagArray, substr($tag,1));
-          } else {
-            array_push($tagArray, $tag);
-          }
-        }
-        $medias = Media::withAnyTag($tagArray)->get();
-        return view('tags.filter',compact('medias'));
     }
     public function destroy($id)
     {
