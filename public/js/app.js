@@ -3315,6 +3315,7 @@ var Media = function () {
     function Media(id, title, description, source, poster_source, duration, simpleType, techType, type, user, user_id, created_at, updated_at, created_at_readable, comments, tags, myLike, likes, dislikes, tracks, category_id) {
         this.id = id;
         this.title = title;
+        this.urlTitle = encodeURIComponent(this.title);
         this.description = description;
         this.source = source;
         this.poster_source = poster_source;
@@ -58762,7 +58763,7 @@ var siteManager = function () {
             if (tmpv.length > 0) {
                 console.log("got values!" + tmpv[0].title);
                 theVue.currentmedia = tmpv[0];
-                theVue.$router.push('/media/' + encodeURIComponent(tmpv[0].title));
+                theVue.$router.push('/media/' + tmpv[0].urlTitle);
                 that.nextMedias = that.nextVideosList(tmpv[0].id);
                 theVue.nextvideos = that.nextMedias;
                 if (theVue.nextvideos == null || theVue.nextvideos) {
@@ -58777,7 +58778,7 @@ var siteManager = function () {
                 that.loadMorePages(function () {
                     that.nextMedias = that.nextVideosList(id);
                     theVue.nextvideos = that.nextMedias;
-                    theVue.$router.push('/media/' + encodeURIComponent(theVue.nextvideos[0].title));
+                    theVue.$router.push('/media/' + theVue.nextvideos[0].urlTitle);
                     theVue.currentmedia = theVue.nextvideos[0];
                     theVue.nextvideos = that.nextVideosList(theVue.nextvideos[0].id);
                     if (theVue.nextvideos == null || theVue.nextvideos) {
@@ -83871,11 +83872,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(7);
  __webpack_exports__["default"] = ({
   props: ['item', 'loggeduserid'],
-  methods: {
-    emitRefreshMedias: function emitRefreshMedias() {
-      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshMedias', "");
-    }
-  },
+  methods: {},
   computed: {
     shorteneddescription: function shorteneddescription() {
       if (this.item.description.length > 83) {
@@ -83908,7 +83905,7 @@ var render = function() {
         "router-link",
         {
           staticClass: "d-block h-100",
-          attrs: { to: "/media/" + encodeURIComponent(_vm.item.title) }
+          attrs: { to: "/media/" + _vm.item.urlTitle }
         },
         [
           _c("img", {
@@ -84265,9 +84262,7 @@ var render = function() {
                                         attrs: {
                                           icon: "play_circle_filled",
                                           title: "Play",
-                                          to:
-                                            "/media/" +
-                                            encodeURIComponent(item.title)
+                                          to: "/media/" + item.urlTitle
                                         }
                                       })
                                     ],
@@ -84622,7 +84617,7 @@ var presets = __WEBPACK_IMPORTED_MODULE_6_butterchurn_presets___default.a.getPre
       var that = this;
       var theMedia = emptyMedia;
       this.medias.forEach(function (val, key) {
-        if (encodeURIComponent(val.title) == encodeURIComponent(that.$route.params.currentTitle)) {
+        if (val.urlTitle == encodeURIComponent(that.$route.params.currentTitle)) {
           theMedia = val;
         }
       });
@@ -92522,9 +92517,7 @@ var render = function() {
                             {
                               staticClass: "btn btn-sm btn-info float-right",
                               attrs: {
-                                to:
-                                  "/mediaedit/" +
-                                  encodeURIComponent(_vm.currentmedia.title)
+                                to: "/mediaedit/" + _vm.currentmedia.urlTitle
                               }
                             },
                             [_vm._v("Edit")]
@@ -95425,8 +95418,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       var that = this;
       var theMedia;
       this.medias.forEach(function (val, key) {
-        var t = val.title;
-        if (encodeURIComponent(t) == encodeURIComponent(that.$route.params.editTitle)) {
+        if (val.urlTitle == encodeURIComponent(that.$route.params.editTitle)) {
           theMedia = val;
           that.mediaType = val.type;
           that.catid = val.category_id;
@@ -97287,9 +97279,7 @@ var render = function() {
                   "router-link",
                   {
                     staticClass: "btn btn-sm btn-info float-left",
-                    attrs: {
-                      to: "/mediaedit/" + encodeURIComponent(item.title)
-                    }
+                    attrs: { to: "/mediaedit/" + item.urlTitle }
                   },
                   [_vm._v("Edit")]
                 ),
@@ -97546,10 +97536,8 @@ var render = function() {
                                     attrs: {
                                       to:
                                         "/media/" +
-                                        encodeURIComponent(
-                                          _vm.getMediaById2(item.data.media_id)
-                                            .title
-                                        )
+                                        _vm.getMediaById2(item.data.media_id)
+                                          .urlTitle
                                     }
                                   },
                                   [
@@ -97591,13 +97579,11 @@ var render = function() {
                                         attrs: {
                                           to:
                                             "/media/" +
-                                            encodeURIComponent(
-                                              _vm.getMediaById2(
-                                                _vm.getCommentById2(
-                                                  item.data.comment_id
-                                                ).media_id
-                                              ).title
-                                            )
+                                            _vm.getMediaById2(
+                                              _vm.getCommentById2(
+                                                item.data.comment_id
+                                              ).media_id
+                                            ).urlTitle
                                         }
                                       },
                                       [

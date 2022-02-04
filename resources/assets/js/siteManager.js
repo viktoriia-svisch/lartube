@@ -124,7 +124,7 @@ var siteManager =  (function () {
             if (tmpv.length > 0) {
                 console.log("got values!" + tmpv[0].title);
                 theVue.currentmedia = tmpv[0];
-                theVue.$router.push('/media/' + encodeURIComponent(tmpv[0].title));
+                theVue.$router.push('/media/' + tmpv[0].urlTitle);
                 that.nextMedias = that.nextVideosList(tmpv[0].id);
                 theVue.nextvideos = that.nextMedias;
                 if (theVue.nextvideos == null || theVue.nextvideos) {
@@ -140,7 +140,7 @@ var siteManager =  (function () {
                 that.loadMorePages(function () {
                     that.nextMedias = that.nextVideosList(id);
                     theVue.nextvideos = that.nextMedias;
-                    theVue.$router.push('/media/' + encodeURIComponent(theVue.nextvideos[0].title));
+                    theVue.$router.push('/media/' + theVue.nextvideos[0].urlTitle);
                     theVue.currentmedia = theVue.nextvideos[0];
                     theVue.nextvideos = that.nextVideosList(theVue.nextvideos[0].id);
                     if (theVue.nextvideos == null || theVue.nextvideos) {
