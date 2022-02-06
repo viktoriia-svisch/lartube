@@ -96,6 +96,10 @@ import { eventBus } from '../eventBus.js';
             eventBus.$emit('refreshMedia',this.currentmedia.id);
           },
           sendComment(id=''){
+            if(this.loggeduserid==0){
+              this.$vs.notify({title:'You can not comment',text:'Log in to like or comment',icon:'',color:'danger',position:'bottom-center'})
+              return
+            }
                                     $.ajax({
                 url: '/comment',
                 type: 'POST',
@@ -115,6 +119,10 @@ import { eventBus } from '../eventBus.js';
             });
           },
           like(comment,l,kind){
+            if(this.loggeduserid==0){
+              this.$vs.notify({title:'You can not vote',text:'Log in to like or comment',icon:'',color:'danger',position:'bottom-center'})
+              return
+            }
             let that = this;
                         if((kind=="like")){
               if(comment.myLike==-1){

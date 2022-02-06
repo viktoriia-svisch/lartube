@@ -89,9 +89,9 @@
   import { eventBus } from '../eventBus.js';
   import SingleGalleryField from './SingleGalleryField'
   import Comments from './Comments'
-  import MediaView from './MediaView'
+  import SingleMediaView from './SingleMediaView'
   import SortSelect from './SortSelect'
-    import { User, Media, Tag } from '../models';
+  import { User, Media, Tag } from '../models';
   import butterchurnPresets from 'butterchurn-presets';
   var emptyMedia = new Media(0,"None","","","","","","","",new User(0,"None","img/404/avatar.png","img/404/background.png","", "", {},false),"","","","","",0,0,0,[],0);
   const presets = butterchurnPresets.getPresets();
@@ -100,7 +100,7 @@
     components : {
         'singleField': SingleGalleryField,
         'comments': Comments,
-        'mediaView' : MediaView,
+        'mediaView' : SingleMediaView,
         'sortSelect': SortSelect
     },
     methods: {
@@ -123,10 +123,11 @@
           return val
         }
       },
-      emitBackClicked(title) {
-        eventBus.$emit('playerBackClick',title);
-      },
       like(l,kind){
+        if(this.loggeduserid==0){
+          this.$vs.notify({title:'You can not vote',text:'Log in to like or comment',icon:'',color:'danger',position:'bottom-center'})
+          return
+        }
         let that = this;
                 if((kind=="like")){
           if(this.mylike==-1){
@@ -155,8 +156,6 @@
             contentType: "application/json",
             cache: false,
             complete : function(res) {
-              console.log("completed")
-              console.log(l)
               that.mylike=l;
             }
         });
