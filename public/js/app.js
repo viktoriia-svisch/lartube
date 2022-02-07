@@ -78386,19 +78386,19 @@ var render = function() {
                     "vs-collapse",
                     {},
                     [
-                      _c("vs-collapse-item", [
-                        _c(
-                          "div",
-                          { attrs: { slot: "header" }, slot: "header" },
-                          [
-                            _c("vs-icon", { attrs: { icon: "reply" } }),
-                            _vm._v(" Reply\n                ")
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _vm.loggeduserid != 0
-                          ? _c(
+                      _vm.loggeduserid != 0
+                        ? _c("vs-collapse-item", [
+                            _c(
+                              "div",
+                              { attrs: { slot: "header" }, slot: "header" },
+                              [
+                                _c("vs-icon", { attrs: { icon: "reply" } }),
+                                _vm._v(" Reply\n                ")
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
                               "form",
                               {
                                 staticClass: "form-inline mb-1",
@@ -78456,8 +78456,8 @@ var render = function() {
                                 })
                               ]
                             )
-                          : _vm._e()
-                      ])
+                          ])
+                        : _vm._e()
                     ],
                     1
                   ),
