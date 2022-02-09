@@ -61,7 +61,7 @@
         </div>
       </div>
       <div class="comments col-sm-8 col-12 float-left">
-        <comments v-bind:level="'0'" v-bind:commentlist="currentmedia.comments" v-bind:loggeduserid="loggeduserid" v-bind:currentmedia="currentmedia"></comments>
+        <comments v-bind:csrf="csrf" v-bind:level="'0'" v-bind:commentlist="currentmedia.comments" v-bind:loggeduserid="loggeduserid" v-bind:currentmedia="currentmedia"></comments>
       </div>
       <div class="col-sm-4 col-12 float-right">
         <h4>Next videos</h4>
@@ -96,7 +96,7 @@
   var emptyMedia = new Media(0,"None","","","","","","","",new User(0,"None","img/404/avatar.png","img/404/background.png","", "", {},false),"","","","","",0,0,0,[],0);
   const presets = butterchurnPresets.getPresets();
   export default {
-    props: ['medias','baseUrl','loggeduserid','canloadmore','currentuser','nextvideos'],
+    props: ['medias','baseUrl','loggeduserid','canloadmore','currentuser','nextvideos','csrf'],
     components : {
         'singleField': SingleGalleryField,
         'comments': Comments,
@@ -151,12 +151,13 @@
         }
         this.mylike=l;
         $.ajax({
-            url: '/like?media_id='+this.currentmedia.id+'&count='+l,
+            url: '/like?media_id='+this.currentmedia.id+'&count='+l+'&_token='+that.csrf,
             type: 'GET',
             contentType: "application/json",
             cache: false,
             complete : function(res) {
               that.mylike=l;
+              eventBus.$emit('refreshMedia',comment.media_id);
             }
         });
       },

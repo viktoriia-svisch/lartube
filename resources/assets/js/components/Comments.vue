@@ -3,6 +3,7 @@
     <div v-if="level==0">
     <h4>Comments <a class="btn btn-sm" @click="refreshMedia()"><vs-icon icon="refresh"></vs-icon></a></h4>
     <form class="form-inline mb-1" id="commentForm" v-if="loggeduserid!=0">
+      <input type="hidden" name="_token" :value="csrf">
       <input id="medias_id" name="medias_id" type="hidden" :value="currentmedia.id">
       <input id="medias_title" name="medias_title" type="hidden" :value="currentmedia.title">
       <input id="parent_id" name="parent_id" type="hidden" value="0">
@@ -42,6 +43,7 @@
                     <vs-icon icon="reply"></vs-icon> Reply
                   </div>
                   <form class="form-inline mb-1" :id="'commentForm'+comment.id" >
+                    <input type="hidden" name="_token" :value="csrf">
                     <input id="medias_id" name="medias_id" type="hidden" :value="currentmedia.id">
                     <input id="medias_title" name="medias_title" type="hidden" :value="currentmedia.title">
                     <input id="parent_id" name="parent_id" type="hidden" :value="comment.id">
@@ -52,7 +54,7 @@
               </vs-collapse>
             </p>
             <div class="col-12">
-      <comments v-bind:commentlist="comment.childs" v-bind:level="Number(level)+1" v-bind:loggeduserid="loggeduserid" v-bind:currentmedia="currentmedia" ></comments>
+      <comments v-bind:csrf="csrf" v-bind:commentlist="comment.childs" v-bind:level="Number(level)+1" v-bind:loggeduserid="loggeduserid" v-bind:currentmedia="currentmedia" ></comments>
     </div>
           </div>
       </div>
@@ -62,7 +64,7 @@
 <script>
 import { eventBus } from '../eventBus.js';
   export default {
-    props: [ 'commentlist','loggeduserid','currentmedia','level'],
+    props: [ 'commentlist','loggeduserid','currentmedia','level','csrf'],
     name: 'comments',
         methods: {
           openConfirm(id){
@@ -76,7 +78,6 @@ import { eventBus } from '../eventBus.js';
             })
           },
           deleteComment() {
-            console.log(this.tmpid)
             let that = this;
             $.ajax({
                 url: '/internal-api/comment/'+this.tmpid,
@@ -145,11 +146,12 @@ import { eventBus } from '../eventBus.js';
               }
             }
             $.ajax({
-                url: '/like?comment_id='+comment.id+'&count='+l,
+                url: '/like?comment_id='+comment.id+'&count='+l+'&_token='+that.csrf,
                 type: 'GET',
                 contentType: "application/json",
                 cache: false,
                 complete : function(res) {
+                  eventBus.$emit('refreshMedia',comment.media_id);
                   comment.myLike=l;
                 }
             });

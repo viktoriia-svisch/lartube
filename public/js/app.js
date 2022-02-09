@@ -52037,12 +52037,12 @@ var siteManager = function () {
             theVue.medias = that.getFilteredMedias();
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('commentCreated', function (json) {
-            that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title);
+            that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).urlTitle);
             that.updateCSRF();
             theVue.alert("Comment created", "success");
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('refreshMedia', function (id) {
-            that.receiveMediaByName(that.findMediaById(Number(id)).title);
+            that.receiveMediaByName(that.findMediaById(Number(id)).urlTitle);
             that.updateCSRF();
             theVue.alert("Media refreshed", "success");
         });
@@ -52148,7 +52148,9 @@ var siteManager = function () {
             console.log("set current id");
             that.currentMediaId = id;
             that.nextMedias = that.nextVideosList(id);
-            theVue.nextvideos = that.nextMedias;
+            if (theVue != undefined) {
+                theVue.nextvideos = that.nextMedias;
+            }
         });
         theVue = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
             data: {
@@ -77763,7 +77765,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 var emptyMedia = new __WEBPACK_IMPORTED_MODULE_5__models__["b" ](0, "None", "", "", "", "", "", "", "", new __WEBPACK_IMPORTED_MODULE_5__models__["e" ](0, "None", "img/404/avatar.png", "img/404/background.png", "", "", {}, false), "", "", "", "", "", 0, 0, 0, [], 0);
 var presets = __WEBPACK_IMPORTED_MODULE_6_butterchurn_presets___default.a.getPresets();
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl', 'loggeduserid', 'canloadmore', 'currentuser', 'nextvideos'],
+  props: ['medias', 'baseUrl', 'loggeduserid', 'canloadmore', 'currentuser', 'nextvideos', 'csrf'],
   components: {
     'singleField': __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default.a,
     'comments': __WEBPACK_IMPORTED_MODULE_2__Comments___default.a,
@@ -77818,12 +77820,13 @@ var presets = __WEBPACK_IMPORTED_MODULE_6_butterchurn_presets___default.a.getPre
       }
       this.mylike = l;
       $.ajax({
-        url: '/like?media_id=' + this.currentmedia.id + '&count=' + l,
+        url: '/like?media_id=' + this.currentmedia.id + '&count=' + l + '&_token=' + that.csrf,
         type: 'GET',
         contentType: "application/json",
         cache: false,
         complete: function complete(res) {
           that.mylike = l;
+          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshMedia', comment.media_id);
         }
       });
     },
@@ -78030,7 +78033,7 @@ module.exports = Component.exports
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_0__eventBus_js__ = __webpack_require__(7);
  __webpack_exports__["default"] = ({
-  props: ['commentlist', 'loggeduserid', 'currentmedia', 'level'],
+  props: ['commentlist', 'loggeduserid', 'currentmedia', 'level', 'csrf'],
   name: 'comments',
   methods: {
     openConfirm: function openConfirm(id) {
@@ -78044,7 +78047,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       });
     },
     deleteComment: function deleteComment() {
-      console.log(this.tmpid);
       var that = this;
       $.ajax({
         url: '/internal-api/comment/' + this.tmpid,
@@ -78114,11 +78116,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
       }
       $.ajax({
-        url: '/like?comment_id=' + comment.id + '&count=' + l,
+        url: '/like?comment_id=' + comment.id + '&count=' + l + '&_token=' + that.csrf,
         type: 'GET',
         contentType: "application/json",
         cache: false,
         complete: function complete(res) {
+          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('refreshMedia', comment.media_id);
           comment.myLike = l;
         }
       });
@@ -78166,6 +78169,11 @@ var render = function() {
                     attrs: { id: "commentForm" }
                   },
                   [
+                    _c("input", {
+                      attrs: { type: "hidden", name: "_token" },
+                      domProps: { value: _vm.csrf }
+                    }),
+                    _vm._v(" "),
                     _c("input", {
                       attrs: {
                         id: "medias_id",
@@ -78406,6 +78414,11 @@ var render = function() {
                               },
                               [
                                 _c("input", {
+                                  attrs: { type: "hidden", name: "_token" },
+                                  domProps: { value: _vm.csrf }
+                                }),
+                                _vm._v(" "),
+                                _c("input", {
                                   attrs: {
                                     id: "medias_id",
                                     name: "medias_id",
@@ -78470,6 +78483,7 @@ var render = function() {
                     [
                       _c("comments", {
                         attrs: {
+                          csrf: _vm.csrf,
                           commentlist: comment.childs,
                           level: Number(_vm.level) + 1,
                           loggeduserid: _vm.loggeduserid,
@@ -85798,6 +85812,7 @@ var render = function() {
             [
               _c("comments", {
                 attrs: {
+                  csrf: _vm.csrf,
                   level: "0",
                   commentlist: _vm.currentmedia.comments,
                   loggeduserid: _vm.loggeduserid,
@@ -91015,9 +91030,30 @@ var render = function() {
     _c("h4", [_vm._v("Create category")]),
     _vm._v(" "),
     _c("form", { attrs: { id: "theForm" } }, [
-      _vm._m(0),
+      _c("div", { staticClass: "form-group row" }, [
+        _c("label", [_vm._v("Title")]),
+        _vm._v(" "),
+        _c("input", {
+          attrs: { type: "hidden", name: "_token" },
+          domProps: { value: _vm.csrf }
+        }),
+        _vm._v(" "),
+        _c("input", {
+          attrs: {
+            type: "hidden",
+            value: "",
+            name: "image",
+            id: "addMediaImage"
+          }
+        }),
+        _vm._v(" "),
+        _c("input", {
+          staticClass: "form-control",
+          attrs: { placeholder: "Media-title", name: "title", type: "text" }
+        })
+      ]),
       _vm._v(" "),
-      _vm._m(1),
+      _vm._m(0),
       _vm._v(" "),
       _c(
         "div",
@@ -91072,23 +91108,6 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row" }, [
-      _c("label", [_vm._v("Title")]),
-      _vm._v(" "),
-      _c("input", {
-        attrs: { type: "hidden", value: "", name: "image", id: "addMediaImage" }
-      }),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { placeholder: "Media-title", name: "title", type: "text" }
-      })
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement

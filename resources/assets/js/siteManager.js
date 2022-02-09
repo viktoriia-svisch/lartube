@@ -193,12 +193,12 @@ var siteManager =  (function () {
             theVue.medias = that.getFilteredMedias();
         });
         eventBus.$on('commentCreated', function (json) {
-            that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).title);
+            that.receiveMediaByName(that.findMediaById(Number(json.data.media_id)).urlTitle);
             that.updateCSRF();
             theVue.alert("Comment created", "success");
         });
         eventBus.$on('refreshMedia', function (id) {
-            that.receiveMediaByName(that.findMediaById(Number(id)).title);
+            that.receiveMediaByName(that.findMediaById(Number(id)).urlTitle);
             that.updateCSRF();
             theVue.alert("Media refreshed", "success");
         });
@@ -307,7 +307,9 @@ var siteManager =  (function () {
             console.log("set current id");
             that.currentMediaId = id;
             that.nextMedias = that.nextVideosList(id);
-            theVue.nextvideos = that.nextMedias;
+            if (theVue != undefined) {
+                theVue.nextvideos = that.nextMedias;
+            }
         });
         theVue = new Vue({
             data: {
