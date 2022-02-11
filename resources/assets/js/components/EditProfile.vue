@@ -131,22 +131,6 @@
         });
         return false;
       },
-      deleteAction() {
-        let that = this;
-        $.ajax({
-            url: '/internal-api/media/'+this.currentmedia.title,
-            type: 'DELETE',
-            cache: false,
-            contentType: false,
-            processData: false,
-            complete : function(res) {
-              if(res.status==200){
-              }
-              eventBus.$emit('videoDeleted',that.currentmedia.title);
-            }
-        });
-        return false;
-      },
 resultAvatar(output) {
     this.avatarCropped = output;
 },

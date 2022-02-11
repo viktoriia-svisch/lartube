@@ -16,15 +16,21 @@
         <label>Media-source:</label>
         <p>Direct mean you put a link from another server here. It needs to be a link, where you get the media, no html.</p>
          <input placeholder="https:         <span class="btn btn-primary" @click="testMedia()">Test link</span>
+         <span class="btn btn-primary" v-if="theTestMedia!=undefined" @click="durationTestMedia()">Add duration</span>
          <span class="btn btn-primary" v-if="theTestMedia!=undefined" @click="removeTestMedia()">Remove test</span>
     </div>
     <div v-if="mediaType=='torrentAudio'|mediaType=='torrentVideo'" class="form-group">
         <label>Torrent (magnet-link)</label>
         <p>A webtorrent magnet-link, for example from peertube-videos</p>
-         <input placeholder="magnet:         <span class="btn btn-primary" @click="testMedia()">Test link</span>
+         <input placeholder="magnet:         <span class="btn btn-primary" @click="testMedia()">Test link and extend infos</span>
+         <span class="btn btn-primary" v-if="theTestMedia!=undefined" @click="durationTestMedia()">Add duration</span>
          <span class="btn btn-primary" v-if="theTestMedia!=undefined" @click="removeTestMedia()">Remove test</span>
     </div>
     <mediaView v-bind:currentmedia="theTestMedia" v-if="theTestMedia!=undefined" v-bind:autoplay="false"></mediaView>
+    <div v-if="mediaType!='localAudio'&mediaType!='localVideo'" class="form-group">
+        <label>Duration:</label>
+        <input placeholder="00:00:00" class="form-control" id="duration" name="duration" type="text">
+    </div>
     <div class="form-group">
         <label>Media-poster:</label>
         <vue-croppie
@@ -46,10 +52,6 @@
           <label>Mediatitle</label>
           <input type="hidden" value="" name="image" id="addMediaImage" />
                <input placeholder="Media-title" class="form-control" name="title" type="text">
-      </div>
-      <div class="form-group">
-          <label>Category:</label>
-          <treeselect v-model="catid" name="category_id" :multiple="false" :options="treecatptions" />
       </div>
       <div class="form-group">
           <label>Media-description:</label>
@@ -77,11 +79,23 @@
         'mediaView' : SingleMediaView
     },
     mounted: function () {
+      let that = this;
       this.$refs.croppieRef.bind({
         url: '/img/404/image.png',
       })
+      eventBus.$on('playerSetDuration', duration => {
+        console.log("receive duration: "+this.secondsToHms(duration))
+        $("#duration").val(this.secondsToHms(duration))
+      });
     },
     methods: {
+      secondsToHms(d) {
+                d = Number(d);
+        var h = Math.floor(d / 3600);
+        var m = Math.floor(d % 3600 / 60);
+        var s = Math.floor(d % 3600 % 60);
+        return ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2);
+      },
       testMedia(){
         var techType;
         if(this.mediaType=="localAudio"||this.mediaType=="directAudio"){
@@ -91,10 +105,14 @@
         } else if(this.mediaType=="torrentAudio"||this.mediaType=="torrentVideo"){
           techType = "torrent";
         }
+        this.linkTested = true;
         this.theTestMedia = new Media(0,"None","",$("#source").val(),"","","",techType,this.mediaType,new User(0,"None","img/404/avatar.png","img/404/background.png","", "", {},false),"","","","","",0,0,0,[],0);
       },
       removeTestMedia(){
         this.theTestMedia = undefined;
+      },
+      durationTestMedia(){
+        eventBus.$emit('playerGetDuration','');
       },
       posterChange(){
         var reader = new FileReader();
@@ -110,23 +128,24 @@
     },
       submitAction() {
         let that = this;
+        if(this.linkTested==false){
+        }
         $.ajax({
           xhr: function() {
             var xhr = new window.XMLHttpRequest();
             xhr.upload.addEventListener("progress", function(evt) {
               if (evt.lengthComputable) {
                 var percentComplete = evt.loaded / evt.total;
-                console.log(percentComplete);
                 that.uploadPercent=percentComplete*100;
-                              }
+              }
             }, false);
             xhr.addEventListener("progress", function(evt) {
               if (evt.lengthComputable) {
                 var percentComplete = evt.loaded / evt.total;
                               }
             }, false);
-   return xhr;
-},
+            return xhr;
+          },
             url: '/media/create',
             type: 'POST',
             data: new FormData($("#theForm")[0]),
@@ -161,6 +180,7 @@ rotate(rotationAngle,event) {
       return {
         mediaType: '',
         catid:0,
+        linkTested:false,
         cropped: null,
         uploadPercent:-1,
         theTestMedia:undefined

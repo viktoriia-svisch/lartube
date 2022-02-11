@@ -20,6 +20,10 @@
           <label>Source:</label>
           <p>{{currentmedia.source}}</p>
         </div>
+        <div v-if="currentmedia.type!='localAudio'&currentmedia.type!='localVideo'" class="form-group row">
+            <label>Duration:</label>
+            <input placeholder="00:00:00" class="form-control" :value="currentmedia.duration" id="duration" name="duration" type="text">
+        </div>
         <div class="form-group row">
           <label>Media-poster:</label>
           <vue-croppie
@@ -120,12 +124,12 @@
         })
       },
       showModal () {
-  this.$refs.myModalRef.show()
-},
-hideModal () {
-  this.submitTrack();
-  this.$refs.myModalRef.hide()
-},
+        this.$refs.myModalRef.show()
+      },
+      hideModal () {
+        this.submitTrack();
+        this.$refs.myModalRef.hide()
+      },
       getCurrentMedia(){
         let that = this;
         var theMedia;

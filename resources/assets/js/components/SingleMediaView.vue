@@ -92,14 +92,9 @@
                       } else {
             that.initTorrentAfterRemove();
           }
-                                                    },
+      },
       initTorrentAfterRemove(){
         let that = this;
-        if(torrentInterval!=undefined){
-          if(theTorrent!=undefined){
-            console.log("torrent destroyed on init..")
-                                              }
-        }
         if(this.currentmedia.techType=="video"){
           this.inited=true
         }
@@ -221,7 +216,13 @@
     mounted(){
       let that = this;
       eventBus.$emit('setCurrentMedia',this.currentmedia.id);
-          eventBus.$on('audioVisualType', visArgs => {
+            eventBus.$on('playerGetDuration', title => {
+        console.log("player??")
+        console.log(that.player)
+        console.log(that.player.duration)
+        eventBus.$emit('playerSetDuration',that.player.duration);
+      });
+      eventBus.$on('audioVisualType', visArgs => {
         that.audiovisualtype = visArgs[0];
         this.audioVisualChangeSeconds = visArgs[1]
         if(visualizer!=undefined){
