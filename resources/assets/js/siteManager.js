@@ -68,6 +68,7 @@ var siteManager =  (function () {
         var notiComp = Vue.component('thesidebar', require("./components/Notifications.vue"));
         var ccComp = Vue.component('thesidebar', require("./components/CreateCategory.vue"));
         var ceComp = Vue.component('thesidebar', require("./components/EditCategory.vue"));
+        var singleCatComp = Vue.component('thesidebar', require("./components/Category.vue"));
         var that = this;
         var routes = [
             { path: '/', component: overview },
@@ -82,6 +83,7 @@ var siteManager =  (function () {
             { path: '/search', component: searchComp },
             { path: '/charts', component: chartsComp },
             { path: '/categories', component: catComp },
+            { path: '/category/:currentCat', component: singleCatComp },
             { path: '/editcat/:catId', component: ceComp },
             { path: '/newcat', component: ccComp },
             { path: '/about', component: aboutComp },

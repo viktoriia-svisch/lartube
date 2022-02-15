@@ -105,6 +105,7 @@ export class Tag {
 export class Category {
   id:number;
   title:string;
+  urlTitle:string;
   description:string;
   avatar:string;
   background:string;
@@ -114,6 +115,7 @@ export class Category {
   constructor(id:number,title:string,description:string,avatar:string,background:string,parent_id:number,children:any){
     this.id=id;
     this.title=title;
+    this.urlTitle = encodeURIComponent(this.title)
     this.description=description;
     this.avatar=avatar;
     this.background=background;
