@@ -56,6 +56,7 @@ class siteManager {
     });
     this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
     setInterval(this.updateCSRF, 1800000);
+    this.loadMorePages()
   }
   initVue(){
     Vue.use(Router)

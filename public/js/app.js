@@ -51938,6 +51938,7 @@ var siteManager = function () {
         this.receiveUsers(function () {});
         this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         setInterval(this.updateCSRF, 1800000);
+        this.loadMorePages();
     }
     siteManager.prototype.initVue = function () {
         var _this = this;
