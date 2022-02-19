@@ -51925,6 +51925,7 @@ var siteManager = function () {
         this.currentMediaId = 0;
         this.currentPage = 2;
         this.initing = true;
+        this.blockScrollExecution = false;
         baseUrl = base + "/";
         if (localStorage.getItem("mediaTypes") != '' && localStorage.getItem("mediaTypes") != null) {
             this.types = localStorage.getItem("mediaTypes").split(",");
@@ -51935,10 +51936,10 @@ var siteManager = function () {
         this.usedSearchTerms = [];
         this.nextMedias = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
+        this.updateCSRF();
         this.receiveUsers(function () {});
         this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         setInterval(this.updateCSRF, 1800000);
-        this.loadMorePages();
     }
     siteManager.prototype.initVue = function () {
         var _this = this;
@@ -52020,7 +52021,6 @@ var siteManager = function () {
                 }
             } else {
                 that.loadMorePages(function () {
-                    that.loadMorePagesByScroll();
                     that.nextMedias = that.nextVideosList(id);
                     theVue.nextvideos = that.nextMedias;
                     theVue.$router.push('/media/' + theVue.nextvideos[0].urlTitle);
@@ -52157,17 +52157,18 @@ var siteManager = function () {
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('loadMore', function (title) {
             that.loadMorePages();
         });
-        window.onscroll = function () {
-            var d = document.documentElement;
-            var offset = d.scrollTop + window.innerHeight;
-            var height = d.offsetHeight;
-            if (offset >= height) {
-                if (that.maxPage >= that.currentPage) {
-                    that.loadMorePages();
-                } else {
+        $(window).scroll(function () {
+            if ($(window).scrollTop() + $(window).height() > $(document).height() - 50) {
+                if (theVue.canloadmore && that.blockScrollExecution == false) {
+                    console.log("near bottom, do a request and block!");
+                    that.blockScrollExecution = true;
+                    that.loadMorePages(function () {
+                        console.log("done, allow next request");
+                        that.blockScrollExecution = false;
+                    });
                 }
             }
-        };
+        });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('refreshSearch', function (title) {
             theVue.searching();
         });
@@ -52200,6 +52201,7 @@ var siteManager = function () {
                 treecatptions: {},
                 fullmedias: that.medias,
                 csrf: that.csrf,
+                totalmedias: that.totalMedias,
                 currentuser: that.currentUser,
                 users: this.users,
                 loggeduserid: this.loggedUserId,
@@ -52308,6 +52310,7 @@ var siteManager = function () {
         }
     };
     siteManager.prototype.loadMorePagesByScroll = function () {
+        console.log("loadMorePagesByScroll");
         var d = document.documentElement;
         var offset = d.scrollTop + window.innerHeight;
         var height = d.offsetHeight;
@@ -52321,13 +52324,16 @@ var siteManager = function () {
         if (callback === void 0) {
             callback = undefined;
         }
-        if (this.maxPage >= this.currentPage) {
+        console.log("load more pages");
+        console.log(this.totalMedias);
+        console.log("vs");
+        console.log(this.medias.length);
+        if (this.totalMedias > this.medias.length) {
             this.receiveMedias('/internal-api/media?page=' + this.currentPage + this.getIgnoreParam(false), false, callback);
-            this.currentPage++;
-            if (this.currentPage > this.maxPage) {
-                console.log("end reached");
-                theVue.canloadmore = false;
-            } else {}
+            theVue.canloadmore = true;
+        } else {
+            console.log("end reached");
+            theVue.canloadmore = false;
         }
     };
     siteManager.prototype.getFilteredMedias = function (myList) {
@@ -52370,10 +52376,24 @@ var siteManager = function () {
         return comment;
     };
     siteManager.prototype.updateCSRF = function () {
-        $.get('/internal-api/refresh-csrf').done(function (data) {
-            this.csrf = data;
-            theVue.csrf = data;
-            $('meta[name="csrf-token"]').attr('content', data);
+        var that = this;
+        $.getJSON('/internal-api/refresh-csrf').done(function (data) {
+            that.csrf = data.csrf;
+            that.totalMedias = data.totalMedias;
+            if (theVue != undefined) {
+                console.log("update the vue total medias" + data.totalMedias);
+                theVue.csrf = data.csrf;
+                theVue.totalmedias = data.totalMedias;
+                if (that.totalMedias > that.medias.length) {
+                    theVue.canloadmore = true;
+                }
+            }
+            $('meta[name="csrf-token"]').attr('content', data.csrf);
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': data.csrf
+                }
+            });
         });
     };
     siteManager.prototype.receiveUsers = function (callback) {
@@ -52432,7 +52452,7 @@ var siteManager = function () {
         $.each(this.medias, function (key, value) {
             content += "," + value.id;
         });
-        return content;
+        return content + "&types=" + this.types.join();
     };
     siteManager.prototype.mkTreeCat = function (data, l) {
         if (l === void 0) {
@@ -52864,9 +52884,9 @@ var siteManager = function () {
                     console.log("check for new notifications");
                     that.receiveNotifications();
                 }, 120000);
+                that.updateCSRF();
             }
             theVue.users = that.users;
-            theVue.categories = that.categories;
             if (that.treecatptions != undefined) {
                 theVue.treecatptions = that.treecatptions;
             }
@@ -89484,7 +89504,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadAllMedias', "");
     }
   },
-  props: ['notifications', 'currentuser', 'medias', 'users', 'tags', 'csrf'],
+  props: ['notifications', 'currentuser', 'medias', 'users', 'tags', 'csrf', 'totalmedias'],
   computed: {},
   watch: {
     dataTypes: function dataTypes(val) {
@@ -89711,21 +89731,6 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _c("vs-navbar-item", { attrs: { index: "6.1" } }, [
-            _c(
-              "a",
-              {
-                staticStyle: { cursor: "pointer" },
-                on: {
-                  click: function($event) {
-                    _vm.emitLoadAllMedias()
-                  }
-                }
-              },
-              [_vm._v("Load all medias")]
-            )
-          ]),
-          _vm._v(" "),
           _c(
             "vs-navbar-item",
             { attrs: { index: "4" } },
@@ -89772,13 +89777,22 @@ var render = function() {
             "vs-sidebar-group",
             { attrs: { title: "Dev options" } },
             [
-              _c("p", [_vm._v("Medias loaded: " + _vm._s(_vm.medias.length))]),
-              _vm._v(" "),
-              _c("p", [_vm._v("Users loaded: " + _vm._s(_vm.users.length))]),
-              _vm._v(" "),
-              _c("p", [_vm._v("Tags loaded: " + _vm._s(_vm.tags.length))]),
-              _vm._v(" "),
               _c("vs-navbar-item", { attrs: { index: "6.1" } }, [
+                _c(
+                  "a",
+                  {
+                    staticStyle: { cursor: "pointer" },
+                    on: {
+                      click: function($event) {
+                        _vm.emitLoadAllMedias()
+                      }
+                    }
+                  },
+                  [_vm._v("Load all medias")]
+                )
+              ]),
+              _vm._v(" "),
+              _c("vs-navbar-item", { attrs: { index: "6.2" } }, [
                 _c(
                   "a",
                   {
@@ -89791,7 +89805,13 @@ var render = function() {
                   },
                   [_vm._v("Reset data")]
                 )
-              ])
+              ]),
+              _vm._v(" "),
+              _c("p", [_vm._v("Medias loaded: " + _vm._s(_vm.medias.length))]),
+              _vm._v(" "),
+              _c("p", [_vm._v("Users loaded: " + _vm._s(_vm.users.length))]),
+              _vm._v(" "),
+              _c("p", [_vm._v("Tags loaded: " + _vm._s(_vm.tags.length))])
             ],
             1
           ),

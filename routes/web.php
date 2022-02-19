@@ -66,7 +66,21 @@ Route::get('/internal-api/notifications/delete', function (Request $request) {
   return Auth::user()->notifications->toJson();
 });
 Route::get('/internal-api/media', function (Request $request) {
-  return MediaResource::collection(Media::orderBy('updated_at', 'desc')->paginate(3));
+    $types = explode(",",$request->input('types'));
+    $tArr = [];
+    foreach($types as $type){
+      if($type=="audio"){
+        $tArr = array_merge($tArr,['localAudio','torrentAudio','directAudio']);
+      }
+      if($type=="video"){
+        $tArr = array_merge($tArr,['localVideo','torrentVideo','directVideo']);
+      }
+    }
+    $res = Media::orderBy('updated_at', 'desc')->whereIn('type', $tArr)->whereNotIn('id', explode(",",$request->input('i')))->limit(3)->get();
+    if(empty($res->count())){
+      $res = Media::orderBy('updated_at', 'desc')->whereNotIn('id', explode(",",$request->input('i')))->limit(3)->get();
+    }
+  return MediaResource::collection($res);
 });
 Route::get('/internal-api/medias/all', function (Request $request) {
     return MediaResource::collection(Media::orderBy('created_at', 'desc')->whereNotIn('id', explode(",",$request->input('i')))->get());
@@ -99,7 +113,7 @@ Route::delete('/internal-api/category/{id}','CategoryController@destroy');
 Route::post('/internal-api/medias/addTrack','MediaController@addTrack');
 Route::post('/internal-api/medias/deleteTrack/{trackid}','MediaController@deleteTrack');
 Route::get('/internal-api/refresh-csrf', function(){
-    return csrf_token();
+  return response()->json(["csrf"=>csrf_token(),"totalMedias"=>Media::count()],200);
 });
 Route::get('/internal-api/users', function () {
   return UserResource::collection(User::all());
