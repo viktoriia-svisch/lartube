@@ -17,17 +17,27 @@
             </span>
             <a :href="torrentdownloadurl" v-b-modal.torrentmodal class="mr-1" v-if="torrentdownloadurl!=''&(currentmedia.techType=='torrent')" >Download file</a>
             <b-btn v-b-modal.torrentmodal class="mr-1" v-if="currentmedia.techType=='torrent'" >Torrent-info</b-btn>
-            <span class="btn btn-sm btn-info mr-1">{{ currentmedia.created_at_readable }}</span>
+            <span id="created_at" class="btn btn-sm btn-info mr-1">{{ currentmedia.created_at_readable }}</span>
             <span class="btn btn-sm btn-info mr-1">{{ currentmedia.type }}</span>
+            <router-link id="category" :to="'/category/'+currentCat.urlTitle" v-if="currentCat!=undefined" class="btn btn-sm btn-info mr-1">{{ currentCat.title }}</router-link>
+            <span v-else class="btn btn-sm btn-warning mr-1">No category</span>
             <router-link class="btn btn-sm btn-primary" :to="'/profile/'+currentmedia.user.id">
               <div id="userAvatar" :text="currentmedia.user.name">
                 <img v-if="currentmedia.user.avatar==''" class="mx-auto rounded-circle img-fluid" src="/img/404/avatar.png" alt="avatar" style="max-height: 20px;" />
                 <img v-else class="mx-auto rounded-circle img-fluid" :src="'/'+currentmedia.user.avatar" alt="avatar" style="max-height: 20px;" />
               </div>
-              <b-tooltip target="userAvatar" placement="top">
-                <h5>{{ currentmedia.user.name }}</h5>
-              </b-tooltip>
             </router-link>
+            <b-tooltip target="userAvatar" placement="top">
+              <p>Uploaded by {{ currentmedia.user.name }}</p>
+            </b-tooltip>
+            <b-tooltip target="created_at" placement="top">
+              <p>Created at {{ currentmedia.created_at.date }}</p>
+              <p>Updated at {{ currentmedia.updated_at.date }}</p>
+            </b-tooltip>
+            <b-tooltip target="category" v-if="currentCat!=undefined" placement="top">
+              <h5>{{ currentCat.title }}</h5>
+              <p>{{ currentCat.description }}</p>
+            </b-tooltip>
             <button id="like" v-if="mylike==1" type="button" @click="like(0,'like')" class="btn btn-sm btn-success">
               <vs-icon icon="thumb_up"></vs-icon>
               <span class="ml-1" id="likeCount">{{ likes }}</span>
@@ -96,7 +106,7 @@
   var emptyMedia = new Media(0,"None","","","","","","","",new User(0,"None","img/404/avatar.png","img/404/background.png","", "", {},false),"","","","","",0,0,0,[],0);
   const presets = butterchurnPresets.getPresets();
   export default {
-    props: ['medias','baseUrl','loggeduserid','canloadmore','currentuser','nextvideos','csrf'],
+    props: ['medias','baseUrl','loggeduserid','canloadmore','currentuser','nextvideos','csrf','categories'],
     components : {
         'singleField': SingleGalleryField,
         'comments': Comments,
@@ -104,6 +114,28 @@
         'sortSelect': SortSelect
     },
     methods: {
+      getCategoryById(category_id,data=undefined){
+        var res;
+        let that = this;
+        var idata = this.categories
+        console.log("search for id")
+        console.log(category_id)
+        if(data!=undefined){
+          idata = data
+        }
+        $.each( idata, function( key, value ) {
+          if(value.children.length>0){
+            var t = that.getCategoryById(category_id,value.children)
+            if(t!=undefined){
+              res = t;
+            }
+          }
+          if(value.id==category_id){
+            res = value;
+          }
+        });
+        return res;
+      },
       nextVisual(){
         let e = $( "#visualList option:selected" )
         e.prop('selected', false);
@@ -170,6 +202,7 @@
           this.medias.forEach(function(val,key){
             if(val.urlTitle==encodeURIComponent(that.$route.params.currentTitle)){
               theMedia = val;
+              that.currentCat = that.getCategoryById(val.category_id)
             }
           });
           if(theMedia==emptyMedia){
@@ -180,6 +213,8 @@
         }
     },
     watch: {
+      categories:function(val){
+      },
       autoplay:function(val){
         localStorage.setItem('autoplay',String(this.autoplay));
       },
@@ -215,7 +250,7 @@
         if(this.inited==false){
           this.inited=true;
           this.currentmedia = this.getCurrentMedia();
-          this.mylike = Number(this.currentmedia.myLike);
+                    this.mylike = Number(this.currentmedia.myLike);
           this.likes = this.currentmedia.likes;
           this.dislikes = this.currentmedia.dislikes;
         }
@@ -256,6 +291,7 @@
       dislikes:0,
       inited: false,
       peers: '',
+      currentCat: undefined,
       data:'',
       currentmedia:emptyMedia,
       originalLikes: 0,

@@ -52472,6 +52472,7 @@ var siteManager = function () {
         });
         return result;
     };
+    siteManager.prototype.resolveMediaCategorys = function () {};
     siteManager.prototype.receiveCategories = function (callback) {
         if (callback === void 0) {
             callback = undefined;
@@ -52539,11 +52540,48 @@ var siteManager = function () {
         });
         return ma;
     };
-    siteManager.prototype.getCategoryKey = function (category_id) {
+    siteManager.prototype.getCategoryKey = function (category_id, data) {
+        if (data === void 0) {
+            data = undefined;
+        }
         var res;
-        $.each(this.categories, function (key, value) {
+        var that = this;
+        var idata = this.categories;
+        if (data != undefined) {
+            idata = data;
+        }
+        $.each(idata, function (key, value) {
+            if (value.children.length > 0) {
+                var t = that.getCategoryKey(category_id, value.children);
+                if (t != undefined) {
+                    res = t;
+                }
+            }
             if (value.id == category_id) {
                 res = key;
+            }
+        });
+        return res;
+    };
+    siteManager.prototype.getCategoryById = function (category_id, data) {
+        if (data === void 0) {
+            data = undefined;
+        }
+        var res;
+        var that = this;
+        var idata = this.categories;
+        if (data != undefined) {
+            idata = data;
+        }
+        $.each(idata, function (key, value) {
+            if (value.children.length > 0) {
+                var t = that.getCategoryById(category_id, value.children);
+                if (t != undefined) {
+                    res = t;
+                }
+            }
+            if (value.id == category_id) {
+                res = value;
             }
         });
         return res;
@@ -77423,6 +77461,7 @@ var render = function() {
               [
                 _c("div", { staticClass: "text-center" }, [
                   _c("img", {
+                    staticStyle: { width: "100%" },
                     attrs: { src: item.poster_source, alt: item.title }
                   })
                 ]),
@@ -77445,7 +77484,7 @@ var render = function() {
                               type: "flex",
                               "vs-justify": "center",
                               "vs-align": "center",
-                              "vs-w": "6"
+                              "vs-w": "10"
                             }
                           },
                           [
@@ -77819,7 +77858,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 var emptyMedia = new __WEBPACK_IMPORTED_MODULE_5__models__["b" ](0, "None", "", "", "", "", "", "", "", new __WEBPACK_IMPORTED_MODULE_5__models__["e" ](0, "None", "img/404/avatar.png", "img/404/background.png", "", "", {}, false), "", "", "", "", "", 0, 0, 0, [], 0);
 var presets = __WEBPACK_IMPORTED_MODULE_6_butterchurn_presets___default.a.getPresets();
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl', 'loggeduserid', 'canloadmore', 'currentuser', 'nextvideos', 'csrf'],
+  props: ['medias', 'baseUrl', 'loggeduserid', 'canloadmore', 'currentuser', 'nextvideos', 'csrf', 'categories'],
   components: {
     'singleField': __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default.a,
     'comments': __WEBPACK_IMPORTED_MODULE_2__Comments___default.a,
@@ -77827,6 +77866,29 @@ var presets = __WEBPACK_IMPORTED_MODULE_6_butterchurn_presets___default.a.getPre
     'sortSelect': __WEBPACK_IMPORTED_MODULE_4__SortSelect___default.a
   },
   methods: {
+    getCategoryById: function getCategoryById(category_id) {
+      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+      var res;
+      var that = this;
+      var idata = this.categories;
+      console.log("search for id");
+      console.log(category_id);
+      if (data != undefined) {
+        idata = data;
+      }
+      $.each(idata, function (key, value) {
+        if (value.children.length > 0) {
+          var t = that.getCategoryById(category_id, value.children);
+          if (t != undefined) {
+            res = t;
+          }
+        }
+        if (value.id == category_id) {
+          res = value;
+        }
+      });
+      return res;
+    },
     nextVisual: function nextVisual() {
       var e = $("#visualList option:selected");
       e.prop('selected', false);
@@ -77893,6 +77955,7 @@ var presets = __WEBPACK_IMPORTED_MODULE_6_butterchurn_presets___default.a.getPre
       this.medias.forEach(function (val, key) {
         if (val.urlTitle == encodeURIComponent(that.$route.params.currentTitle)) {
           theMedia = val;
+          that.currentCat = that.getCategoryById(val.category_id);
         }
       });
       if (theMedia == emptyMedia) {
@@ -77903,6 +77966,7 @@ var presets = __WEBPACK_IMPORTED_MODULE_6_butterchurn_presets___default.a.getPre
     }
   },
   watch: {
+    categories: function categories(val) {},
     autoplay: function autoplay(val) {
       localStorage.setItem('autoplay', String(this.autoplay));
     },
@@ -77979,6 +78043,7 @@ var presets = __WEBPACK_IMPORTED_MODULE_6_butterchurn_presets___default.a.getPre
       dislikes: 0,
       inited: false,
       peers: '',
+      currentCat: undefined,
       data: '',
       currentmedia: emptyMedia,
       originalLikes: 0,
@@ -85649,13 +85714,36 @@ var render = function() {
                       )
                     : _vm._e(),
                   _vm._v(" "),
-                  _c("span", { staticClass: "btn btn-sm btn-info mr-1" }, [
-                    _vm._v(_vm._s(_vm.currentmedia.created_at_readable))
-                  ]),
+                  _c(
+                    "span",
+                    {
+                      staticClass: "btn btn-sm btn-info mr-1",
+                      attrs: { id: "created_at" }
+                    },
+                    [_vm._v(_vm._s(_vm.currentmedia.created_at_readable))]
+                  ),
                   _vm._v(" "),
                   _c("span", { staticClass: "btn btn-sm btn-info mr-1" }, [
                     _vm._v(_vm._s(_vm.currentmedia.type))
                   ]),
+                  _vm._v(" "),
+                  _vm.currentCat != undefined
+                    ? _c(
+                        "router-link",
+                        {
+                          staticClass: "btn btn-sm btn-info mr-1",
+                          attrs: {
+                            id: "category",
+                            to: "/category/" + _vm.currentCat.urlTitle
+                          }
+                        },
+                        [_vm._v(_vm._s(_vm.currentCat.title))]
+                      )
+                    : _c(
+                        "span",
+                        { staticClass: "btn btn-sm btn-warning mr-1" },
+                        [_vm._v("No category")]
+                      ),
                   _vm._v(" "),
                   _c(
                     "router-link",
@@ -85691,16 +85779,53 @@ var render = function() {
                                 }
                               })
                         ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "b-tooltip",
-                        { attrs: { target: "userAvatar", placement: "top" } },
-                        [_c("h5", [_vm._v(_vm._s(_vm.currentmedia.user.name))])]
                       )
-                    ],
-                    1
+                    ]
                   ),
+                  _vm._v(" "),
+                  _c(
+                    "b-tooltip",
+                    { attrs: { target: "userAvatar", placement: "top" } },
+                    [
+                      _c("p", [
+                        _vm._v(
+                          "Uploaded by " + _vm._s(_vm.currentmedia.user.name)
+                        )
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "b-tooltip",
+                    { attrs: { target: "created_at", placement: "top" } },
+                    [
+                      _c("p", [
+                        _vm._v(
+                          "Created at " +
+                            _vm._s(_vm.currentmedia.created_at.date)
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("p", [
+                        _vm._v(
+                          "Updated at " +
+                            _vm._s(_vm.currentmedia.updated_at.date)
+                        )
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _vm.currentCat != undefined
+                    ? _c(
+                        "b-tooltip",
+                        { attrs: { target: "category", placement: "top" } },
+                        [
+                          _c("h5", [_vm._v(_vm._s(_vm.currentCat.title))]),
+                          _vm._v(" "),
+                          _c("p", [_vm._v(_vm._s(_vm.currentCat.description))])
+                        ]
+                      )
+                    : _vm._e(),
                   _vm._v(" "),
                   _vm.mylike == 1
                     ? _c(
