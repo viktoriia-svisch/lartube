@@ -52103,7 +52103,7 @@ var siteManager = function () {
             theVue.alert("Media load by comment", "success");
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('loadMedia', function (title) {
-            that.receiveMediaByName(title, function (id) {
+            that.receiveMediaByName(encodeURIComponent(title), function (id) {
                 that.updateCSRF();
                 if (theVue != undefined) {
                     if (theVue.$route.params.currentTitle != undefined) {
@@ -52815,7 +52815,7 @@ var siteManager = function () {
         var returnMedia = undefined;
         var that = this;
         $.each(that.medias, function (key, value) {
-            if (value.title == mediaName) {
+            if (value.urlTitle == mediaName) {
                 returnMedia = value;
             }
         });
@@ -52951,7 +52951,7 @@ var siteManager = function () {
             }
             if (theVue.$route.params.editTitle != undefined) {
                 if (that.findMediaByName(theVue.$route.params.editTitle) == undefined) {
-                    that.receiveMediaByName(theVue.$route.params.editTitle, function (id) {
+                    that.receiveMediaByName(encodeURIComponent(theVue.$route.params.editTitle), function (id) {
                         that.currentMediaId = id;
                     });
                 }
