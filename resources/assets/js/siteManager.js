@@ -569,7 +569,7 @@ var siteManager =  (function () {
         $.each(this.medias, function (key, value) {
             content += "," + value.id;
         });
-        return content + "&types=" + this.types.join();
+        return content + "&types=" + this.types.join() + "&sortBy=" + theMediaSorter.sortBy;
     };
     siteManager.prototype.mkTreeCat = function (data, l) {
         if (l === void 0) { l = 0; }
