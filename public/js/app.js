@@ -52198,7 +52198,7 @@ var siteManager = function () {
                 search: '',
                 nextvideos: [],
                 notifications: [],
-                treecatptions: {},
+                treecatptions: undefined,
                 fullmedias: that.medias,
                 csrf: that.csrf,
                 totalmedias: that.totalMedias,
@@ -90055,9 +90055,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__ = __webpack_require__(25);
  var __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__SingleGalleryField__);
  __webpack_exports__["default"] = ({
-  props: ['medias', 'baseUrl', 'canloadmore', 'loggeduserid', 'categories', 'catlevel', 'currentuser'],
-  name: 'cat',
+  props: ['medias', 'baseUrl', 'canloadmore', 'loggeduserid', 'categories', 'catlevel', 'currentuser', 'treecatptions'],
+  name: 'categoriesTag',
+  watch: {
+    catids: function catids(val) {}
+  },
   methods: {
+    emitLoadMore: function emitLoadMore() {
+      __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadMore', '');
+    },
+    isIdIncluded: function isIdIncluded(id) {
+      var ret = false;
+      this.catids.forEach(function (val, key) {
+        if (val == id) {
+          ret = true;
+        }
+      });
+      return ret;
+    },
     deleteAction: function deleteAction(id) {
       var that = this;
       $.ajax({
@@ -90077,6 +90092,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   components: {
     'singleField': __WEBPACK_IMPORTED_MODULE_1__SingleGalleryField___default.a
+  },
+  data: function data() {
+    return {
+      catids: []
+    };
   }
 });
  }),
@@ -90085,101 +90105,175 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _vm.catlevel == 0 && _vm.currentuser.admin
-      ? _c(
-          "p",
-          [
-            _c(
-              "router-link",
-              {
-                staticClass: "btn btn-warning btn-sm",
-                attrs: { to: "/newcat/" }
-              },
-              [
-                _c("vs-icon", { attrs: { icon: "create" } }),
-                _vm._v("Create\n    ")
-              ],
-              1
-            )
-          ],
-          1
-        )
-      : _vm._e(),
-    _vm._v(" "),
-    _c(
-      "ul",
+  return _c(
+    "div",
+    [
+      _vm.catlevel == 0
+        ? _c(
+            "p",
+            { staticClass: "float-left col-4" },
+            [
+              _vm.currentuser.admin
+                ? _c(
+                    "router-link",
+                    {
+                      staticClass: "btn btn-warning btn-sm",
+                      attrs: { to: "/newcat/" }
+                    },
+                    [
+                      _c("vs-icon", { attrs: { icon: "create" } }),
+                      _vm._v("Create\n    ")
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.treecatptions != undefined
+                ? _c("treeselect", {
+                    attrs: {
+                      multiple: true,
+                      "always-open": true,
+                      name: "parent_id",
+                      options: _vm.treecatptions
+                    },
+                    model: {
+                      value: _vm.catids,
+                      callback: function($$v) {
+                        _vm.catids = $$v
+                      },
+                      expression: "catids"
+                    }
+                  })
+                : _vm._e()
+            ],
+            1
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c("p", { staticClass: "float-right col-8" }),
       _vm._l(_vm.categories, function(cat) {
-        return _c(
-          "li",
-          [
-            _c("router-link", { attrs: { to: "/category/" + cat.urlTitle } }, [
-              _vm._v(_vm._s(cat.title))
-            ]),
-            _vm._v(" "),
-            _vm.currentuser.admin
-              ? _c(
-                  "p",
-                  [
-                    _c(
-                      "router-link",
-                      {
-                        staticClass: "btn btn-warning btn-sm mr-1",
-                        attrs: { to: "/editcat/" + cat.id }
-                      },
+        return _vm.isIdIncluded(cat.id)
+          ? _c(
+              "div",
+              { staticClass: "float-right col-8" },
+              [
+                _vm.currentuser.admin
+                  ? _c(
+                      "span",
+                      { staticClass: "text-right float-right" },
                       [
-                        _c("vs-icon", { attrs: { icon: "edit" } }),
-                        _vm._v("Edit")
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-danger btn-sm",
-                        on: {
-                          click: function($event) {
-                            _vm.deleteAction(cat.id)
-                          }
-                        }
-                      },
-                      [
-                        _c("vs-icon", { attrs: { icon: "delete" } }),
-                        _vm._v("Delete")
+                        _c(
+                          "router-link",
+                          {
+                            staticClass: "btn btn-warning btn-sm mr-1",
+                            attrs: { to: "/editcat/" + cat.id }
+                          },
+                          [
+                            _c("vs-icon", { attrs: { icon: "edit" } }),
+                            _vm._v("Edit")
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-danger btn-sm",
+                            on: {
+                              click: function($event) {
+                                _vm.deleteAction(cat.id)
+                              }
+                            }
+                          },
+                          [
+                            _c("vs-icon", { attrs: { icon: "delete" } }),
+                            _vm._v("Delete")
+                          ],
+                          1
+                        )
                       ],
                       1
                     )
+                  : _vm._e(),
+                _vm._v(" "),
+                _c(
+                  "h5",
+                  [
+                    _c(
+                      "router-link",
+                      { attrs: { to: "/category/" + cat.urlTitle } },
+                      [_vm._v(_vm._s(cat.title))]
+                    )
                   ],
                   1
-                )
-              : _vm._e(),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "ml-3" },
-              [
-                cat.children.length > 0 ? _c("p", [_vm._v("Subs")]) : _vm._e(),
+                ),
+                _vm._v(" "),
+                _c("p", [_vm._v(_vm._s(cat.description))]),
                 _vm._v(" "),
                 cat.children.length > 0
-                  ? _c("cat", {
-                      attrs: {
-                        catlevel: Number(_vm.catlevel) + 1,
-                        currentuser: _vm.currentuser,
-                        categories: cat.children
-                      }
-                    })
-                  : _vm._e()
+                  ? _c("p", [_vm._v("Subcategories")])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm._l(cat.children, function(subcat) {
+                  return cat.children.length > 0
+                    ? _c(
+                        "p",
+                        [
+                          _c(
+                            "router-link",
+                            { attrs: { to: "/category/" + subcat.urlTitle } },
+                            [_vm._v(_vm._s(subcat.title))]
+                          )
+                        ],
+                        1
+                      )
+                    : _vm._e()
+                }),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "row text-center" },
+                  _vm._l(cat.medias, function(media) {
+                    return _c(
+                      "div",
+                      { staticClass: "col-lg-6 col-md-6 col-xs-6" },
+                      [
+                        _c("singleField", {
+                          attrs: { item: media, loggeduserid: _vm.loggeduserid }
+                        })
+                      ],
+                      1
+                    )
+                  }),
+                  0
+                ),
+                _vm._v(" "),
+                _c("vs-divider", { attrs: { color: "primary", icon: "" } })
               ],
-              1
+              2
             )
-          ],
-          1
-        )
+          : _vm._e()
       }),
-      0
-    )
-  ])
+      _vm._v(" "),
+      _vm.canloadmore
+        ? _c(
+            "p",
+            {
+              staticClass: "float-right col-8 btn-block btn-sm btn btn-info",
+              on: {
+                click: function($event) {
+                  _vm.emitLoadMore()
+                }
+              }
+            },
+            [_vm._v("Scroll down or click to load more")]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c("p")
+    ],
+    2
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -91698,17 +91792,27 @@ var render = function() {
           _vm._v(" "),
           _c("p", [_vm._v(_vm._s(_vm.theCat.description))]),
           _vm._v(" "),
-          _vm.theCat.children.length > 0 ? _c("p", [_vm._v("Subs")]) : _vm._e(),
-          _vm._v(" "),
           _vm.theCat.children.length > 0
-            ? _c("cat", {
-                attrs: {
-                  catlevel: Number(_vm.catlevel) + 1,
-                  categories: _vm.theCat.children,
-                  currentuser: _vm.currentuser
-                }
-              })
+            ? _c("p", [_vm._v("Subcategories")])
             : _vm._e(),
+          _vm._v(" "),
+          _vm._l(_vm.theCat.children, function(subcat) {
+            return _vm.theCat.children.length > 0
+              ? _c(
+                  "p",
+                  [
+                    _c(
+                      "router-link",
+                      { attrs: { to: "/category/" + subcat.urlTitle } },
+                      [_vm._v(_vm._s(subcat.title))]
+                    )
+                  ],
+                  1
+                )
+              : _vm._e()
+          }),
+          _vm._v(" "),
+          _c("h5", [_vm._v("Medias")]),
           _vm._v(" "),
           _c(
             "div",
@@ -91728,7 +91832,7 @@ var render = function() {
             0
           )
         ],
-        1
+        2
       )
     : _vm._e()
 }

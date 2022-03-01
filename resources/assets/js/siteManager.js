@@ -322,7 +322,7 @@ var siteManager =  (function () {
                 search: '',
                 nextvideos: [],
                 notifications: [],
-                treecatptions: {},
+                treecatptions: undefined,
                 fullmedias: that.medias,
                 csrf: that.csrf,
                 totalmedias: that.totalMedias,
