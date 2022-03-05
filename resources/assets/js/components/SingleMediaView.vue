@@ -188,10 +188,18 @@
     if((this.currentmedia!=undefined)&&(this.inited==false)){
             eventBus.$emit('setCurrentMedia',this.currentmedia.id);
       this.initTorrent()
-      if(this.autoplay){
-        this.player.play();
-            }
       let that = this;
+      if(this.currentmedia.type=="torrentAudio"||this.currentmedia.type=="torrentVideo"){
+        setTimeout(function(){
+          if(that.autoplay){
+            that.player.play();
+                      }
+        }, 3000);
+      } else {
+        if(that.autoplay){
+          that.player.play();
+        }
+      }
       this.player.on('ended', () => {
         if(that.autoplay){
           console.log('movie ended')

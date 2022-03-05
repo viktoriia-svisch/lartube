@@ -78797,10 +78797,18 @@ var presets = __WEBPACK_IMPORTED_MODULE_3_butterchurn_presets___default.a.getPre
       if (this.currentmedia != undefined && this.inited == false) {
         __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('setCurrentMedia', this.currentmedia.id);
         this.initTorrent();
-        if (this.autoplay) {
-          this.player.play();
-        }
         var that = this;
+        if (this.currentmedia.type == "torrentAudio" || this.currentmedia.type == "torrentVideo") {
+          setTimeout(function () {
+            if (that.autoplay) {
+              that.player.play();
+            }
+          }, 3000);
+        } else {
+          if (that.autoplay) {
+            that.player.play();
+          }
+        }
         this.player.on('ended', function () {
           if (that.autoplay) {
             console.log('movie ended');
