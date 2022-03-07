@@ -51921,9 +51921,7 @@ var searchDelay;
 var theMediaSorter = new __WEBPACK_IMPORTED_MODULE_5__tools__["a" ]();
 var siteManager = function () {
     function siteManager(base) {
-        this.maxPage = -1;
         this.currentMediaId = 0;
-        this.currentPage = 2;
         this.initing = true;
         this.blockScrollExecution = false;
         baseUrl = base + "/";
@@ -51934,6 +51932,7 @@ var siteManager = function () {
         }
         this.catchedTagMedias = [];
         this.usedSearchTerms = [];
+        this.usedCatRequests = [];
         this.nextMedias = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
         this.updateCSRF();
@@ -51993,6 +51992,7 @@ var siteManager = function () {
             theVue.canloadmore = true;
             that.catchedTagMedias = [];
             _this.usedSearchTerms = [];
+            _this.usedCatRequests = [];
             that.receiveMedias("/internal-api/media" + _this.getIgnoreParam(), true);
             that.updateCSRF();
         });
@@ -52015,7 +52015,7 @@ var siteManager = function () {
                     that.loadMorePages(function () {
                         that.nextMedias = that.nextVideosList(id);
                         theVue.nextvideos = that.nextMedias;
-                        that.loadMorePagesByScroll();
+                        that.loadMorePages();
                         console.log("received by callback from nextvideo-empty");
                     });
                 }
@@ -52030,7 +52030,7 @@ var siteManager = function () {
                         that.loadMorePages(function () {
                             that.nextMedias = that.nextVideosList(id);
                             theVue.nextvideos = that.nextMedias;
-                            that.loadMorePagesByScroll();
+                            that.loadMorePages();
                             theVue.medias = that.getFilteredMedias();
                             theVue.fullmedias = that.medias;
                         });
@@ -52160,17 +52160,25 @@ var siteManager = function () {
         $(window).scroll(function () {
             if ($(window).scrollTop() + $(window).height() > $(document).height() - 50) {
                 if (theVue.canloadmore && that.blockScrollExecution == false) {
-                    console.log("near bottom, do a request and block!");
-                    that.blockScrollExecution = true;
-                    that.loadMorePages(function () {
-                        console.log("done, allow next request");
-                        that.blockScrollExecution = false;
-                    });
+                    if (theVue.$router.currentRoute.path == "/" || theVue.$router.currentRoute.path == "/tags") {
+                        console.log("near bottom, do a request and block!");
+                        that.blockScrollExecution = true;
+                        that.loadMorePages(function () {
+                            console.log("done, allow next request");
+                            that.blockScrollExecution = false;
+                        });
+                    }
                 }
             }
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('refreshSearch', function (title) {
             theVue.searching();
+        });
+        __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('getMediasByCatId', function (id) {
+            if (that.usedCatRequests.includes(id) == false) {
+                that.usedCatRequests.push(id);
+                that.receiveMedias("/internal-api/medias/byCatId/" + id + that.getIgnoreParam());
+            }
         });
         __WEBPACK_IMPORTED_MODULE_4__eventBus__["a" ].$on('filterTypes', function (types) {
             that.types = types;
@@ -52247,11 +52255,11 @@ var siteManager = function () {
                     }
                     var m = [];
                     if (that.usedSearchTerms.includes(s.toString()) == false && s.toString() != "") {
-                        that.usedSearchTerms.push(s);
                         if (searchDelay != undefined) {
                             clearTimeout(searchDelay);
                         }
                         searchDelay = setTimeout(function () {
+                            that.usedSearchTerms.push(s);
                             that.receiveMedias("/internal-api/medias/search/" + s + that.getIgnoreParam());
                         }, 300);
                     }
@@ -52309,17 +52317,6 @@ var siteManager = function () {
             });
         }
     };
-    siteManager.prototype.loadMorePagesByScroll = function () {
-        console.log("loadMorePagesByScroll");
-        var d = document.documentElement;
-        var offset = d.scrollTop + window.innerHeight;
-        var height = d.offsetHeight;
-        if (offset >= height) {
-            if (this.maxPage >= this.currentPage) {
-                this.loadMorePages();
-            }
-        }
-    };
     siteManager.prototype.loadMorePages = function (callback) {
         if (callback === void 0) {
             callback = undefined;
@@ -52329,7 +52326,7 @@ var siteManager = function () {
         console.log("vs");
         console.log(this.medias.length);
         if (this.totalMedias > this.medias.length) {
-            this.receiveMedias('/internal-api/media?page=' + this.currentPage + this.getIgnoreParam(false), false, callback);
+            this.receiveMedias('/internal-api/media?' + this.getIgnoreParam(false), false, callback);
             theVue.canloadmore = true;
         } else {
             console.log("end reached");
@@ -52821,9 +52818,12 @@ var siteManager = function () {
         });
         return returnMedia;
     };
-    siteManager.prototype.findMediaById = function (id, callback) {
+    siteManager.prototype.findMediaById = function (id, callback, getIfUndefined) {
         if (callback === void 0) {
             callback = undefined;
+        }
+        if (getIfUndefined === void 0) {
+            getIfUndefined = true;
         }
         var returnMedia = undefined;
         var that = this;
@@ -52833,7 +52833,9 @@ var siteManager = function () {
             }
         });
         if (returnMedia == undefined) {
-            that.receiveMediaById(id, callback);
+            if (getIfUndefined) {
+                that.receiveMediaById(id, callback);
+            }
         } else {
             if (callback != undefined) {
                 callback();
@@ -52886,88 +52888,85 @@ var siteManager = function () {
         var that = this;
         var loadCount = 0,
             replaceCount = 0;
-        $.getJSON(url, function name(data) {
-            if (forceUpdate || that.medias == undefined) {
-                that.medias = [];
-            }
-            $.each(data.data, function (key, value) {
-                if (that.findMediaById(value.id) == undefined) {
-                    var m = new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, that.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id);
-                    $.each(m.comments, function (key1, value1) {
-                        m.comments[key1] = that.fillUser(value1);
-                        m.comments[key1].user = that.getUserById(value1.user_id);
-                    });
-                    loadCount++;
-                    m.comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
-                    that.medias.push(m);
-                    that.fillMediasToCat();
+        if (forceUpdate || that.medias == undefined) {
+            that.medias = [];
+        }
+        if (this.totalMedias > this.medias.length) {
+            $.getJSON(url, function name(data) {
+                $.each(data.data, function (key, value) {
+                    if (that.findMediaById(value.id, undefined, false) == undefined) {
+                        var m = new __WEBPACK_IMPORTED_MODULE_6__models__["b" ](value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, that.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id);
+                        $.each(m.comments, function (key1, value1) {
+                            m.comments[key1] = that.fillUser(value1);
+                            m.comments[key1].user = that.getUserById(value1.user_id);
+                        });
+                        loadCount++;
+                        m.comments = m.comments.sort(__WEBPACK_IMPORTED_MODULE_5__tools__["a" ].byCreatedAtComments);
+                        that.medias.push(m);
+                        that.fillMediasToCat();
+                    } else {
+                        replaceCount++;
+                    }
+                });
+                if (theVue == undefined) {
+                    that.initVue();
+                    that.receiveNotifications();
+                    if (that.notificationTimer != undefined) {
+                        clearInterval(that.notificationTimer);
+                    }
+                    that.notificationTimer = setInterval(function () {
+                        console.log("check for new notifications");
+                        that.receiveNotifications();
+                    }, 120000);
+                    that.updateCSRF();
+                }
+                theVue.users = that.users;
+                if (that.treecatptions != undefined) {
+                    theVue.treecatptions = that.treecatptions;
+                }
+                that.medias = theMediaSorter.sort(that.medias);
+                theVue.fullmedias = that.medias;
+                theVue.medias = that.getFilteredMedias();
+                theVue.categories = that.categories;
+                if (theVue.$route.params.profileId != undefined) {
+                    theVue.user = that.getUserById(theVue.$route.params.profileId);
+                    theVue.fullmedias = that.medias;
+                    theVue.medias = that.getFilteredMedias(that.getMediasByUser(theVue.$route.params.profileId));
+                }
+                if (theVue.$route.params.currentTitle != undefined) {
+                    if (that.findMediaByName(theVue.$route.params.currentTitle) == undefined) {
+                        that.receiveMediaByName(theVue.$route.params.currentTitle, function (id) {
+                            that.currentMediaId = id;
+                            that.nextMedias = that.nextVideosList(id);
+                            theVue.nextvideos = that.nextMedias;
+                        });
+                    } else {
+                        that.nextMedias = that.nextVideosList(that.findMediaByName(theVue.$route.params.currentTitle).id);
+                        theVue.nextvideos = that.nextMedias;
+                    }
+                }
+                if (theVue.$route.params.editTitle != undefined) {
+                    if (that.findMediaByName(theVue.$route.params.editTitle) == undefined) {
+                        that.receiveMediaByName(encodeURIComponent(theVue.$route.params.editTitle), function (id) {
+                            that.currentMediaId = id;
+                        });
+                    }
+                }
+                if (theVue.$router.currentRoute.path == "/search") {
+                    theVue.searching();
+                }
+                if (loadCount == 0 && replaceCount == 0) {
+                    if (that.totalMedias == that.medias.length) {
+                        theVue.alert("All medias are loaded", "warning");
+                    }
                 } else {
-                    replaceCount++;
+                    theVue.alert("Load " + loadCount + " and " + replaceCount + " medias already existed.");
+                }
+                if (callback != undefined) {
+                    callback();
                 }
             });
-            if (data.meta != undefined && that.maxPage == -1) {
-                if (data.meta.last_page != null) {
-                    console.log("set maxPage");
-                    console.log(data.meta.last_page);
-                    that.maxPage = data.meta.last_page;
-                }
-            }
-            if (theVue == undefined) {
-                that.initVue();
-                that.receiveNotifications();
-                if (that.notificationTimer != undefined) {
-                    clearInterval(that.notificationTimer);
-                }
-                that.notificationTimer = setInterval(function () {
-                    console.log("check for new notifications");
-                    that.receiveNotifications();
-                }, 120000);
-                that.updateCSRF();
-            }
-            theVue.users = that.users;
-            if (that.treecatptions != undefined) {
-                theVue.treecatptions = that.treecatptions;
-            }
-            that.medias = theMediaSorter.sort(that.medias);
-            theVue.fullmedias = that.medias;
-            theVue.medias = that.getFilteredMedias();
-            theVue.categories = that.categories;
-            if (theVue.$route.params.profileId != undefined) {
-                theVue.user = that.getUserById(theVue.$route.params.profileId);
-                theVue.fullmedias = that.medias;
-                theVue.medias = that.getFilteredMedias(that.getMediasByUser(theVue.$route.params.profileId));
-            }
-            if (theVue.$route.params.currentTitle != undefined) {
-                if (that.findMediaByName(theVue.$route.params.currentTitle) == undefined) {
-                    that.receiveMediaByName(theVue.$route.params.currentTitle, function (id) {
-                        that.currentMediaId = id;
-                        that.nextMedias = that.nextVideosList(id);
-                        theVue.nextvideos = that.nextMedias;
-                    });
-                } else {
-                    that.nextMedias = that.nextVideosList(that.findMediaByName(theVue.$route.params.currentTitle).id);
-                    theVue.nextvideos = that.nextMedias;
-                }
-            }
-            if (theVue.$route.params.editTitle != undefined) {
-                if (that.findMediaByName(theVue.$route.params.editTitle) == undefined) {
-                    that.receiveMediaByName(encodeURIComponent(theVue.$route.params.editTitle), function (id) {
-                        that.currentMediaId = id;
-                    });
-                }
-            }
-            if (theVue.$router.currentRoute.path == "/search") {
-                theVue.searching();
-            }
-            if (loadCount == 0 && replaceCount == 0) {
-                theVue.alert("All medias are loaded", "warning");
-            } else {
-                theVue.alert("Load " + loadCount + " and " + replaceCount + " medias already existed.");
-            }
-            if (callback != undefined) {
-                callback();
-            }
-        });
+        }
     };
     siteManager.prototype.getUserById = function (id) {
         var search = new __WEBPACK_IMPORTED_MODULE_6__models__["e" ](0, "None", "/img/404/avatar.png", "/img/404/background.png", "None-profile", {}, "", false);
@@ -90065,10 +90064,40 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  __webpack_exports__["default"] = ({
   props: ['medias', 'baseUrl', 'canloadmore', 'loggeduserid', 'categories', 'catlevel', 'currentuser', 'treecatptions'],
   name: 'categoriesTag',
+  mounted: function mounted() {
+    if (localStorage.getItem("categories_remember") != undefined && localStorage.getItem("categories_remember") != null) {
+      this.catids = localStorage.getItem("categories_remember");
+    }
+  },
   watch: {
-    catids: function catids(val) {}
+    catids: function catids(val) {
+      this.currentcat = this.getCurrentCategory(val);
+      localStorage.setItem("categories_remember", val);
+    }
   },
   methods: {
+    getCurrentCategory: function getCurrentCategory(id) {
+      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+      var that = this;
+      var theC = undefined;
+      var idata = this.categories;
+      if (data != undefined) {
+        idata = data;
+      }
+      idata.forEach(function (val, key) {
+        if (val.children.length > 0) {
+          var tmpResult = that.getCurrentCategory(id, val.children);
+          if (tmpResult != undefined) {
+            theC = tmpResult;
+          }
+        }
+        if (val.id == id) {
+          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('getMediasByCatId', id);
+          theC = val;
+        }
+      });
+      return theC;
+    },
     emitLoadMore: function emitLoadMore() {
       __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('loadMore', '');
     },
@@ -90103,7 +90132,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   data: function data() {
     return {
-      catids: []
+      catids: 0,
+      currentcat: undefined
     };
   }
 });
@@ -90113,175 +90143,152 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _vm.catlevel == 0
-        ? _c(
-            "p",
-            { staticClass: "float-left col-4" },
-            [
-              _vm.currentuser.admin
-                ? _c(
-                    "router-link",
-                    {
-                      staticClass: "btn btn-warning btn-sm",
-                      attrs: { to: "/newcat/" }
+  return _c("div", [
+    _vm.catlevel == 0
+      ? _c(
+          "p",
+          { staticClass: "float-left col-3" },
+          [
+            _vm.currentuser.admin
+              ? _c(
+                  "router-link",
+                  {
+                    staticClass: "btn btn-block btn-warning btn-sm",
+                    attrs: { to: "/newcat/" }
+                  },
+                  [
+                    _c("vs-icon", { attrs: { icon: "create" } }),
+                    _vm._v("Create category\n    ")
+                  ],
+                  1
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.treecatptions != undefined
+              ? _c("treeselect", {
+                  attrs: {
+                    multiple: false,
+                    "always-open": true,
+                    name: "parent_id",
+                    options: _vm.treecatptions
+                  },
+                  model: {
+                    value: _vm.catids,
+                    callback: function($$v) {
+                      _vm.catids = $$v
                     },
-                    [
-                      _c("vs-icon", { attrs: { icon: "create" } }),
-                      _vm._v("Create\n    ")
-                    ],
-                    1
-                  )
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.treecatptions != undefined
-                ? _c("treeselect", {
-                    attrs: {
-                      multiple: true,
-                      "always-open": true,
-                      name: "parent_id",
-                      options: _vm.treecatptions
-                    },
-                    model: {
-                      value: _vm.catids,
-                      callback: function($$v) {
-                        _vm.catids = $$v
-                      },
-                      expression: "catids"
-                    }
-                  })
-                : _vm._e()
-            ],
-            1
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _c("p", { staticClass: "float-right col-8" }),
-      _vm._l(_vm.categories, function(cat) {
-        return _vm.isIdIncluded(cat.id)
-          ? _c(
-              "div",
-              { staticClass: "float-right col-8" },
-              [
-                _vm.currentuser.admin
-                  ? _c(
-                      "span",
-                      { staticClass: "text-right float-right" },
-                      [
-                        _c(
-                          "router-link",
-                          {
-                            staticClass: "btn btn-warning btn-sm mr-1",
-                            attrs: { to: "/editcat/" + cat.id }
-                          },
-                          [
-                            _c("vs-icon", { attrs: { icon: "edit" } }),
-                            _vm._v("Edit")
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-danger btn-sm",
-                            on: {
-                              click: function($event) {
-                                _vm.deleteAction(cat.id)
-                              }
-                            }
-                          },
-                          [
-                            _c("vs-icon", { attrs: { icon: "delete" } }),
-                            _vm._v("Delete")
-                          ],
-                          1
-                        )
-                      ],
-                      1
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                _c(
-                  "h5",
+                    expression: "catids"
+                  }
+                })
+              : _vm._e()
+          ],
+          1
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _c("p", { staticClass: "float-right col-9" }),
+    _vm.currentcat != undefined
+      ? _c(
+          "div",
+          { staticClass: "float-right col-9" },
+          [
+            _vm.currentuser.admin
+              ? _c(
+                  "span",
+                  { staticClass: "text-right float-right" },
                   [
                     _c(
                       "router-link",
-                      { attrs: { to: "/category/" + cat.urlTitle } },
-                      [_vm._v(_vm._s(cat.title))]
-                    )
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _c("p", [_vm._v(_vm._s(cat.description))]),
-                _vm._v(" "),
-                cat.children.length > 0
-                  ? _c("p", [_vm._v("Subcategories")])
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm._l(cat.children, function(subcat) {
-                  return cat.children.length > 0
-                    ? _c(
-                        "p",
-                        [
-                          _c(
-                            "router-link",
-                            { attrs: { to: "/category/" + subcat.urlTitle } },
-                            [_vm._v(_vm._s(subcat.title))]
-                          )
-                        ],
-                        1
-                      )
-                    : _vm._e()
-                }),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "row text-center" },
-                  _vm._l(cat.medias, function(media) {
-                    return _c(
-                      "div",
-                      { staticClass: "col-lg-6 col-md-6 col-xs-6" },
+                      {
+                        staticClass: "btn btn-warning btn-sm mr-1",
+                        attrs: { to: "/editcat/" + _vm.currentcat.id }
+                      },
                       [
-                        _c("singleField", {
-                          attrs: { item: media, loggeduserid: _vm.loggeduserid }
-                        })
+                        _c("vs-icon", { attrs: { icon: "edit" } }),
+                        _vm._v("Edit")
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-danger btn-sm",
+                        on: {
+                          click: function($event) {
+                            _vm.deleteAction(_vm.currentcat.id)
+                          }
+                        }
+                      },
+                      [
+                        _c("vs-icon", { attrs: { icon: "delete" } }),
+                        _vm._v("Delete")
                       ],
                       1
                     )
-                  }),
-                  0
-                ),
-                _vm._v(" "),
-                _c("vs-divider", { attrs: { color: "primary", icon: "" } })
+                  ],
+                  1
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _c(
+              "h5",
+              [
+                _c(
+                  "router-link",
+                  { attrs: { to: "/category/" + _vm.currentcat.urlTitle } },
+                  [_vm._v(_vm._s(_vm.currentcat.title))]
+                )
               ],
-              2
+              1
+            ),
+            _vm._v(" "),
+            _c("p", [_vm._v(_vm._s(_vm.currentcat.description))]),
+            _vm._v(" "),
+            _vm.currentcat.children.length > 0
+              ? _c("p", [_vm._v("Subcategories")])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm._l(_vm.currentcat.children, function(subcat) {
+              return _vm.currentcat.children.length > 0
+                ? _c(
+                    "p",
+                    [
+                      _c(
+                        "router-link",
+                        { attrs: { to: "/category/" + subcat.urlTitle } },
+                        [_vm._v(_vm._s(subcat.title))]
+                      )
+                    ],
+                    1
+                  )
+                : _vm._e()
+            }),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "row text-center" },
+              _vm._l(_vm.currentcat.medias, function(media) {
+                return _c(
+                  "div",
+                  { staticClass: "col-lg-6 col-md-6 col-xs-6" },
+                  [
+                    _c("singleField", {
+                      attrs: { item: media, loggeduserid: _vm.loggeduserid }
+                    })
+                  ],
+                  1
+                )
+              }),
+              0
             )
-          : _vm._e()
-      }),
-      _vm._v(" "),
-      _vm.canloadmore
-        ? _c(
-            "p",
-            {
-              staticClass: "float-right col-8 btn-block btn-sm btn btn-info",
-              on: {
-                click: function($event) {
-                  _vm.emitLoadMore()
-                }
-              }
-            },
-            [_vm._v("Scroll down or click to load more")]
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _c("p")
-    ],
-    2
-  )
+          ],
+          2
+        )
+      : _vm._e(),
+    _vm._v(" "),
+    _c("p")
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -91772,10 +91779,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
           var tmpResult = that.getCurrentCategory(val.children);
           if (tmpResult != undefined) {
             theC = tmpResult;
+            __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('getMediasByCatId', theC.id);
           }
         }
         if (val.urlTitle == encodeURIComponent(that.$route.params.currentCat)) {
           theC = val;
+          __WEBPACK_IMPORTED_MODULE_0__eventBus_js__["a" ].$emit('getMediasByCatId', theC.id);
         }
       });
       return theC;

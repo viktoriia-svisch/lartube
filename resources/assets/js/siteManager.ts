@@ -23,10 +23,9 @@ class siteManager {
   users:Array<User>;
   notifications:Array<Notification>;
   usedSearchTerms:any;
+  usedCatRequests:any;
   tags:Array<Tag>;
-  maxPage:number;
   blockScrollExecution:boolean;
-  currentPage:number;
   categories:Array<Category>;
   loggedUserId:number;
   currentUser:User;
@@ -40,9 +39,7 @@ class siteManager {
   types:Array<string>;
   currentMediaId:number;
   constructor(base:string){
-    this.maxPage=-1;
     this.currentMediaId = 0;
-    this.currentPage=2;
     this.initing=true;
     this.blockScrollExecution = false;
     baseUrl = base+"/";
@@ -53,6 +50,7 @@ class siteManager {
     }
     this.catchedTagMedias=[];
     this.usedSearchTerms=[];
+    this.usedCatRequests=[];
     this.nextMedias=[];
     this.loggedUserId = Number($("#loggedUserId").attr("content"));
     this.updateCSRF();
@@ -133,6 +131,7 @@ class siteManager {
       theVue.canloadmore = true;
       that.catchedTagMedias=[];
       this.usedSearchTerms=[];
+      this.usedCatRequests=[];
       that.receiveMedias("/internal-api/media"+this.getIgnoreParam(),true)
       that.updateCSRF();
     });
@@ -155,7 +154,7 @@ class siteManager {
           that.loadMorePages(function(){
             that.nextMedias = that.nextVideosList(id)
             theVue.nextvideos = that.nextMedias
-            that.loadMorePagesByScroll()
+            that.loadMorePages()
             console.log("received by callback from nextvideo-empty")
           });
         }
@@ -170,7 +169,7 @@ class siteManager {
             that.loadMorePages(function(){
               that.nextMedias = that.nextVideosList(id)
               theVue.nextvideos = that.nextMedias
-              that.loadMorePagesByScroll()
+              that.loadMorePages()
               theVue.medias = that.getFilteredMedias()
               theVue.fullmedias = that.medias
             });
@@ -300,17 +299,25 @@ class siteManager {
     $(window).scroll(function() {
        if($(window).scrollTop() + $(window).height() > $(document).height() - 50) {
          if(theVue.canloadmore&&that.blockScrollExecution==false){
+           if(theVue.$router.currentRoute.path=="/"||theVue.$router.currentRoute.path=="/tags"){
            console.log("near bottom, do a request and block!");
            that.blockScrollExecution=true
            that.loadMorePages(function(){
              console.log("done, allow next request")
              that.blockScrollExecution = false;
            })
+          }
          }
        }
     });
     eventBus.$on('refreshSearch', title => {
       theVue.searching();
+    });
+    eventBus.$on('getMediasByCatId', id => {
+      if(that.usedCatRequests.includes(id)==false){
+        that.usedCatRequests.push(id);
+        that.receiveMedias("/internal-api/medias/byCatId/"+id+that.getIgnoreParam());
+      }
     });
     eventBus.$on('filterTypes', types => {
       that.types = types;
@@ -380,11 +387,11 @@ class siteManager {
         }
         var m = [];
         if(that.usedSearchTerms.includes(s.toString())==false&&s.toString()!=""){
-          that.usedSearchTerms.push(s);
           if(searchDelay!=undefined){
             clearTimeout(searchDelay);
           }
           searchDelay = setTimeout(function(){
+            that.usedSearchTerms.push(s);
             that.receiveMedias("/internal-api/medias/search/"+s+that.getIgnoreParam());
           }, 300);
         }
@@ -443,24 +450,13 @@ if(localStorage.getItem('cookiePolicy')!="read"){
   })
 }
   }
-  loadMorePagesByScroll(){
-    console.log("loadMorePagesByScroll")
-    var d = document.documentElement;
-    var offset = d.scrollTop + window.innerHeight;
-    var height = d.offsetHeight;
-    if (offset >= height) {
-      if(this.maxPage>=this.currentPage){
-        this.loadMorePages()
-      }
-    }
-  }
   loadMorePages(callback=undefined){
     console.log("load more pages")
     console.log(this.totalMedias)
     console.log("vs")
     console.log(this.medias.length)
     if(this.totalMedias>this.medias.length){
-      this.receiveMedias('/internal-api/media?page='+this.currentPage+this.getIgnoreParam(false),false,callback)
+      this.receiveMedias('/internal-api/media?'+this.getIgnoreParam(false),false,callback)
       theVue.canloadmore=true;
   } else {
     console.log("end reached")
@@ -907,7 +903,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
     });
     return returnMedia;
   }
-  findMediaById(id:number,callback=undefined):Media{
+  findMediaById(id:number,callback=undefined,getIfUndefined=true):Media{
     var returnMedia = undefined;
     let that = this;
     $.each(that.medias, function(key,value){
@@ -916,7 +912,9 @@ if(localStorage.getItem('cookiePolicy')!="read"){
       }
     });
     if(returnMedia==undefined){
-      that.receiveMediaById(id,callback);
+      if(getIfUndefined){
+        that.receiveMediaById(id,callback);
+      }
     } else {
       if(callback!=undefined){
         callback()
@@ -956,12 +954,13 @@ if(localStorage.getItem('cookiePolicy')!="read"){
   receiveMedias(url="/internal-api/media"+this.getIgnoreParam(),forceUpdate=false,callback=undefined):void{
     let that = this;
     var loadCount=0,replaceCount=0;
+    if((forceUpdate)||(that.medias==undefined)){
+      that.medias = [];
+    }
+    if(this.totalMedias>this.medias.length){
     $.getJSON(url, function name(data) {
-      if((forceUpdate)||(that.medias==undefined)){
-        that.medias = [];
-      }
         $.each( data.data, function( key, value ) {
-         if(that.findMediaById(value.id)==undefined){
+         if(that.findMediaById(value.id,undefined,false)==undefined){
             var m = new Media(value.id,value.title, value.description, value.source, value.poster_source,value.duration, value.simpleType,value.techType, value.type, that.getUserById(value.user_id),value.user_id,value.created_at,value.updated_at,value.created_at_readable,value.comments,that.getTagsByIdArray(value.tagsIds),value.myLike,value.likes,value.dislikes,value.tracks,value.category_id)
             $.each( m.comments, function( key1, value1 ) {
               m.comments[key1] = that.fillUser(value1);
@@ -975,13 +974,6 @@ if(localStorage.getItem('cookiePolicy')!="read"){
             replaceCount++;
           }
         });
-        if(data.meta!=undefined&&that.maxPage==-1){
-        if(data.meta.last_page!=null){
-          console.log("set maxPage")
-          console.log(data.meta.last_page)
-          that.maxPage = data.meta.last_page;
-        }
-        }
         if(theVue==undefined){
           that.initVue();
           that.receiveNotifications();
@@ -1030,7 +1022,9 @@ if(localStorage.getItem('cookiePolicy')!="read"){
           theVue.searching();
         }
         if(loadCount==0&&replaceCount==0){
-          theVue.alert("All medias are loaded","warning")
+          if(that.totalMedias==that.medias.length){
+            theVue.alert("All medias are loaded","warning")
+          }
         } else {
           theVue.alert("Load "+loadCount+" and "+replaceCount+" medias already existed.")
         }
@@ -1038,6 +1032,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
           callback();
         }
     });
+  }
   }
   getUserById(id:number):User{
     var search:User = new User(0,"None","/img/404/avatar.png","/img/404/background.png","None-profile",{},"",false)
