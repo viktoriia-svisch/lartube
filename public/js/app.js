@@ -85477,7 +85477,9 @@ var render = function() {
                   )
                 : _vm._e(),
               _vm._v(" "),
-              _vm.currentmedia.techType == "video"
+              _vm.currentmedia.techType == "video" &&
+              _vm.currentmedia.type != "youtube" &&
+              _vm.currentmedia.type != "vimeo"
                 ? _c("vue-plyr", { ref: "player" }, [
                     _c(
                       "video",
@@ -85511,6 +85513,28 @@ var render = function() {
                       ],
                       2
                     )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.currentmedia.type == "youtube"
+                ? _c("vue-plyr", { ref: "player" }, [
+                    _c("div", {
+                      attrs: {
+                        "data-plyr-provider": "youtube",
+                        "data-plyr-embed-id": _vm.currentmedia.source
+                      }
+                    })
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.currentmedia.type == "vimeo"
+                ? _c("vue-plyr", { ref: "player" }, [
+                    _c("div", {
+                      attrs: {
+                        "data-plyr-provider": "vimeo",
+                        "data-plyr-embed-id": _vm.currentmedia.source
+                      }
+                    })
                   ])
                 : _vm._e(),
               _vm._v(" "),
@@ -87841,21 +87865,32 @@ var render = function() {
                 _c("option", { attrs: { selected: "", value: "localAudio" } }, [
                   _vm._v("Local audio")
                 ]),
+                _vm._v(" "),
                 _c("option", { attrs: { value: "localVideo" } }, [
                   _vm._v("Local video")
                 ]),
+                _vm._v(" "),
                 _c("option", { attrs: { value: "directVideo" } }, [
                   _vm._v("Direct video")
                 ]),
+                _vm._v(" "),
                 _c("option", { attrs: { value: "directAudio" } }, [
                   _vm._v("Direct audio")
                 ]),
+                _vm._v(" "),
                 _c("option", { attrs: { value: "torrentAudio" } }, [
                   _vm._v("Torrent audio")
                 ]),
+                _vm._v(" "),
                 _c("option", { attrs: { value: "torrentVideo" } }, [
                   _vm._v("Torrent video")
-                ])
+                ]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "youtube" } }, [
+                  _vm._v("Youtube")
+                ]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "vimeo" } }, [_vm._v("Vimeo")])
               ]
             )
           ]),
@@ -87957,6 +87992,67 @@ var render = function() {
                   staticClass: "form-control",
                   attrs: {
                     placeholder: "magnet:
+                    id: "source",
+                    name: "source",
+                    type: "text"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    staticClass: "btn btn-primary",
+                    on: {
+                      click: function($event) {
+                        _vm.testMedia()
+                      }
+                    }
+                  },
+                  [_vm._v("Test link and extend infos")]
+                ),
+                _vm._v(" "),
+                _vm.theTestMedia != undefined
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "btn btn-primary",
+                        on: {
+                          click: function($event) {
+                            _vm.durationTestMedia()
+                          }
+                        }
+                      },
+                      [_vm._v("Add duration")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.theTestMedia != undefined
+                  ? _c(
+                      "span",
+                      {
+                        staticClass: "btn btn-primary",
+                        on: {
+                          click: function($event) {
+                            _vm.removeTestMedia()
+                          }
+                        }
+                      },
+                      [_vm._v("Remove test")]
+                    )
+                  : _vm._e()
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          (_vm.mediaType == "youtube") | (_vm.mediaType == "vimeo")
+            ? _c("div", { staticClass: "form-group" }, [
+                _c("label", [_vm._v("Youtube or vimeo")]),
+                _vm._v(" "),
+                _c("p", [_vm._v("Add the id only")]),
+                _vm._v(" "),
+                _c("input", {
+                  staticClass: "form-control",
+                  attrs: {
+                    placeholder: "Like bTqVqk7FSmY or 76979871",
                     id: "source",
                     name: "source",
                     type: "text"
@@ -88588,30 +88684,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       };
     },
     likeSeries: function likeSeries() {
-      var localVideo = 0,
-          localAudio = 0,
-          directAudio = 0,
-          directVideo = 0,
-          torrentAudio = 0,
-          torrentVideo = 0;
       var likeArray = [];
       var dislikeArray = [];
       this.medias.forEach(function (item, index) {
-        if (item.type == "localVideo") {
-          localVideo++;
-        } else if (item.type == "localAudio") {
-          localAudio++;
-        } else if (item.type == "directAudio") {
-          directAudio++;
-        } else if (item.type == "directVideo") {
-          directVideo++;
-        } else if (item.type == "torrentAudio") {
-          torrentAudio++;
-        } else if (item.type == "torrentVideo") {
-          torrentVideo++;
-        } else {
-          console.warn("Weird type? " + item.type);
-        }
         likeArray.push(item.likes);
         dislikeArray.push(item.dislikes);
       });
@@ -88629,7 +88704,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
           id: 'vuechart-example'
         },
         xaxis: {
-          categories: ["Local audio", "Local video", "Direct audio", "Direct Video", "Torrent audio", "Torrent video"]
+          categories: ["Local audio", "Local video", "Direct audio", "Direct Video", "Torrent audio", "Torrent video", "Youtube", "Vimeo"]
         }
       };
     },
@@ -88639,7 +88714,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
           directAudio = 0,
           directVideo = 0,
           torrentAudio = 0,
-          torrentVideo = 0;
+          torrentVideo = 0,
+          youtube = 0,
+          vimeo = 0;
       this.medias.forEach(function (item, index) {
         if (item.type == "localVideo") {
           localVideo++;
@@ -88653,13 +88730,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
           torrentAudio++;
         } else if (item.type == "torrentVideo") {
           torrentVideo++;
+        } else if (item.type == "youtube") {
+          youtube++;
+        } else if (item.type == "vimeo") {
+          vimeo++;
         } else {
           console.warn("Weird type? " + item.type);
         }
       });
       return [{
         name: 'Medias',
-        data: [localAudio, localVideo, directAudio, directVideo, torrentAudio, torrentVideo]
+        data: [localAudio, localVideo, directAudio, directVideo, torrentAudio, torrentVideo, youtube, vimeo]
       }];
     },
     chartOptions2: function chartOptions2() {
@@ -89065,21 +89146,32 @@ var render = function() {
                   _c("option", { attrs: { value: "localAudio" } }, [
                     _vm._v("Local audio")
                   ]),
+                  _vm._v(" "),
                   _c("option", { attrs: { value: "localVideo" } }, [
                     _vm._v("Local video")
                   ]),
+                  _vm._v(" "),
                   _c("option", { attrs: { value: "directVideo" } }, [
                     _vm._v("Direct video")
                   ]),
+                  _vm._v(" "),
                   _c("option", { attrs: { value: "directAudio" } }, [
                     _vm._v("Direct audio")
                   ]),
+                  _vm._v(" "),
                   _c("option", { attrs: { value: "torrentAudio" } }, [
                     _vm._v("Torrent audio")
                   ]),
+                  _vm._v(" "),
                   _c("option", { attrs: { value: "torrentVideo" } }, [
                     _vm._v("Torrent video")
-                  ])
+                  ]),
+                  _vm._v(" "),
+                  _c("option", { attrs: { value: "youtube" } }, [
+                    _vm._v("Youtube")
+                  ]),
+                  _vm._v(" "),
+                  _c("option", { attrs: { value: "vimeo" } }, [_vm._v("Vimeo")])
                 ]
               )
             ]),
