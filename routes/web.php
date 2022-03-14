@@ -103,7 +103,7 @@ Route::get('/internal-api/media', function (Request $request) {
         $tArr = array_merge($tArr,['localAudio','torrentAudio','directAudio']);
       }
       if($type=="video"){
-        $tArr = array_merge($tArr,['localVideo','torrentVideo','directVideo']);
+        $tArr = array_merge($tArr,['localVideo','torrentVideo','directVideo','youtube','vimeo']);
       }
     }
     $sortBy = getMediaOrder($request->input('sortBy'));
