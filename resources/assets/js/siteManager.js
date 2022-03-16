@@ -4,6 +4,8 @@ import Router from 'vue-router';
 import BootstrapVue from 'bootstrap-vue';
 import VueCroppie from 'vue-croppie';
 import { eventBus } from './eventBus';
+import translation from './translation';
+import dateTranslation from './dateTranslation';
 import { MediaSorter, Search } from './tools';
 import { User, Media, Tag, Category, Notification } from './models';
 import VueApexCharts from 'vue-apexcharts';
@@ -11,12 +13,14 @@ import Vuesax from 'vuesax';
 import 'material-icons/iconfont/material-icons.css';
 import 'vuesax/dist/vuesax.css'; 
 import VuePlyr from 'vue-plyr';
+import VueI18n from 'vue-i18n';
 import Treeselect from '@riophae/vue-treeselect';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 var app;
 var theVue;
 var searchDelay;
 var theMediaSorter = new MediaSorter();
+var i18n;
 var siteManager =  (function () {
     function siteManager(base) {
         this.currentMediaId = 0;
@@ -48,6 +52,7 @@ var siteManager =  (function () {
         Vue.use(VueApexCharts);
         Vue.use(Vuesax);
         Vue.use(VuePlyr);
+        Vue.use(VueI18n);
         Vue.component('treeselect', Treeselect);
         Vue.component('apexchart', VueApexCharts);
         var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
@@ -100,6 +105,10 @@ var siteManager =  (function () {
         eventBus.$on('getNewMedias', function (title) {
             theVue.alert("Look for new medias..");
             that.receiveMedias();
+        });
+        eventBus.$on('languageChange', function (lang) {
+            console.log("change language to " + lang);
+            i18n.locale = lang;
         });
         eventBus.$on('userEdited', function (id) {
             theVue.alert("Look for new users..");
@@ -324,7 +333,18 @@ var siteManager =  (function () {
                 theVue.nextvideos = that.nextMedias;
             }
         });
+        var lang = "en";
+        if (localStorage.getItem("language") != '' && localStorage.getItem("language") != undefined) {
+            lang = localStorage.getItem("language");
+        }
+        i18n = new VueI18n({
+            locale: lang,
+            fallbackLocale: 'en',
+            messages: translation,
+            dateTimeFormats: dateTranslation
+        });
         theVue = new Vue({
+            i18n: i18n,
             data: {
                 title: "Overview",
                 search: '',

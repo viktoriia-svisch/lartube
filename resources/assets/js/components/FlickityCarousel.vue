@@ -6,20 +6,33 @@
       <option value="likes">By likes</option><option value="likes_reverse">By likes (reverse)</option>
       <option value="dislikes">By dislikes</option><option value="dislikes_reverse">By dislikes (reverse)</option>
     </select></p>
-<flickity v-if="medias!=undefined"  ref="flickity" :options="flickityOptions">
+<div id="flick" v-if="medias!=undefined">
         <div v-for="item in medias" class="carousel-cell">
-          Vlaaaa
+          <h5>{{ item.title }}</h5>
+          <p>{{ item.description }}</p>
         </div>
-    </flickity>
+    </div>
       <button @click="previous()">Custom Previous Button</button>
       <button @click="next()">Custom Next Button</button>
       </div>
 </template>
 <script>
   import { eventBus } from '../eventBus.js';
-  import FlickityVue from 'vue-flickity';
+  import Flickity from 'flickity';
+  import 'flickity/dist/flickity.css'   import FlickityVue from 'vue-flickity';
   export default {
     props: ['medias','baseUrl','loggeduserid','canloadmore'],
+    watch:{
+      medias:function(val){
+        this.rebuilded=true
+        console.log("load flick")
+                    if(this.flkty!=undefined){
+        this.flkty.destroy();
+      }
+ this.flktyElement = document.querySelector('#flick');
+ this.flkty = new Flickity( this.flktyElement,this.flickityOptions);
+                            }
+    },
     methods: {
       next() {
   this.$refs.flickity.next();
@@ -42,6 +55,9 @@ previous() {
       'flickity' : FlickityVue
   },
   mounted(){
+    this.$nextTick(function() {
+      this.rebuilded=true
+          })
   },
   data(){
     return {
@@ -51,7 +67,10 @@ previous() {
         prevNextButtons: true,
         pageDots: false,
         wrapAround: true,
-        groupCells: true
+        groupCells: true,
+        rebuilded: false,
+        flkty: undefined,
+        flktyElement: undefined,
               }
     }
   }

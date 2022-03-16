@@ -31,10 +31,15 @@
         <vue-plyr ref="player" v-if="currentmedia.type=='vimeo'">
           <div data-plyr-provider="vimeo" :data-plyr-embed-id="currentmedia.source"></div>
         </vue-plyr>
-        <vue-plyr ref="player" v-if="currentmedia.techType=='torrent'" >
+        <vue-plyr ref="player" v-if="currentmedia.type=='torrentVideo'" >
           <video class="col-12" id="torrentPlayer" controls :poster="currentmedia.poster_source">
             <track v-for="track in currentmedia.tracks" :label="track.title" kind="subtitles" :srclang="track.title" :src="'/'+track.source">
           </video>
+        </vue-plyr>
+        <vue-plyr ref="player" v-if="currentmedia.type=='torrentAudio'" >
+          <audio class="col-12" id="torrentPlayer" controls :poster="currentmedia.poster_source">
+            <track v-for="track in currentmedia.tracks" :label="track.title" kind="subtitles" :srclang="track.title" :src="'/'+track.source">
+          </audio>
         </vue-plyr>
       </div>
     </div>
@@ -113,7 +118,12 @@
                                     var file = theTorrent.files.find(function (file) {
                     that.lasttorrentid = theTorrent.magnetURI;
                     currsrc = theTorrent.magnetURI;
-                    return file.name.endsWith('.mp4')
+                    if(that.currentmedia.type=='torrentVideo'){
+                      return file.name.endsWith('.mp4')
+                    }
+                    if(that.currentmedia.type=='torrentAudio'){
+                      return file.name.endsWith('.mp3')
+                    }
                   })
                     theTorrent.on('done', onDone);
                     torrentInterval = setInterval(onProgress, 500);

@@ -19,7 +19,7 @@
           <treeselect v-model="catid" name="parent_id" :multiple="false" :options="treecatptions" />
         </div>
       </form>
-      <button @click="submitAction();" class="btn btn-success" >Save</button> <button @click="openConfirm();" class="btn btn-danger float-right" >Delete</button>
+      <button @click="submitAction();" class="btn btn-success" >{{ $t("Save") }}</button> <button @click="openConfirm();" class="btn btn-danger float-right" >Delete</button>
     </div>
 </template>
 <script>
