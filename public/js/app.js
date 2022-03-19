@@ -66367,9 +66367,19 @@ module.exports = function (css) {
 "use strict";
 var translation = {
     en: {
+        Play: 'Play',
+        Parent: 'Parent',
+        title: 'title',
+        description: 'description',
+        Title: 'Title',
+        Description: 'Description',
+        Source: 'Source',
+        Poster: 'Poster',
+        Duration: 'Duration',
         'Created at': 'Created at',
         'Updated at': 'Updated at',
         'No category': 'No category',
+        loaded: 'loaded',
         Next: 'Next',
         Reply: 'Reply',
         Login: 'Login',
@@ -66394,12 +66404,23 @@ var translation = {
         Upload: 'Upload',
         results: 'results',
         category: 'category',
+        Category: 'Category',
         Notifications: 'Notifications',
         My: 'My',
         'No user-results': 'No user-results',
         'Sort by': 'Sort by'
     },
     de: {
+        Play: 'Spiele',
+        Parent: 'Eltern',
+        title: 'Titel',
+        description: 'Beschreibung',
+        Title: 'Titel',
+        Description: 'Beschreibung',
+        Source: 'Quelle',
+        Poster: 'Poster',
+        Duration: 'Dauer',
+        loaded: 'geladen',
         'Created at': 'Erstellt am',
         'Updated at': 'Verändert am',
         Next: 'Nächste',
@@ -66427,6 +66448,7 @@ var translation = {
         Tag: 'Tag',
         results: 'Resultate',
         category: 'Kategorie',
+        Category: 'Kategorie',
         My: 'Meine',
         'Sort by': 'Sortiere nach',
         Notifications: 'Benachrichtigungen'
@@ -80248,7 +80270,10 @@ var render = function() {
                                             staticClass: "mr-1",
                                             attrs: {
                                               icon: "settings",
-                                              title: "Edit media",
+                                              title:
+                                                _vm.$t("Edit") +
+                                                " " +
+                                                _vm.$t("media"),
                                               to: "/mediaedit/" + item.title
                                             }
                                           })
@@ -80257,7 +80282,10 @@ var render = function() {
                                       _c("vs-button", {
                                         attrs: {
                                           icon: "play_circle_filled",
-                                          title: "Play",
+                                          title:
+                                            _vm.$t("Play") +
+                                            " " +
+                                            _vm.$t("media"),
                                           to: "/media/" + item.urlTitle
                                         }
                                       })
@@ -82312,22 +82340,28 @@ var render = function() {
       }
     },
     [
-      _c("option", { attrs: { value: "created_at" } }, [_vm._v("Created at")]),
+      _c("option", { attrs: { value: "created_at" } }, [
+        _vm._v(_vm._s(_vm.$t("Created at")))
+      ]),
       _vm._v(" "),
       _c("option", { attrs: { value: "created_at_reverse" } }, [
-        _vm._v("Created at (reverse)")
+        _vm._v(_vm._s(_vm.$t("Created at")) + " (reverse)")
       ]),
       _vm._v(" "),
-      _c("option", { attrs: { value: "updated_at" } }, [_vm._v("Updated at")]),
+      _c("option", { attrs: { value: "updated_at" } }, [
+        _vm._v(_vm._s(_vm.$t("Updated at")))
+      ]),
       _vm._v(" "),
       _c("option", { attrs: { value: "updated_at_reverse" } }, [
-        _vm._v("Updated at (reverse)")
+        _vm._v(_vm._s(_vm.$t("Updated at")) + " (reverse)")
       ]),
       _vm._v(" "),
-      _c("option", { attrs: { value: "title" } }, [_vm._v("By title")]),
+      _c("option", { attrs: { value: "title" } }, [
+        _vm._v(_vm._s(_vm.$t("Title")))
+      ]),
       _vm._v(" "),
       _c("option", { attrs: { value: "title_reverse" } }, [
-        _vm._v("By title (reverse)")
+        _vm._v(_vm._s(_vm.$t("Title")) + " (reverse)")
       ]),
       _vm._v(" "),
       _c("option", { attrs: { value: "type" } }, [_vm._v("By type")]),
@@ -90934,7 +90968,11 @@ var render = function() {
         ? _c("overview", {
             attrs: { currentuser: _vm.currentuser, medias: _vm.usermedias }
           })
-        : _c("h5", [_vm._v(_vm._s(_vm.$t("User")) + " got no medias")])
+        : _c("h5", [
+            _vm._v(
+              _vm._s(_vm.$t("User")) + " got no " + _vm._s(_vm.$t("medias"))
+            )
+          ])
     ],
     1
   )
@@ -91331,7 +91369,11 @@ var render = function() {
           }
         }
       },
-      [_vm._v("Save")]
+      [
+        _c("vs-icon", { attrs: { icon: "save" } }),
+        _vm._v(_vm._s(_vm.$t("Save")))
+      ],
+      1
     )
   ])
 }
@@ -91629,7 +91671,9 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", {}, [
     _c("div", { staticClass: "card" }, [
-      _c("div", { staticClass: "card-header" }, [_vm._v("Login")]),
+      _c("div", { staticClass: "card-header" }, [
+        _vm._v(_vm._s(_vm.$t("Login")))
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "card-body" }, [
         _c(
@@ -91693,7 +91737,9 @@ var render = function() {
               },
               [
                 _vm._v(
-                  "\n                          Login\n                      "
+                  "\n                          " +
+                    _vm._s(_vm.$t("Login")) +
+                    "\n                      "
                 )
               ]
             ),
@@ -91915,7 +91961,9 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", {}, [
     _c("div", { staticClass: "card" }, [
-      _c("div", { staticClass: "card-header" }, [_vm._v("Register")]),
+      _c("div", { staticClass: "card-header" }, [
+        _vm._v(_vm._s(_vm.$t("Register")))
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "card-body" }, [
         _c(
@@ -91929,7 +91977,18 @@ var render = function() {
             }
           },
           [
-            _vm._m(0),
+            _c("div", { staticClass: "form-group row" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "col-md-4 col-form-label text-md-right",
+                  attrs: { for: "name" }
+                },
+                [_vm._v(_vm._s(_vm.$t("Username")))]
+              ),
+              _vm._v(" "),
+              _vm._m(0)
+            ]),
             _vm._v(" "),
             _c("input", {
               attrs: { type: "hidden", name: "_token" },
@@ -92148,7 +92207,7 @@ var render = function() {
                   }
                 }
               },
-              [_vm._v("Register")]
+              [_vm._v(_vm._s(_vm.$t("Register")))]
             )
           ])
         ])
@@ -92161,29 +92220,18 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row" }, [
-      _c(
-        "label",
-        {
-          staticClass: "col-md-4 col-form-label text-md-right",
-          attrs: { for: "name" }
-        },
-        [_vm._v("Name")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-md-6" }, [
-        _c("input", {
-          staticClass: "form-control",
-          attrs: {
-            id: "name",
-            type: "text",
-            name: "name",
-            value: "",
-            required: "",
-            autofocus: ""
-          }
-        })
-      ])
+    return _c("div", { staticClass: "col-md-6" }, [
+      _c("input", {
+        staticClass: "form-control",
+        attrs: {
+          id: "name",
+          type: "text",
+          name: "name",
+          value: "",
+          required: "",
+          autofocus: ""
+        }
+      })
     ])
   },
   function() {
@@ -93182,7 +93230,7 @@ var render = function() {
             type: "checkbox"
           }
         }),
-        _vm._v("Users")
+        _vm._v(_vm._s(_vm.$t("Users")))
       ]
     ),
     _vm._v(" "),
@@ -93205,7 +93253,7 @@ var render = function() {
             type: "checkbox"
           }
         }),
-        _vm._v("Media-title")
+        _vm._v(_vm._s(_vm.$t("Media")) + " " + _vm._s(_vm.$t("Title")))
       ]
     ),
     _vm._v(" "),
@@ -93224,7 +93272,7 @@ var render = function() {
           staticClass: "d-none",
           attrs: { id: "theLiveSearchMediaDescription", type: "checkbox" }
         }),
-        _vm._v("Media-description")
+        _vm._v(_vm._s(_vm.$t("Media")) + " " + _vm._s(_vm.$t("Description")))
       ]
     ),
     _vm._v(" "),
@@ -93243,7 +93291,7 @@ var render = function() {
           staticClass: "d-none",
           attrs: { id: "theLiveSearchTags", type: "checkbox" }
         }),
-        _vm._v("Tags")
+        _vm._v(_vm._s(_vm.$t("Tags")))
       ]
     ),
     _vm._v(" "),
@@ -93754,11 +93802,13 @@ var render = function() {
         "div",
         { staticClass: "col-xs-12 col-sm-12 col-md-12" },
         [
-          _c("h4", [_vm._v("Edit media")]),
+          _c("h4", [
+            _vm._v(_vm._s(_vm.$t("Edit")) + " " + _vm._s(_vm.$t("media")))
+          ]),
           _vm._v(" "),
           _c("form", { attrs: { id: "theForm" } }, [
             _c("div", { staticClass: "form-group row" }, [
-              _c("label", [_vm._v("Media-title")]),
+              _c("label", [_vm._v(_vm._s(_vm.$t("Title")))]),
               _vm._v(" "),
               _c("input", {
                 attrs: { type: "hidden", name: "_token" },
@@ -93786,7 +93836,9 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group row" }, [
-              _c("label", [_vm._v("Media-type (only for restore):")]),
+              _c("label", [
+                _vm._v(_vm._s(_vm.$t("Type")) + " (only for restore):")
+              ]),
               _vm._v(" "),
               _c(
                 "select",
@@ -93854,7 +93906,7 @@ var render = function() {
               "div",
               { staticClass: "form-group row" },
               [
-                _c("label", [_vm._v("Category")]),
+                _c("label", [_vm._v(_vm._s(_vm.$t("Category")))]),
                 _vm._v(" "),
                 _c("treeselect", {
                   attrs: {
@@ -93875,15 +93927,24 @@ var render = function() {
             ),
             _vm._v(" "),
             _c("div", { staticClass: "form-group row" }, [
-              _c("label", [_vm._v("Source:")]),
+              _c("label", [_vm._v(_vm._s(_vm.$t("Source")))]),
               _vm._v(" "),
-              _c("p", [_vm._v(_vm._s(_vm.currentmedia.source))])
+              _c("input", {
+                staticClass: "form-control",
+                attrs: {
+                  readonly: "",
+                  id: "duration",
+                  name: "duration",
+                  type: "text"
+                },
+                domProps: { value: _vm.currentmedia.source }
+              })
             ]),
             _vm._v(" "),
             (_vm.currentmedia.type != "localAudio") &
             (_vm.currentmedia.type != "localVideo")
               ? _c("div", { staticClass: "form-group row" }, [
-                  _c("label", [_vm._v("Duration:")]),
+                  _c("label", [_vm._v(_vm._s(_vm.$t("Duration")))]),
                   _vm._v(" "),
                   _c("input", {
                     staticClass: "form-control",
@@ -93902,7 +93963,7 @@ var render = function() {
               "div",
               { staticClass: "form-group row" },
               [
-                _c("label", [_vm._v("Media-poster:")]),
+                _c("label", [_vm._v(_vm._s(_vm.$t("Poster")))]),
                 _vm._v(" "),
                 _c("vue-croppie", {
                   ref: "croppieRef",
@@ -93964,7 +94025,7 @@ var render = function() {
             ),
             _vm._v(" "),
             _c("div", { staticClass: "form-group row" }, [
-              _c("label", [_vm._v("Media-description:")]),
+              _c("label", [_vm._v(_vm._s(_vm.$t("Description")))]),
               _vm._v(" "),
               _c("textarea", {
                 staticClass: "form-control",
@@ -94145,7 +94206,11 @@ var render = function() {
                 }
               }
             },
-            [_vm._v("Save")]
+            [
+              _c("vs-icon", { attrs: { icon: "save" } }),
+              _vm._v(_vm._s(_vm.$t("Save")))
+            ],
+            1
           ),
           _vm._v(" "),
           _c(
@@ -94158,7 +94223,11 @@ var render = function() {
                 }
               }
             },
-            [_vm._v("Delete")]
+            [
+              _c("vs-icon", { attrs: { icon: "delete" } }),
+              _vm._v(_vm._s(_vm.$t("Delete")))
+            ],
+            1
           )
         ],
         1
@@ -94471,7 +94540,7 @@ var render = function() {
           _c("input", {
             attrs: {
               icon: "search",
-              placeholder: _vm.$t("Search"),
+              placeholder: _vm.$t("Search") + "...",
               id: "theLiveSearch"
             },
             on: {
@@ -94506,7 +94575,7 @@ var render = function() {
           }
         },
         [
-          _c("div", { staticClass: "row col-10" }, [
+          _c("div", { staticClass: "row col-12" }, [
             _c(
               "label",
               {
@@ -94632,7 +94701,14 @@ var render = function() {
           _c(
             "vs-navbar-item",
             { attrs: { index: "1" } },
-            [_c("router-link", { attrs: { to: "/" } }, [_vm._v("Home")])],
+            [
+              _c(
+                "router-link",
+                { attrs: { to: "/" } },
+                [_c("vs-icon", { attrs: { icon: "home" } }), _vm._v("Home")],
+                1
+              )
+            ],
             1
           ),
           _vm._v(" "),
@@ -94640,9 +94716,15 @@ var render = function() {
             "vs-navbar-item",
             { attrs: { index: "9" } },
             [
-              _c("router-link", { attrs: { to: "/categories" } }, [
-                _vm._v(_vm._s(_vm.$t("Categories")))
-              ])
+              _c(
+                "router-link",
+                { attrs: { to: "/categories" } },
+                [
+                  _c("vs-icon", { attrs: { icon: "view_list" } }),
+                  _vm._v(_vm._s(_vm.$t("Categories")))
+                ],
+                1
+              )
             ],
             1
           ),
@@ -94651,9 +94733,15 @@ var render = function() {
             "vs-navbar-item",
             { attrs: { index: "3" } },
             [
-              _c("router-link", { attrs: { to: "/tags" } }, [
-                _vm._v(_vm._s(_vm.$t("Tags")))
-              ])
+              _c(
+                "router-link",
+                { attrs: { to: "/tags" } },
+                [
+                  _c("vs-icon", { attrs: { icon: "tag" } }),
+                  _vm._v(_vm._s(_vm.$t("Tags")))
+                ],
+                1
+              )
             ],
             1
           ),
@@ -94662,9 +94750,15 @@ var render = function() {
             "vs-navbar-item",
             { attrs: { index: "2" } },
             [
-              _c("router-link", { attrs: { to: "/charts" } }, [
-                _vm._v("Charts")
-              ])
+              _c(
+                "router-link",
+                { attrs: { to: "/charts" } },
+                [
+                  _c("vs-icon", { attrs: { icon: "multiline_chart" } }),
+                  _vm._v("Charts")
+                ],
+                1
+              )
             ],
             1
           ),
@@ -94706,7 +94800,7 @@ var render = function() {
                     { attrs: { index: "7.1" } },
                     [
                       _c("router-link", { attrs: { to: "/admin/users" } }, [
-                        _vm._v("Users")
+                        _vm._v(_vm._s(_vm.$t("Users")))
                       ])
                     ],
                     1
@@ -94731,7 +94825,7 @@ var render = function() {
                       }
                     }
                   },
-                  [_vm._v("Load all medias")]
+                  [_vm._v("Load all " + _vm._s(_vm.$t("medias")))]
                 )
               ]),
               _vm._v(" "),
@@ -94750,11 +94844,35 @@ var render = function() {
                 )
               ]),
               _vm._v(" "),
-              _c("p", [_vm._v("Medias loaded: " + _vm._s(_vm.medias.length))]),
+              _c("p", [
+                _vm._v(
+                  _vm._s(_vm.$t("Medias")) +
+                    " " +
+                    _vm._s(_vm.$t("loaded")) +
+                    ": " +
+                    _vm._s(_vm.medias.length)
+                )
+              ]),
               _vm._v(" "),
-              _c("p", [_vm._v("Users loaded: " + _vm._s(_vm.users.length))]),
+              _c("p", [
+                _vm._v(
+                  _vm._s(_vm.$t("Users")) +
+                    " " +
+                    _vm._s(_vm.$t("loaded")) +
+                    ": " +
+                    _vm._s(_vm.users.length)
+                )
+              ]),
               _vm._v(" "),
-              _c("p", [_vm._v("Tags loaded: " + _vm._s(_vm.tags.length))])
+              _c("p", [
+                _vm._v(
+                  _vm._s(_vm.$t("Tags")) +
+                    " " +
+                    _vm._s(_vm.$t("loaded")) +
+                    ": " +
+                    _vm._s(_vm.tags.length)
+                )
+              ])
             ],
             1
           ),
@@ -95467,11 +95585,11 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("vs-th", { attrs: { "sort-key": "created_at" } }, [
-                _vm._v("Created")
+                _vm._v(_vm._s(_vm.$t("Created at")))
               ]),
               _vm._v(" "),
               _c("vs-th", { attrs: { "sort-key": "updated_at" } }, [
-                _vm._v("Updated")
+                _vm._v(_vm._s(_vm.$t("Updated at")))
               ]),
               _vm._v(" "),
               _c("vs-th", { attrs: { "sort-key": "admin" } }, [_vm._v("Admin")])
@@ -95596,7 +95714,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("h3", [_vm._v("My Videos")]),
+    _c("h3", [_vm._v(_vm._s(_vm.$t("My")) + " " + _vm._s(_vm.$t("medias")))]),
     _vm._v(" "),
     _c(
       "div",
@@ -95620,7 +95738,11 @@ var render = function() {
                     staticClass: "btn btn-sm btn-info float-left",
                     attrs: { to: "/mediaedit/" + item.urlTitle }
                   },
-                  [_vm._v("Edit")]
+                  [
+                    _c("vs-icon", { attrs: { icon: "edit" } }),
+                    _vm._v(_vm._s(_vm.$t("Edit")))
+                  ],
+                  1
                 ),
                 _vm._v(" "),
                 _c(
@@ -95633,7 +95755,11 @@ var render = function() {
                       }
                     }
                   },
-                  [_vm._v("Delete")]
+                  [
+                    _c("vs-icon", { attrs: { icon: "delete" } }),
+                    _vm._v(_vm._s(_vm.$t("Delete")))
+                  ],
+                  1
                 )
               ],
               1
@@ -96129,7 +96255,7 @@ var render = function() {
     _vm._v(" "),
     _c("form", { attrs: { id: "theForm" } }, [
       _c("div", { staticClass: "form-group row" }, [
-        _c("label", [_vm._v("Title")]),
+        _c("label", [_vm._v(_vm._s(_vm.$("Title")))]),
         _vm._v(" "),
         _c("input", {
           attrs: { type: "hidden", name: "_token" },
@@ -96151,13 +96277,19 @@ var render = function() {
         })
       ]),
       _vm._v(" "),
-      _vm._m(0),
+      _c("div", { staticClass: "form-group row" }, [
+        _c("label", [_vm._v(_vm._s(_vm.$("Description")))]),
+        _vm._v(" "),
+        _vm._m(0)
+      ]),
       _vm._v(" "),
       _c(
         "div",
         { staticClass: "form-group row" },
         [
-          _c("label", [_vm._v("Parent-Category")]),
+          _c("label", [
+            _vm._v(_vm._s(_vm.$t("Parent")) + "-" + _vm._s(_vm.$t("category")))
+          ]),
           _vm._v(" "),
           _c("treeselect", {
             attrs: {
@@ -96188,7 +96320,11 @@ var render = function() {
           }
         }
       },
-      [_vm._v("Save")]
+      [
+        _c("vs-icon", { attrs: { icon: "save" } }),
+        _vm._v(_vm._s(_vm.$t("Save")))
+      ],
+      1
     ),
     _vm._v(" "),
     _c(
@@ -96201,7 +96337,11 @@ var render = function() {
           }
         }
       },
-      [_vm._v("Delete")]
+      [
+        _c("vs-icon", { attrs: { icon: "delete" } }),
+        _vm._v(_vm._s(_vm.$t("Delete")))
+      ],
+      1
     )
   ])
 }
@@ -96210,21 +96350,17 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row" }, [
-      _c("label", [_vm._v("Description")]),
-      _vm._v(" "),
-      _c("p", [
-        _c("textarea", {
-          staticClass: "form-control",
-          attrs: {
-            placeholder: "Media-description",
-            id: "description",
-            name: "description",
-            cols: "50",
-            rows: "10"
-          }
-        })
-      ])
+    return _c("p", [
+      _c("textarea", {
+        staticClass: "form-control",
+        attrs: {
+          placeholder: "Media-description",
+          id: "description",
+          name: "description",
+          cols: "50",
+          rows: "10"
+        }
+      })
     ])
   }
 ]
@@ -96421,7 +96557,7 @@ var render = function() {
         _vm._v(" "),
         _c("form", { attrs: { id: "theForm" } }, [
           _c("div", { staticClass: "form-group row" }, [
-            _c("label", [_vm._v("Title")]),
+            _c("label", [_vm._v(_vm._s(_vm.$t("Title")))]),
             _vm._v(" "),
             _c("input", {
               attrs: { type: "hidden", name: "_token" },
@@ -96440,7 +96576,7 @@ var render = function() {
             _c("input", {
               staticClass: "form-control",
               attrs: {
-                placeholder: "Media-title",
+                placeholder: _vm.$t("Title") + "...",
                 name: "title",
                 type: "text"
               },
@@ -96449,13 +96585,13 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "form-group row" }, [
-            _c("label", [_vm._v("Description")]),
+            _c("label", [_vm._v(_vm._s(_vm.$t("Description")))]),
             _vm._v(" "),
             _c("p", [
               _c("textarea", {
                 staticClass: "form-control",
                 attrs: {
-                  placeholder: "Media-description",
+                  placeholder: _vm.$t("Description") + "...",
                   id: "description",
                   name: "description",
                   cols: "50",
@@ -96470,7 +96606,11 @@ var render = function() {
             "div",
             { staticClass: "form-group row" },
             [
-              _c("label", [_vm._v("Parent-Category")]),
+              _c("label", [
+                _vm._v(
+                  _vm._s(_vm.$t("Parent")) + "-" + _vm._s(_vm.$t("category"))
+                )
+              ]),
               _vm._v(" "),
               _c("treeselect", {
                 attrs: {
@@ -96501,7 +96641,11 @@ var render = function() {
               }
             }
           },
-          [_vm._v(_vm._s(_vm.$t("Save")))]
+          [
+            _c("vs-icon", { attrs: { icon: "save" } }),
+            _vm._v(_vm._s(_vm.$t("Save")))
+          ],
+          1
         ),
         _vm._v(" "),
         _c(
@@ -96647,7 +96791,7 @@ var render = function() {
               : _vm._e()
           }),
           _vm._v(" "),
-          _c("h5", [_vm._v("Medias")]),
+          _c("h5", [_vm._v(_vm._s(_vm.$t("Medias")))]),
           _vm._v(" "),
           _c(
             "div",

@@ -60,7 +60,7 @@
           </div>
       </div>
     </form>
-    <button @click="submitAction();" class="btn btn-success" >Save</button> 
+    <button @click="submitAction();" class="btn btn-success" ><vs-icon icon="save"></vs-icon>{{ $t('Save') }}</button> 
     </div>
 </template>
 <script>

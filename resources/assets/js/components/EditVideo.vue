@@ -1,15 +1,15 @@
 <template>
     <div v-if="currentmedia!=undefined" class="col-xs-12 col-sm-12 col-md-12">
-      <h4>Edit media</h4>
+      <h4>{{ $t('Edit') }} {{ $t('media') }}</h4>
       <form id="theForm">
         <div class="form-group row">
-          <label>Media-title</label>
+          <label>{{ $t('Title') }}</label>
           <input type="hidden" name="_token" :value="csrf">
           <input type="hidden" value="" name="image" id="addMediaImage" />
           <input placeholder="Media-title" class="form-control" :value="currentmedia.title" name="title" type="text">
         </div>
         <div class="form-group row">
-          <label>Media-type (only for restore):</label>
+          <label>{{ $t('Type') }} (only for restore):</label>
           <select name="type" v-model="mediaType">
             <option value="localAudio">Local audio</option>
             <option value="localVideo">Local video</option>
@@ -22,19 +22,19 @@
           </select>
         </div>
         <div class="form-group row">
-          <label>Category</label>
+          <label>{{ $t('Category') }}</label>
           <treeselect v-model="catid" name="category_id" :multiple="false" :options="treecatptions" />
         </div>
         <div class="form-group row">
-          <label>Source:</label>
-          <p>{{currentmedia.source}}</p>
+          <label>{{ $t('Source') }}</label>
+          <input readonly class="form-control" :value="currentmedia.source" id="duration" name="duration" type="text">
         </div>
         <div v-if="currentmedia.type!='localAudio'&currentmedia.type!='localVideo'" class="form-group row">
-            <label>Duration:</label>
+            <label>{{ $t('Duration') }}</label>
             <input placeholder="00:00:00" class="form-control" :value="currentmedia.duration" id="duration" name="duration" type="text">
         </div>
         <div class="form-group row">
-          <label>Media-poster:</label>
+          <label>{{ $t('Poster') }}</label>
           <vue-croppie
             ref="croppieRef"
             :enableOrientation="true"
@@ -51,7 +51,7 @@
           <div id="poster"></div>
         </div>
         <div class="form-group row">
-          <label>Media-description:</label>
+          <label>{{ $t('Description') }}</label>
           <textarea placeholder="Media-description" id="addMediaDescription" class="form-control" :value="rmBr(currentmedia.description)" name="description" cols="50" rows="10"></textarea>
         </div>
         <div class="form-group row">
@@ -90,7 +90,7 @@
           <b-btn @click="$refs.myModalRef.hide()" class="mt-3 col-4" variant="outline-success" block >Cancel</b-btn>
         </div>
       </b-modal>
-      <button @click="submitAction();" class="btn btn-success" >Save</button> <button @click="openConfirm();" class="btn btn-danger float-right" >Delete</button>
+      <button @click="submitAction();" class="btn btn-success" ><vs-icon icon="save"></vs-icon>{{ $t('Save') }}</button> <button @click="openConfirm();" class="btn btn-danger float-right" ><vs-icon icon="delete"></vs-icon>{{ $t('Delete') }}</button>
     </div>
 </template>
 <script>
