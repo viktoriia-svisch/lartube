@@ -325,7 +325,9 @@ class siteManager {
     eventBus.$on('getMediasByCatId', id => {
       if(that.usedCatRequests.includes(id)==false){
         that.usedCatRequests.push(id);
-        that.receiveMedias("/internal-api/medias/byCatId/"+id+that.getIgnoreParam());
+        that.receiveMedias("/internal-api/medias/byCatId/"+id+that.getIgnoreParam(),false,function(){
+          eventBus.$emit('mediasByCatIdReceived',id);
+        });
       }
     });
     eventBus.$on('filterTypes', types => {
