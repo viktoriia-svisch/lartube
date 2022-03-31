@@ -7,6 +7,7 @@
         <div class="swiper-pagination" slot="pagination"></div>
         <div class="swiper-button-prev" style="" slot="button-prev"></div>
         <div class="swiper-button-next" slot="button-next"></div>
+        <div class="swiper-scrollbar" slot="scrollbar"></div>
       </swiper>
   </div>
 </template>
@@ -39,7 +40,7 @@ import { swiper, swiperSlide } from 'vue-awesome-swiper'
       return {
         swiperOption: {
           slidesPerView: 2,
-          spaceBetween: 10,
+          spaceBetween: 5,
           grabCursor: true,
           loop: true,
           pagination: {
@@ -59,7 +60,11 @@ import { swiper, swiperSlide } from 'vue-awesome-swiper'
           navigation: {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev'
-          }
+          },
+          scrollbar: {
+          el: '.swiper-scrollbar'
+        },
+        mousewheel: true
         }
       }
     }
