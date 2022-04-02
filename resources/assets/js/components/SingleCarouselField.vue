@@ -11,6 +11,7 @@
               <p class="card-text">
                 {{ shorteneddescription(item) }}
               </p>
+              <p>{{ item.simpleType }}</p>
             </b-card>
           </router-link>
         </div>
