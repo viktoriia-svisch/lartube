@@ -31,8 +31,8 @@
               <p>Uploaded by {{ currentmedia.user.name }}</p>
             </b-tooltip>
             <b-tooltip target="created_at" placement="top">
-              <p>{{ $t('Created at') }} {{ $d(new Date(currentmedia.created_at.date),'short') }}</p>
-              <p>{{ $t('Updated at') }} {{ $d(new Date(currentmedia.updated_at.date),'short') }}</p>
+              <p>{{ $t('Created at') }} {{ currentmedia.created_at.date  }}</p>
+              <p>{{ $t('Updated at') }} {{ currentmedia.updated_at.date  }}</p>
             </b-tooltip>
             <b-tooltip target="category" v-if="currentCat!=undefined" placement="top">
               <h5>{{ currentCat.title }}</h5>
@@ -91,7 +91,7 @@
         <p>Uploadspeed: {{ uploadspeed }}</p>
         <p>Downloadpercent: {{ downloadpercent }}</p>
         <p><vs-switch v-model="chartEnabled"/><label>Enable chart (workaround)</label></p>
-        <p><apexchart v-if="chartEnabled" width="500" type="line" id="chart3" :options="chartOptions2" :series="chartData"></apexchart></p>
+        <p><apexchart v-if="chartEnabled" width="100%" type="line" id="chart3" :options="chartOptions2" :series="chartData"></apexchart></p>
       </b-modal>
   </div>
 </template>
@@ -117,11 +117,7 @@
       getCategoryById(category_id,data=undefined){
         var res;
         let that = this;
-        var idata = this.categories
-        if(data!=undefined){
-          idata = data
-        }
-        $.each( idata, function( key, value ) {
+        $.each( data, function( key, value ) {
           if(value.children.length>0){
             var t = that.getCategoryById(category_id,value.children)
             if(t!=undefined){
@@ -195,17 +191,21 @@
           eventBus.$emit('loadMore','');
         },
         getCurrentMedia() {
-                    let that = this;
-          var theMedia = emptyMedia
+          let that = this;
+          var theMedia = undefined
           this.medias.forEach(function(val,key){
             if(val.urlTitle==encodeURIComponent(that.$route.params.currentTitle)){
               theMedia = val;
-              that.currentCat = that.getCategoryById(val.category_id)
+              that.blockGetRequest=false
+              that.currentCat = that.getCategoryById(val.category_id,that.categories)
             }
           });
-          if(theMedia==emptyMedia){
+          if(theMedia==undefined){
             console.log("media not there yet, want it!");
-            eventBus.$emit('loadMedia',encodeURIComponent(that.$route.params.currentTitle));
+            if(this.blockGetRequest==false){
+              this.blockGetRequest=true
+              eventBus.$emit('loadMedia',encodeURIComponent(that.$route.params.currentTitle));
+            }
           }
           return theMedia;
         }
@@ -225,10 +225,13 @@
         eventBus.$emit('audioVisualType',[this.audiovisualtype,this.audioVisualChangeSeconds]);
   },
   medias: function(val){
+    console.log("medias change")
     this.currentmedia = this.getCurrentMedia();
-    this.mylike = Number(this.currentmedia.myLike);
-    this.likes = this.currentmedia.likes;
-    this.dislikes = this.currentmedia.dislikes;
+    if(this.currentmedia!=undefined){
+      this.mylike = Number(this.currentmedia.myLike);
+      this.likes = this.currentmedia.likes;
+      this.dislikes = this.currentmedia.dislikes;
+    }
 },
   audioVisualChangeSeconds:function(val){
     localStorage.setItem('audioVisualChangeSeconds',this.audioVisualChangeSeconds);
@@ -239,38 +242,28 @@
       series2: function () {
         return this.chartData;
       },
-      visualPresets: function () {
-        return butterchurnPresets.getPresets();
-      },
-          },
+    },
     updated: function () {
       this.$nextTick(function () {
-        if(this.inited==false){
-          this.inited=true;
-          this.currentmedia = this.getCurrentMedia();
-                    this.mylike = Number(this.currentmedia.myLike);
-          this.likes = this.currentmedia.likes;
-          this.dislikes = this.currentmedia.dislikes;
-        }
       });
     },
     mounted(){
       let that = this;
-      console.log("autoplay-var")
-      console.log(localStorage.getItem("autoplay"))
+      this.currentmedia = this.getCurrentMedia()
       if(localStorage.getItem("autoplay")=='true'){
         this.autoplay=true;
       }
-            if(localStorage.getItem('audioVisualType')!=undefined&localStorage.getItem('audioVisualType')!=''){
+      if(localStorage.getItem('audioVisualType')!=undefined&localStorage.getItem('audioVisualType')!=''){
         this.audiovisualtype=localStorage.getItem('audioVisualType');
       }
       if(localStorage.getItem('audioVisualChangeSeconds')!=undefined&localStorage.getItem('audioVisualChangeSeconds')!=''){
         this.audioVisualChangeSeconds=localStorage.getItem('audioVisualChangeSeconds');
       }
-      this.currentmedia = this.getCurrentMedia();
-      this.mylike = Number(this.currentmedia.myLike);
-      this.likes = this.currentmedia.likes;
-      this.dislikes = this.currentmedia.dislikes;
+            if(this.currentmedia!=undefined){
+        this.mylike = Number(this.currentmedia.myLike);
+        this.likes = this.currentmedia.likes;
+        this.dislikes = this.currentmedia.dislikes;
+      }
       eventBus.$emit('audioVisualType',[this.audiovisualtype,this.audioVisualChangeSeconds]);
       eventBus.$on('torrentChartData', chartData => {
                 that.peers = chartData[0][0];
@@ -284,11 +277,13 @@
              },
   data(){
     return {
+      blockGetRequest:false,
       mylike:0,
       likes:0,
       dislikes:0,
       inited: false,
       peers: '',
+      visualPresets:butterchurnPresets.getPresets(),
       currentCat: undefined,
       data:'',
       currentmedia:emptyMedia,
