@@ -220,6 +220,7 @@ class siteManager {
       }
       that.medias = theMediaSorter.sort(that.medias)
       if(that.currentMediaId!=0){
+        console.log("nextMedias set by sort")
         that.nextMedias = that.nextVideosList(that.currentMediaId);
         theVue.nextvideos = that.nextMedias;
       }
@@ -227,14 +228,16 @@ class siteManager {
       theVue.medias = that.getFilteredMedias()
     });
     eventBus.$on('commentCreated', json => {
-      that.receiveMediaById(json.data.media_id)
-      that.updateCSRF();
-      theVue.alert("Comment created","success")
+      that.receiveMediaById(json.data.media_id, function(){
+        that.updateCSRF();
+        theVue.alert(theVue.$t("Comment")+" "+theVue.$t("created"),"success")
+      })
     });
     eventBus.$on('refreshMedia', id => {
-      that.receiveMediaById(id)
-      that.updateCSRF();
-      theVue.alert("Media refreshed","success")
+      that.receiveMediaById(id,function(){
+        that.updateCSRF();
+        theVue.alert(theVue.$t("Media")+" "+theVue.$t("refreshed"),"success")
+      })
     });
     eventBus.$on('loadMediaById', id => {
       that.receiveMediaById(id)
@@ -244,16 +247,18 @@ class siteManager {
       }
     });
     eventBus.$on('loadMediaByCommentId', id => {
-      if(theVue!=undefined){
-        that.receiveMediaByCommentId(id)
+      that.receiveMediaByCommentId(id,function(){
         that.updateCSRF();
-      }
-      theVue.alert("Media load by comment","success")
+        if(theVue!=undefined){
+          theVue.alert("Media load by comment","success")
+        }
+      })
     });
     eventBus.$on('loadMedia', title => {
       that.receiveMediaByName(encodeURIComponent(title), function(id){
         that.updateCSRF();
         if(theVue!=undefined){
+          console.log("[loadMedia] update the vue after receive media")
           theVue.fullmedias = that.medias
           theVue.medias = that.getFilteredMedias(that.medias)
           if(theVue.$route.params.currentTitle!=undefined){
@@ -311,7 +316,7 @@ class siteManager {
        if($(window).scrollTop() + $(window).height() > $(document).height() - 50) {
          if(theVue.canloadmore&&that.blockScrollExecution==false){
            if(theVue.$router.currentRoute.path=="/"||theVue.$router.currentRoute.path=="/tags"){
-           console.log("near bottom, do a request and block!");
+           console.log("near bottom, do a request and block until request done!");
            that.blockScrollExecution=true
            that.loadMorePages(function(){
              console.log("done, allow next request")
@@ -328,6 +333,7 @@ class siteManager {
       if(that.usedCatRequests.includes(id)==false){
         that.usedCatRequests.push(id);
         that.receiveMedias("/internal-api/medias/byCatId/"+id+that.getIgnoreParam(),false,function(){
+          that.fillMediasToCat();
           eventBus.$emit('mediasByCatIdReceived',id);
         });
       }
@@ -463,15 +469,12 @@ if(localStorage.getItem('cookiePolicy')!="read"){
 }
   }
   loadMorePages(callback=undefined){
-    console.log("load more pages")
-    console.log(this.totalMedias)
-    console.log("vs")
-    console.log(this.medias.length)
     if(this.totalMedias>this.medias.length){
+      console.log("loadMorePages go for")
       this.receiveMedias('/internal-api/media?'+this.getIgnoreParam(false),false,callback)
       theVue.canloadmore=true;
   } else {
-    console.log("end reached")
+    console.log("loadMorePages end reached")
     theVue.canloadmore=false;
   }
 }
@@ -517,7 +520,6 @@ if(localStorage.getItem('cookiePolicy')!="read"){
       that.csrf = data.csrf;
       that.totalMedias = data.totalMedias;
       if(theVue!=undefined){
-        console.log("update the vue total medias"+data.totalMedias)
         theVue.csrf = data.csrf;
         theVue.totalmedias = data.totalMedias
         if(that.totalMedias>that.medias.length){

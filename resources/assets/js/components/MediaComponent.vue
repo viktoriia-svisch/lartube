@@ -31,8 +31,8 @@
               <p>Uploaded by {{ currentmedia.user.name }}</p>
             </b-tooltip>
             <b-tooltip target="created_at" placement="top">
-              <p>{{ $t('Created at') }} {{ currentmedia.created_at.date  }}</p>
-              <p>{{ $t('Updated at') }} {{ currentmedia.updated_at.date  }}</p>
+              <p>{{ $t('Created at') }} {{ $d(new Date(currentmedia.created_at.date),'short') }}</p>
+              <p>{{ $t('Updated at') }} {{ $d(new Date(currentmedia.updated_at.date),'short') }}</p>
             </b-tooltip>
             <b-tooltip target="category" v-if="currentCat!=undefined" placement="top">
               <h5>{{ currentCat.title }}</h5>
@@ -274,7 +274,7 @@
         that.chartData[1].data.push(chartData[2])
         that.chartData[2].data.push(chartData[3])
       });
-             },
+  },
   data(){
     return {
       blockGetRequest:false,
@@ -286,7 +286,7 @@
       visualPresets:butterchurnPresets.getPresets(),
       currentCat: undefined,
       data:'',
-      currentmedia:emptyMedia,
+      currentmedia:undefined,
       originalLikes: 0,
       originalDislikes: 0,
       audioVisualChangeSeconds:0.0,
