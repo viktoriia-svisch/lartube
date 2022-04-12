@@ -1,9 +1,10 @@
 var baseUrl;
 import Vue from 'vue';
+import Vuex from 'vuex';
 import Router from 'vue-router';
 import BootstrapVue from 'bootstrap-vue';
 import VueCroppie from 'vue-croppie';
-import { eventBus } from './eventBus';
+import { eventBus, store } from './eventBus';
 import translation from './translation';
 import dateTranslation from './dateTranslation';
 import { MediaSorter, Search } from './tools';
@@ -16,13 +17,22 @@ import VuePlyr from 'vue-plyr';
 import VueI18n from 'vue-i18n';
 import Treeselect from '@riophae/vue-treeselect';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
-var app;
+Vue.use(Vuex);
+Vue.use(Router);
+Vue.use(BootstrapVue);
+Vue.use(VueCroppie);
+Vue.use(VueApexCharts);
+Vue.use(Vuesax);
+Vue.use(VuePlyr);
+Vue.use(VueI18n);
+Vue.component('treeselect', Treeselect);
+Vue.component('apexchart', VueApexCharts);
 var theVue;
 var searchDelay;
 var theMediaSorter = new MediaSorter();
 var i18n;
-var siteManager =  (function () {
-    function siteManager(base) {
+class siteManager {
+    constructor(base) {
         this.currentMediaId = 0;
         this.initing = true;
         this.blockScrollExecution = false;
@@ -44,17 +54,7 @@ var siteManager =  (function () {
         this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         setInterval(this.updateCSRF, 1800000);
     }
-    siteManager.prototype.initVue = function () {
-        var _this = this;
-        Vue.use(Router);
-        Vue.use(BootstrapVue);
-        Vue.use(VueCroppie);
-        Vue.use(VueApexCharts);
-        Vue.use(Vuesax);
-        Vue.use(VuePlyr);
-        Vue.use(VueI18n);
-        Vue.component('treeselect', Treeselect);
-        Vue.component('apexchart', VueApexCharts);
+    initVue() {
         var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
         var player = Vue.component('player', require("./components/MediaComponent.vue"));
         var profileComp = Vue.component('profile', require("./components/ProfileComponent.vue"));
@@ -75,8 +75,8 @@ var siteManager =  (function () {
         var ccComp = Vue.component('thesidebar', require("./components/CreateCategory.vue"));
         var ceComp = Vue.component('thesidebar', require("./components/EditCategory.vue"));
         var singleCatComp = Vue.component('thesidebar', require("./components/Category.vue"));
-        var that = this;
-        var routes = [
+        let that = this;
+        const routes = [
             { path: '/', component: overview },
             { path: '/media/:currentTitle', component: player },
             { path: '/profile/:profileId', component: profileComp },
@@ -98,19 +98,19 @@ var siteManager =  (function () {
             { path: '/admin/users', component: uaComp },
             { path: '/mediaedit/:editTitle', component: editVideoComp }
         ];
-        eventBus.$on('getNotifications', function (url) {
+        eventBus.$on('getNotifications', url => {
             theVue.alert("Look for new notifications");
             that.receiveNotifications(url);
         });
-        eventBus.$on('getNewMedias', function (title) {
+        eventBus.$on('getNewMedias', title => {
             theVue.alert("Look for new medias..");
             that.receiveMedias();
         });
-        eventBus.$on('languageChange', function (lang) {
+        eventBus.$on('languageChange', lang => {
             console.log("change language to " + lang);
             i18n.locale = lang;
         });
-        eventBus.$on('userEdited', function (id) {
+        eventBus.$on('userEdited', id => {
             theVue.alert("Look for new users..");
             that.receiveUsers();
             that.updateCSRF();
@@ -118,20 +118,20 @@ var siteManager =  (function () {
                 theVue.$router.push("/profile/" + id);
             }
         });
-        eventBus.$on('refreshMedias', function (title) {
+        eventBus.$on('refreshMedias', title => {
             theVue.canloadmore = true;
             that.catchedTagMedias = [];
-            _this.usedSearchTerms = [];
-            _this.usedCatRequests = [];
-            that.receiveMedias("/internal-api/media" + _this.getIgnoreParam(), true);
+            this.usedSearchTerms = [];
+            this.usedCatRequests = [];
+            that.receiveMedias("/internal-api/media" + this.getIgnoreParam(), true);
             that.updateCSRF();
         });
-        eventBus.$on('loadAllMedias', function (title) {
-            that.receiveMedias("/internal-api/medias/all" + _this.getIgnoreParam());
+        eventBus.$on('loadAllMedias', title => {
+            that.receiveMedias("/internal-api/medias/all" + this.getIgnoreParam());
             theVue.canloadmore = false;
             that.updateCSRF();
         });
-        eventBus.$on('autoplayNextVideo', function (id) {
+        eventBus.$on('autoplayNextVideo', id => {
             console.log("received autoplay");
             var tmpv = that.nextVideosList(id);
             if (tmpv.length > 0) {
@@ -169,10 +169,10 @@ var siteManager =  (function () {
                 });
             }
         });
-        eventBus.$on('login', function (settings) {
-            _this.initing = false;
-            _this.loggedUserId = settings.user_id;
-            theVue.loggeduserid = _this.loggedUserId;
+        eventBus.$on('login', settings => {
+            this.initing = false;
+            this.loggedUserId = settings.user_id;
+            theVue.loggeduserid = this.loggedUserId;
             that.receiveUsers(function () {
                 that.currentUser = that.getUserById(that.loggedUserId);
                 theVue.currentuser = that.currentUser;
@@ -181,23 +181,24 @@ var siteManager =  (function () {
             theVue.$router.push('/');
             that.updateCSRF();
         });
-        eventBus.$on('logout', function (settings) {
-            _this.loggedUserId = 0;
-            theVue.loggeduserid = _this.loggedUserId;
+        eventBus.$on('logout', settings => {
+            this.loggedUserId = 0;
+            theVue.loggeduserid = this.loggedUserId;
             that.currentUser = that.getUserById(that.loggedUserId);
             theVue.currentuser = that.currentUser;
             theVue.alert("Logged out", "danger", "power_settings_new");
             theVue.$router.push('/');
             that.updateCSRF();
         });
-        eventBus.$on('loginFailed', function (settings) {
+        eventBus.$on('loginFailed', settings => {
             theVue.alert("Login failed", "danger", "error");
         });
-        eventBus.$on('loadUserVideos', function (userid) {
-            that.receiveMedias("/internal-api/medias/by/" + userid + _this.getIgnoreParam());
+        eventBus.$on('loadUserVideos', userid => {
+            that.receiveMedias("/internal-api/medias/by/" + userid + this.getIgnoreParam());
         });
-        eventBus.$on('sortBy', function (sortBy) {
-            theMediaSorter.sortBy = sortBy;
+        eventBus.$on('sortBy', sortBy => {
+            theMediaSorter.setSortBy(sortBy);
+            store.commit("sortMediasBy", sortBy);
             if (theVue.$router.currentRoute.path == "/search") {
                 theVue.search.mediaResult = theMediaSorter.sort(theVue.search.mediaResult);
             }
@@ -210,26 +211,26 @@ var siteManager =  (function () {
             theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();
         });
-        eventBus.$on('commentCreated', function (json) {
+        eventBus.$on('commentCreated', json => {
             that.receiveMediaById(json.data.media_id, function () {
                 that.updateCSRF();
                 theVue.alert(theVue.$t("Comment") + " " + theVue.$t("created"), "success");
             });
         });
-        eventBus.$on('refreshMedia', function (id) {
+        eventBus.$on('refreshMedia', id => {
             that.receiveMediaById(id, function () {
                 that.updateCSRF();
                 theVue.alert(theVue.$t("Media") + " " + theVue.$t("refreshed"), "success");
             });
         });
-        eventBus.$on('loadMediaById', function (id) {
+        eventBus.$on('loadMediaById', id => {
             that.receiveMediaById(id);
             that.updateCSRF();
             if (theVue != undefined) {
                 theVue.alert("Media load by id", "success");
             }
         });
-        eventBus.$on('loadMediaByCommentId', function (id) {
+        eventBus.$on('loadMediaByCommentId', id => {
             that.receiveMediaByCommentId(id, function () {
                 that.updateCSRF();
                 if (theVue != undefined) {
@@ -237,9 +238,10 @@ var siteManager =  (function () {
                 }
             });
         });
-        eventBus.$on('loadMedia', function (title) {
+        eventBus.$on('loadMedia', title => {
             that.receiveMediaByName(encodeURIComponent(title), function (id) {
                 that.updateCSRF();
+                store.commit("disableBlockRequest");
                 if (theVue != undefined) {
                     console.log("[loadMedia] update the vue after receive media");
                     theVue.fullmedias = that.medias;
@@ -252,30 +254,30 @@ var siteManager =  (function () {
                 }
             });
         });
-        eventBus.$on('videoDeleted', function (title) {
+        eventBus.$on('videoDeleted', title => {
             theVue.alert("Video " + title + " deleted", "success");
             that.deleteMediaByName(title);
             that.updateCSRF();
         });
-        eventBus.$on('videoCreated', function (json) {
+        eventBus.$on('videoCreated', json => {
             that.receiveTagsForMedia(json);
             theVue.alert("Video " + json.data.title + " created", "success");
             that.updateCSRF();
         });
-        eventBus.$on('categoriesRefreshed', function (json) {
+        eventBus.$on('categoriesRefreshed', json => {
             that.receiveCategories(function () {
                 theVue.alert("Categories refreshed", "success");
                 that.updateCSRF();
                 theVue.$router.push("/categories");
             });
         });
-        eventBus.$on('videoEdited', function (json) {
+        eventBus.$on('videoEdited', json => {
             that.deleteMediaByName(json[0]);
             that.receiveTagsForMedia(json[1]);
             theVue.alert("Video " + json[1].data.title + " edited", "success");
             that.updateCSRF();
         });
-        eventBus.$on('checkTag', function (tagName) {
+        eventBus.$on('checkTag', tagName => {
             if (tagName == '') {
                 if ($("#specialAllTag").is(":checked")) {
                     theVue.medias = that.getFilteredMedias();
@@ -294,7 +296,7 @@ var siteManager =  (function () {
                 }
             }
         });
-        eventBus.$on('loadMore', function (title) {
+        eventBus.$on('loadMore', title => {
             that.loadMorePages();
         });
         $(window).scroll(function () {
@@ -311,10 +313,10 @@ var siteManager =  (function () {
                 }
             }
         });
-        eventBus.$on('refreshSearch', function (title) {
+        eventBus.$on('refreshSearch', title => {
             theVue.searching();
         });
-        eventBus.$on('getMediasByCatId', function (id) {
+        eventBus.$on('getMediasByCatId', id => {
             if (that.usedCatRequests.includes(id) == false) {
                 that.usedCatRequests.push(id);
                 that.receiveMedias("/internal-api/medias/byCatId/" + id + that.getIgnoreParam(), false, function () {
@@ -323,19 +325,20 @@ var siteManager =  (function () {
                 });
             }
         });
-        eventBus.$on('filterTypes', function (types) {
+        eventBus.$on('filterTypes', types => {
             that.types = types;
+            store.commit("setFilterTypes", types);
             theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();
-            if (_this.currentMediaId != 0) {
-                that.nextMedias = that.nextVideosList(_this.currentMediaId);
+            if (this.currentMediaId != 0) {
+                that.nextMedias = that.nextVideosList(this.currentMediaId);
             }
             theVue.nextvideos = that.getFilteredMedias(that.nextMedias);
             if (theVue.$router.currentRoute.path == "/search") {
                 theVue.searching();
             }
         });
-        eventBus.$on('setCurrentMedia', function (id) {
+        eventBus.$on('setCurrentMedia', id => {
             console.log("set current id");
             that.currentMediaId = id;
             that.nextMedias = that.nextVideosList(id);
@@ -354,7 +357,7 @@ var siteManager =  (function () {
             dateTimeFormats: dateTranslation
         });
         theVue = new Vue({
-            i18n: i18n,
+            i18n,
             data: {
                 title: "Overview",
                 search: '',
@@ -377,25 +380,22 @@ var siteManager =  (function () {
             components: {
                 'thesidebar': sidebarComp
             },
-            router: new Router({ routes: routes,
-                scrollBehavior: function (to, from, savedPosition) {
+            router: new Router({ routes,
+                scrollBehavior(to, from, savedPosition) {
                     return { x: 0, y: 0 };
                 }
             }),
             methods: {
-                alert: function (msg, type, icon) {
-                    if (type === void 0) { type = "dark"; }
-                    if (icon === void 0) { icon = ''; }
+                alert(msg, type = "dark", icon = '') {
                     this.$vs.notify({ title: msg, text: '', icon: icon, color: type, position: 'bottom-center' });
                 },
-                openLoading: function () {
-                    var _this = this;
+                openLoading() {
                     this.$vs.loading();
-                    setTimeout(function () {
-                        _this.$vs.loading.close();
+                    setTimeout(() => {
+                        this.$vs.loading.close();
                     }, 2000);
                 },
-                searching: function () {
+                searching() {
                     var s = $("#theLiveSearch").val();
                     if (theVue.$router.currentRoute.path != "/search" && s != '') {
                         theVue.$router.push('/search');
@@ -422,10 +422,10 @@ var siteManager =  (function () {
                     }
                 }
             },
-            mounted: function () {
+            mounted() {
             },
             watch: {
-                $route: function (to, from) {
+                $route(to, from) {
                     if (to.params.profileId != undefined) {
                         this.user = sm.getUserById(to.params.profileId);
                         this.medias = sm.getMediasByUser(to.params.profileId);
@@ -441,10 +441,10 @@ var siteManager =  (function () {
                 }
             }
         }).$mount('#app');
-        theVue.$router.beforeResolve(function (to, from, next) {
+        theVue.$router.beforeResolve((to, from, next) => {
             next();
         });
-        theVue.$router.afterEach(function (to, from) {
+        theVue.$router.afterEach((to, from) => {
         });
         if (localStorage.getItem('cookiePolicy') != "read") {
             theVue.$vs.notify({
@@ -452,13 +452,12 @@ var siteManager =  (function () {
                 text: 'Some of your informations are saved in your browser or on the server (mostly in case of login).<br /> With a Ok you acceppt this. <br /> <a class="btn btn-success" onclick="localStorage.setItem(\'cookiePolicy\',\'read\');">Ok</a>',
                 color: 'primary',
                 fixed: true,
-                click: function () {
+                click: () => {
                 },
             });
         }
-    };
-    siteManager.prototype.loadMorePages = function (callback) {
-        if (callback === void 0) { callback = undefined; }
+    }
+    loadMorePages(callback = undefined) {
         if (this.totalMedias > this.medias.length) {
             console.log("loadMorePages go for");
             this.receiveMedias('/internal-api/media?' + this.getIgnoreParam(false), false, callback);
@@ -468,9 +467,8 @@ var siteManager =  (function () {
             console.log("loadMorePages end reached");
             theVue.canloadmore = false;
         }
-    };
-    siteManager.prototype.getFilteredMedias = function (myList) {
-        if (myList === void 0) { myList = undefined; }
+    }
+    getFilteredMedias(myList = undefined) {
         var theMedias = [];
         var origMedias;
         if (myList == undefined) {
@@ -479,7 +477,7 @@ var siteManager =  (function () {
         else {
             origMedias = myList;
         }
-        var that = this;
+        let that = this;
         $.each(origMedias, function (key, value) {
             $.each(that.types, function (key1, type) {
                 if (type == value.simpleType) {
@@ -495,9 +493,9 @@ var siteManager =  (function () {
             }
         });
         return theMedias;
-    };
-    siteManager.prototype.fillUser = function (comment) {
-        var that = this;
+    }
+    fillUser(comment) {
+        let that = this;
         $.each(comment.childs, function (key, value) {
             if (value.childs.length > 0) {
                 comment.childs[key] = that.fillUser(value);
@@ -506,9 +504,9 @@ var siteManager =  (function () {
         });
         comment.childs = comment.childs.sort(MediaSorter.byCreatedAtComments);
         return comment;
-    };
-    siteManager.prototype.updateCSRF = function () {
-        var that = this;
+    }
+    updateCSRF() {
+        let that = this;
         $.getJSON('/internal-api/refresh-csrf').done(function (data) {
             that.csrf = data.csrf;
             that.totalMedias = data.totalMedias;
@@ -526,10 +524,9 @@ var siteManager =  (function () {
                 }
             });
         });
-    };
-    siteManager.prototype.receiveUsers = function (callback) {
-        if (callback === void 0) { callback = undefined; }
-        var that = this;
+    }
+    receiveUsers(callback = undefined) {
+        let that = this;
         $.getJSON("/internal-api/users", function name(data) {
             that.users = [];
             if (that.loggedUserId == 0) {
@@ -549,15 +546,16 @@ var siteManager =  (function () {
                 that.users.push(u);
             });
             if (that.initing) {
-                that.receiveTags();
-                that.receiveCategories();
+                that.receiveTags(function () {
+                    that.receiveCategories();
+                });
             }
             if (callback != undefined) {
                 callback();
             }
         });
-    };
-    siteManager.prototype.nextVideosList = function (id) {
+    }
+    nextVideosList(id) {
         var nextVideos = [];
         var startAdd = false;
         $.each(this.getFilteredMedias(), function (key, value) {
@@ -569,9 +567,8 @@ var siteManager =  (function () {
             }
         });
         return nextVideos;
-    };
-    siteManager.prototype.getIgnoreParam = function (first) {
-        if (first === void 0) { first = true; }
+    }
+    getIgnoreParam(first = true) {
         var content = "&i=0";
         if (first) {
             content = "?i=0";
@@ -580,14 +577,13 @@ var siteManager =  (function () {
             content += "," + value.id;
         });
         return content + "&types=" + this.types.join() + "&sortBy=" + theMediaSorter.sortBy;
-    };
-    siteManager.prototype.mkTreeCat = function (data, l) {
-        if (l === void 0) { l = 0; }
+    }
+    mkTreeCat(data, l = 0) {
         var result = [];
         if (l == 0) {
             result = [{ id: 0, label: 'None' }];
         }
-        var that = this;
+        let that = this;
         $.each(data, function (key, value) {
             if (value.children.length > 0) {
                 result.push({ id: value.id, label: value.title, children: that.mkTreeCat(value.children, 1) });
@@ -597,12 +593,11 @@ var siteManager =  (function () {
             }
         });
         return result;
-    };
-    siteManager.prototype.resolveMediaCategorys = function () {
-    };
-    siteManager.prototype.receiveCategories = function (callback) {
-        if (callback === void 0) { callback = undefined; }
-        var that = this;
+    }
+    resolveMediaCategorys() {
+    }
+    receiveCategories(callback = undefined) {
+        let that = this;
         $.getJSON("/internal-api/categories", function name(data) {
             that.categories = [];
             $.each(data.data, function (key, value) {
@@ -610,20 +605,18 @@ var siteManager =  (function () {
             });
             that.fillMediasToCat();
             that.treecatptions = that.mkTreeCat(data.data);
+            store.commit("setCategories", that.categories);
             if (theVue != undefined) {
                 theVue.categories = that.categories;
                 theVue.treecatptions = that.treecatptions;
-                console.log(theVue.treecatptions);
             }
             if (callback != undefined) {
                 callback();
             }
         });
-    };
-    siteManager.prototype.receiveNotifications = function (url, callback) {
-        if (url === void 0) { url = '/internal-api/notifications'; }
-        if (callback === void 0) { callback = undefined; }
-        var that = this;
+    }
+    receiveNotifications(url = '/internal-api/notifications', callback = undefined) {
+        let that = this;
         if (this.loggedUserId != 0) {
             $.getJSON(url, function name(data) {
                 that.notifications = [];
@@ -651,8 +644,8 @@ var siteManager =  (function () {
                 }
             });
         }
-    };
-    siteManager.prototype.getCategoryMedias = function (category_id) {
+    }
+    getCategoryMedias(category_id) {
         var ma = [];
         $.each(this.medias, function (key, value) {
             if (value.category_id == category_id) {
@@ -660,11 +653,10 @@ var siteManager =  (function () {
             }
         });
         return ma;
-    };
-    siteManager.prototype.getCategoryKey = function (category_id, data) {
-        if (data === void 0) { data = undefined; }
+    }
+    getCategoryKey(category_id, data = undefined) {
         var res;
-        var that = this;
+        let that = this;
         var idata = this.categories;
         if (data != undefined) {
             idata = data;
@@ -681,11 +673,10 @@ var siteManager =  (function () {
             }
         });
         return res;
-    };
-    siteManager.prototype.getCategoryById = function (category_id, data) {
-        if (data === void 0) { data = undefined; }
+    }
+    getCategoryById(category_id, data = undefined) {
         var res;
-        var that = this;
+        let that = this;
         var idata = this.categories;
         if (data != undefined) {
             idata = data;
@@ -702,27 +693,27 @@ var siteManager =  (function () {
             }
         });
         return res;
-    };
-    siteManager.prototype.receiveTags = function (forceUpdate) {
-        if (forceUpdate === void 0) { forceUpdate = false; }
-        var that = this;
+    }
+    receiveTags(callback = undefined) {
+        let that = this;
         $.getJSON("/api/tags", function name(data) {
-            if ((that.tags == undefined) || (forceUpdate)) {
-                that.tags = [];
-                $.each(data.data, function (key, value) {
-                    that.tags.push(new Tag(value.id, value.name, value.slug, value.count));
-                });
-            }
+            that.tags = [];
+            $.each(data.data, function (key, value) {
+                that.tags.push(new Tag(value.id, value.name, value.slug, value.count));
+            });
             this.tags = that.tags;
+            store.commit("setTags", that.tags);
             if (theVue != undefined) {
                 theVue.tags = this.tags;
             }
+            if (callback != undefined) {
+                callback();
+            }
             that.receiveMedias();
         });
-    };
-    siteManager.prototype.receiveTagsForMedia = function (json, forceUpdate) {
-        if (forceUpdate === void 0) { forceUpdate = true; }
-        var that = this;
+    }
+    receiveTagsForMedia(json, forceUpdate = true) {
+        let that = this;
         $.getJSON("/api/tags", function name(data) {
             if ((that.tags == undefined) || (forceUpdate)) {
                 that.tags = [];
@@ -731,27 +722,23 @@ var siteManager =  (function () {
                 });
             }
             this.tags = that.tags;
+            store.commit("setTags", that.tags);
             if (theVue != undefined) {
                 theVue.tags = this.tags;
             }
             json = json.data;
-            that.medias.unshift(new Media(json.id, json.title, json.description, json.source, json.poster_source, json.duration, json.simpleType, json.techType, json.type, that.getUserById(json.user_id), json.user_id, json.created_at, json.updated_at, json.created_at_readable, json.comments, that.getTagsByIdArray(json.tagsIds), json.myLike, json.likes, json.dislikes, json.tracks, json.category_id));
-            theVue.fullmedias = that.medias;
-            theVue.medias = that.getFilteredMedias();
-            theVue.$router.push('/');
         });
-    };
-    siteManager.prototype.getCommentById2 = function (id, callback) {
-        if (callback === void 0) { callback = undefined; }
+    }
+    getCommentById2(id, callback = undefined) {
         if (id == null || id == 0) {
             return;
         }
         var theMedia = undefined;
-        var that = this;
+        let that = this;
         this.medias.forEach(function (val, key) {
-            val.comments.forEach(function (val2, key2) {
-                if (val2.id == id) {
-                    theMedia = val2;
+            val.comments.forEach(function (comment, key2) {
+                if (comment.id == id) {
+                    theMedia = comment;
                 }
             });
         });
@@ -764,10 +751,9 @@ var siteManager =  (function () {
             }
         }
         return theMedia;
-    };
-    siteManager.prototype.receiveMediaByCommentId = function (mediaName, callback) {
-        if (callback === void 0) { callback = undefined; }
-        var that = this;
+    }
+    receiveMediaByCommentId(mediaName, callback = undefined) {
+        let that = this;
         var theKey;
         var existsAlready = false;
         $.getJSON("/internal-api/medias/byCommentId/" + mediaName, function name(data) {
@@ -787,6 +773,7 @@ var siteManager =  (function () {
                     m.comments[key1].user = that.getUserById(value1.user_id);
                 });
                 that.medias.push(m);
+                store.commit("addMedia", m);
                 that.medias = theMediaSorter.sort(that.medias);
                 theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias();
@@ -811,16 +798,13 @@ var siteManager =  (function () {
                 callback();
             }
         });
-    };
-    siteManager.prototype.receiveMediaById = function (mediaName, callback) {
-        if (callback === void 0) { callback = undefined; }
-        var that = this;
+    }
+    receiveMediaById(mediaName, callback = undefined) {
+        let that = this;
         var theKey;
-        var existsAlready = false;
         $.getJSON("/internal-api/medias/byId/" + mediaName, function name(data) {
             $.each(that.medias, function (key, value) {
                 if (value.id == mediaName) {
-                    existsAlready = true;
                     theKey = key;
                 }
             });
@@ -832,6 +816,7 @@ var siteManager =  (function () {
                     m.comments[key1].user = that.getUserById(value1.user_id);
                 });
                 that.medias.push(m);
+                store.commit("addMedia", m);
                 that.medias = theMediaSorter.sort(that.medias);
                 theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias();
@@ -856,10 +841,9 @@ var siteManager =  (function () {
                 callback();
             }
         });
-    };
-    siteManager.prototype.receiveMediaByName = function (mediaName, callback) {
-        if (callback === void 0) { callback = undefined; }
-        var that = this;
+    }
+    receiveMediaByName(mediaName, callback = undefined) {
+        let that = this;
         var theKey;
         var existsAlready = false;
         var m;
@@ -880,6 +864,7 @@ var siteManager =  (function () {
                 });
                 if (that.medias.indexOf(m) == -1) {
                     that.medias.push(m);
+                    store.commit("addMedia", m);
                 }
                 that.medias = theMediaSorter.sort(that.medias);
             }
@@ -905,16 +890,16 @@ var siteManager =  (function () {
                 callback(data.id);
             }
         });
-    };
-    siteManager.prototype.getTagsByIdArray = function (arr) {
+    }
+    getTagsByIdArray(arr) {
         var tmpTags = [];
-        var that = this;
+        let that = this;
         $.each(arr, function (key, value) {
             tmpTags.push(that.findTagById(value));
         });
         return tmpTags;
-    };
-    siteManager.prototype.findTagById = function (id) {
+    }
+    findTagById(id) {
         var returner = undefined;
         $.each(this.tags, function (key, value) {
             if (value.id == id) {
@@ -922,22 +907,20 @@ var siteManager =  (function () {
             }
         });
         return returner;
-    };
-    siteManager.prototype.findMediaByName = function (mediaName) {
+    }
+    findMediaByName(mediaName) {
         var returnMedia = undefined;
-        var that = this;
+        let that = this;
         $.each(that.medias, function (key, value) {
             if (value.urlTitle == mediaName) {
                 returnMedia = value;
             }
         });
         return returnMedia;
-    };
-    siteManager.prototype.findMediaById = function (id, callback, getIfUndefined) {
-        if (callback === void 0) { callback = undefined; }
-        if (getIfUndefined === void 0) { getIfUndefined = true; }
+    }
+    findMediaById(id, callback = undefined, getIfUndefined = true) {
         var returnMedia = undefined;
-        var that = this;
+        let that = this;
         $.each(that.medias, function (key, value) {
             if (value.id == id) {
                 returnMedia = value;
@@ -954,10 +937,10 @@ var siteManager =  (function () {
             }
         }
         return returnMedia;
-    };
-    siteManager.prototype.deleteMediaByName = function (mediaName) {
+    }
+    deleteMediaByName(mediaName) {
         console.log("deletemethod reach");
-        var that = this;
+        let that = this;
         var i = 0;
         $.each(that.medias, function (key, value) {
             if (value != undefined) {
@@ -971,10 +954,9 @@ var siteManager =  (function () {
         theVue.fullmedias = that.medias;
         theVue.medias = that.getFilteredMedias();
         theVue.$router.push('/');
-    };
-    siteManager.prototype.fillMediasToCat = function (c) {
-        if (c === void 0) { c = undefined; }
-        var that = this;
+    }
+    fillMediasToCat(c = undefined) {
+        let that = this;
         if (c == undefined) {
             c = that.categories;
         }
@@ -984,15 +966,13 @@ var siteManager =  (function () {
                 that.fillMediasToCat(value.children);
             }
         });
-    };
-    siteManager.prototype.receiveMedias = function (url, forceUpdate, callback) {
-        if (url === void 0) { url = "/internal-api/media" + this.getIgnoreParam(); }
-        if (forceUpdate === void 0) { forceUpdate = false; }
-        if (callback === void 0) { callback = undefined; }
-        var that = this;
+    }
+    receiveMedias(url = "/internal-api/media" + this.getIgnoreParam(), forceUpdate = false, callback = undefined) {
+        let that = this;
         var loadCount = 0, replaceCount = 0;
         if ((forceUpdate) || (that.medias == undefined)) {
             that.medias = [];
+            store.commit("clearMedias");
         }
         if (this.totalMedias > this.medias.length) {
             $.getJSON(url, function name(data) {
@@ -1006,6 +986,7 @@ var siteManager =  (function () {
                         loadCount++;
                         m.comments = m.comments.sort(MediaSorter.byCreatedAtComments);
                         that.medias.push(m);
+                        store.commit("addMedia", m);
                         that.fillMediasToCat();
                     }
                     else {
@@ -1053,8 +1034,8 @@ var siteManager =  (function () {
                 }
             });
         }
-    };
-    siteManager.prototype.getUserById = function (id) {
+    }
+    getUserById(id) {
         var search = new User(0, "None", "/img/404/avatar.png", "/img/404/background.png", "None-profile", {}, "", false);
         $.each(this.users, function (key, value) {
             if (value.id == id) {
@@ -1062,8 +1043,8 @@ var siteManager =  (function () {
             }
         });
         return search;
-    };
-    siteManager.prototype.getMediasByUser = function (id) {
+    }
+    getMediasByUser(id) {
         var userMedias = [];
         $.each(this.medias, function (key, value) {
             if (value.user_id == id) {
@@ -1071,16 +1052,15 @@ var siteManager =  (function () {
             }
         });
         return userMedias;
-    };
-    return siteManager;
-}());
+    }
+}
 ;
 if (sm == undefined) {
     var sm;
 }
 export function init(baseUrl) {
     sm = new siteManager(baseUrl);
-    eventBus.$on('overviewPlayClick', function (title) {
+    eventBus.$on('overviewPlayClick', title => {
         theVue.title = title;
     });
 }

@@ -1,9 +1,10 @@
 var baseUrl:string;
 import Vue from 'vue'
+import Vuex from 'vuex'
 import Router from 'vue-router';
 import BootstrapVue from 'bootstrap-vue'
 import VueCroppie from 'vue-croppie';
-import { eventBus } from './eventBus';
+import { eventBus,store } from './eventBus';
 import translation from './translation';
 import dateTranslation from './dateTranslation';
 import { MediaSorter, Search } from './tools';
@@ -16,11 +17,20 @@ import VuePlyr from 'vue-plyr'
 import VueI18n from 'vue-i18n'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-var app;
-var theVue;
-var searchDelay;
+Vue.use(Vuex)
+Vue.use(Router)
+Vue.use(BootstrapVue);
+Vue.use(VueCroppie);
+Vue.use(VueApexCharts)
+Vue.use(Vuesax)
+Vue.use(VuePlyr)
+Vue.use(VueI18n)
+Vue.component('treeselect', Treeselect)
+Vue.component('apexchart', VueApexCharts)
+var theVue:any;
+var searchDelay:any;
 var theMediaSorter = new MediaSorter();
-var i18n;
+var i18n:VueI18n;
 class siteManager {
   medias:Array<Media>;
   nextMedias:Array<Media>;
@@ -64,15 +74,6 @@ class siteManager {
     setInterval(this.updateCSRF, 1800000);
   }
   initVue(){
-    Vue.use(Router)
-    Vue.use(BootstrapVue);
-    Vue.use(VueCroppie);
-    Vue.use(VueApexCharts)
-    Vue.use(Vuesax)
-    Vue.use(VuePlyr)
-    Vue.use(VueI18n)
-    Vue.component('treeselect', Treeselect)
-    Vue.component('apexchart', VueApexCharts)
     var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
     var player = Vue.component('player', require("./components/MediaComponent.vue"));
     var profileComp = Vue.component('profile', require("./components/ProfileComponent.vue"));
@@ -214,7 +215,8 @@ class siteManager {
       that.receiveMedias("/internal-api/medias/by/"+userid+this.getIgnoreParam())
     });
     eventBus.$on('sortBy', sortBy => {
-      theMediaSorter.sortBy = sortBy
+      theMediaSorter.setSortBy(sortBy)
+      store.commit("sortMediasBy",sortBy)
       if(theVue.$router.currentRoute.path=="/search"){
         theVue.search.mediaResult = theMediaSorter.sort(theVue.search.mediaResult)
       }
@@ -257,6 +259,7 @@ class siteManager {
     eventBus.$on('loadMedia', title => {
       that.receiveMediaByName(encodeURIComponent(title), function(id){
         that.updateCSRF();
+        store.commit("disableBlockRequest")
         if(theVue!=undefined){
           console.log("[loadMedia] update the vue after receive media")
           theVue.fullmedias = that.medias
@@ -340,6 +343,7 @@ class siteManager {
     });
     eventBus.$on('filterTypes', types => {
       that.types = types;
+      store.commit("setFilterTypes",types)
       theVue.fullmedias = that.medias
       theVue.medias=that.getFilteredMedias();
       if(this.currentMediaId!=0){
@@ -480,7 +484,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
 }
   getFilteredMedias(myList = undefined){
     var theMedias:Array<Media> = []
-    var origMedias;
+    var origMedias:Array<Media>;
     if(myList==undefined){
       origMedias = this.medias
     } else {
@@ -503,7 +507,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
     });
     return theMedias;
   }
-  fillUser(comment){
+  fillUser(comment:any){
     let that = this;
     $.each( comment.childs, function( key, value ) {
       if(value.childs.length>0){
@@ -554,8 +558,9 @@ if(localStorage.getItem('cookiePolicy')!="read"){
           that.users.push(u);
         });
         if(that.initing){
-          that.receiveTags();
-          that.receiveCategories();
+          that.receiveTags(function(){
+            that.receiveCategories();
+          });
         }
         if(callback!=undefined){
           callback();
@@ -611,10 +616,10 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         });
       that.fillMediasToCat();
       that.treecatptions = that.mkTreeCat(data.data)
+      store.commit("setCategories",that.categories)
       if(theVue!=undefined){
         theVue.categories = that.categories;
         theVue.treecatptions = that.treecatptions;
-        console.log(theVue.treecatptions)
       }
       if(callback!=undefined){
         callback();
@@ -661,7 +666,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
     return ma;
   }
   getCategoryKey(category_id:number,data=undefined){
-    var res;
+    var res:any;
     let that = this;
     var idata = this.categories
     if(data!=undefined){
@@ -700,18 +705,20 @@ if(localStorage.getItem('cookiePolicy')!="read"){
     });
     return res;
   }
-  receiveTags(forceUpdate=false):void{
+  receiveTags(callback=undefined):void{
     let that = this;
     $.getJSON("/api/tags", function name(data) {
-      if((that.tags==undefined)||(forceUpdate)){
       that.tags = [];
         $.each( data.data, function( key, value ) {
           that.tags.push(new Tag(value.id, value.name, value.slug, value.count));
         });
-      }
       this.tags = that.tags;
+      store.commit("setTags",that.tags)
       if(theVue!=undefined){
         theVue.tags = this.tags;
+      }
+      if(callback!=undefined){
+        callback()
       }
         that.receiveMedias();
     });
@@ -726,26 +733,23 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         });
       }
       this.tags = that.tags;
+      store.commit("setTags",that.tags)
       if(theVue!=undefined){
         theVue.tags = this.tags;
       }
       json = json.data;
-      that.medias.unshift(new Media(json.id,json.title,json.description,json.source,json.poster_source,json.duration,json.simpleType,json.techType,json.type,that.getUserById(json.user_id),json.user_id,json.created_at,json.updated_at,json.created_at_readable,json.comments,that.getTagsByIdArray(json.tagsIds),json.myLike,json.likes,json.dislikes,json.tracks,json.category_id))
-      theVue.fullmedias = that.medias
-      theVue.medias = that.getFilteredMedias();
-      theVue.$router.push('/');
     });
   }
-  getCommentById2(id,callback=undefined){
+  getCommentById2(id:number,callback=undefined){
     if(id==null||id==0){
       return;
     }
     var theMedia = undefined;
     let that = this;
     this.medias.forEach(function(val,key){
-      val.comments.forEach(function(val2,key2){
-      if(val2.id==id){
-        theMedia = val2;
+      val.comments.forEach(function(comment:any,key2){
+      if(comment.id==id){
+        theMedia = comment;
       }
       });
     });
@@ -779,6 +783,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
           m.comments[key1].user = that.getUserById(value1.user_id)
         });
         that.medias.push(m)
+        store.commit("addMedia",m)
         that.medias = theMediaSorter.sort(that.medias)
         theVue.fullmedias = that.medias
         theVue.medias = that.getFilteredMedias();
@@ -805,12 +810,10 @@ if(localStorage.getItem('cookiePolicy')!="read"){
   }
   receiveMediaById(mediaName:number,callback=undefined):void{
     let that = this;
-    var theKey;
-    var existsAlready = false;
+    var theKey:any;
     $.getJSON("/internal-api/medias/byId/"+mediaName, function name(data) {
       $.each(that.medias, function(key,value){
         if(value.id==mediaName){
-          existsAlready=true;
           theKey = key;
         }
       });
@@ -822,6 +825,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
           m.comments[key1].user = that.getUserById(value1.user_id)
         });
         that.medias.push(m)
+        store.commit("addMedia",m)
         that.medias = theMediaSorter.sort(that.medias)
         theVue.fullmedias = that.medias
         theVue.medias = that.getFilteredMedias();
@@ -868,6 +872,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
         });
         if(that.medias.indexOf(m)==-1){
           that.medias.push(m)
+          store.commit("addMedia",m)
         }
         that.medias = theMediaSorter.sort(that.medias)
       } else if(theKey!=undefined) {
@@ -973,6 +978,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
     var loadCount=0,replaceCount=0;
     if((forceUpdate)||(that.medias==undefined)){
       that.medias = [];
+      store.commit("clearMedias")
     }
     if(this.totalMedias>this.medias.length){
     $.getJSON(url, function name(data) {
@@ -986,6 +992,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
             loadCount++;
             m.comments = m.comments.sort(MediaSorter.byCreatedAtComments);
             that.medias.push(m);
+            store.commit("addMedia",m)
             that.fillMediasToCat()
           } else {
             replaceCount++;
@@ -1054,7 +1061,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
 if(sm==undefined){
   var sm;
 }
-export function init(baseUrl) {
+export function init(baseUrl:string) {
   sm = new siteManager(baseUrl);
   eventBus.$on('overviewPlayClick', title => {
     theVue.title = title;

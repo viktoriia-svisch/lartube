@@ -1,9 +1,5 @@
-var User =  (function () {
-    function User(id, name, avatar, background, bio, mediaIds, tagString, publicState, admin, email, created_at, updated_at) {
-        if (admin === void 0) { admin = false; }
-        if (email === void 0) { email = ''; }
-        if (created_at === void 0) { created_at = ''; }
-        if (updated_at === void 0) { updated_at = ''; }
+export class User {
+    constructor(id, name, avatar, background, bio, mediaIds, tagString, publicState, admin = false, email = '', created_at = '', updated_at = '') {
         this.id = id;
         this.name = name;
         this.avatar = avatar;
@@ -17,14 +13,12 @@ var User =  (function () {
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
-    User.prototype.toJson = function () {
+    toJson() {
         return "{id:" + this.id + ",name:'" + this.name + "',avatar:'" + this.avatar + "',background:'" + this.background + "'}";
-    };
-    return User;
-}());
-export { User };
-var Media =  (function () {
-    function Media(id, title, description, source, poster_source, duration, simpleType, techType, type, user, user_id, created_at, updated_at, created_at_readable, comments, tags, myLike, likes, dislikes, tracks, category_id) {
+    }
+}
+export class Media {
+    constructor(id, title, description, source, poster_source, duration, simpleType, techType, type, user, user_id, created_at, updated_at, created_at_readable, comments, tags, myLike, likes, dislikes, tracks, category_id) {
         this.id = id;
         this.title = title;
         this.urlTitle = encodeURIComponent(this.title);
@@ -49,31 +43,27 @@ var Media =  (function () {
         this.tracks = tracks;
         this.category_id = category_id;
     }
-    Media.prototype.tagStringing = function () {
+    tagStringing() {
         var theTagString = "";
         $.each(this.tags, function (key, val) {
             theTagString += val.name + " ";
         });
         return theTagString;
-    };
-    Media.prototype.toJson = function () {
+    }
+    toJson() {
         return "{title:'" + this.title + "',description:'" + this.description + "',source:'" + this.source;
-    };
-    return Media;
-}());
-export { Media };
-var Tag =  (function () {
-    function Tag(id, name, slug, count) {
+    }
+}
+export class Tag {
+    constructor(id, name, slug, count) {
         this.id = id;
         this.name = name;
         this.slug = slug;
         this.count = count;
     }
-    return Tag;
-}());
-export { Tag };
-var Category =  (function () {
-    function Category(id, title, description, avatar, background, parent_id, children) {
+}
+export class Category {
+    constructor(id, title, description, avatar, background, parent_id, children) {
         this.id = id;
         this.title = title;
         this.urlTitle = encodeURIComponent(this.title);
@@ -83,13 +73,13 @@ var Category =  (function () {
         this.medias = [];
         this.parent_id = parent_id;
         this.children = [];
-        var that = this;
+        let that = this;
         $.each(children, function (key1, value) {
             that.children.push(new Category(value.id, value.title, value.description, value.avatar_source, value.background_source, value.parent_id, value.children));
         });
     }
-    Category.prototype.setMedias = function (medias) {
-        var that = this;
+    setMedias(medias) {
+        let that = this;
         that.medias = [];
         $.each(medias, function (key1, value) {
             if (value.category_id == that.id) {
@@ -98,18 +88,14 @@ var Category =  (function () {
                 }
             }
         });
-    };
-    return Category;
-}());
-export { Category };
-var Notification =  (function () {
-    function Notification(id, type, data, read_at, created_at) {
+    }
+}
+export class Notification {
+    constructor(id, type, data, read_at, created_at) {
         this.id = id;
         this.type = type;
         this.data = data;
         this.read_at = read_at;
         this.created_at = created_at;
     }
-    return Notification;
-}());
-export { Notification };
+}

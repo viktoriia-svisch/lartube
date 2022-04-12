@@ -45,6 +45,10 @@ export class MediaSorter {
     }
     return medias
   }
+  setSortBy(sortBy){
+    localStorage.setItem("choosenSort",sortBy)
+    this.sortBy = sortBy
+  }
   static byType(a,b) {
     if (a.type < b.type)
       return -1;
