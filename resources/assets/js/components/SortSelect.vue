@@ -32,6 +32,7 @@ export default {
     this.$nextTick(function () {
       var cs = localStorage.getItem("choosenSort")
       if(cs!=null&&cs!=''){
+        console.log("set sortSelect to "+cs)
         this.selectVal = cs;
       }
       eventBus.$emit('sortBy',this.selectVal);

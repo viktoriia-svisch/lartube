@@ -12,6 +12,7 @@ import { User, Media, Tag, Category, Notification } from './models';
 import VueApexCharts from 'vue-apexcharts';
 import Vuesax from 'vuesax';
 import 'material-icons/iconfont/material-icons.css';
+import 'plyr/dist/plyr.css';
 import 'vuesax/dist/vuesax.css'; 
 import VuePlyr from 'vue-plyr';
 import VueI18n from 'vue-i18n';
@@ -426,13 +427,6 @@ class siteManager {
             },
             watch: {
                 $route(to, from) {
-                    if (to.params.profileId != undefined) {
-                        this.user = sm.getUserById(to.params.profileId);
-                        this.medias = sm.getMediasByUser(to.params.profileId);
-                    }
-                    else {
-                        this.medias = sm.medias;
-                    }
                     if (to.path == "/login" || to.path == "/register") {
                         if (that.loggedUserId != 0) {
                             theVue.$router.push('/');
@@ -513,6 +507,7 @@ class siteManager {
             if (theVue != undefined) {
                 theVue.csrf = data.csrf;
                 theVue.totalmedias = data.totalMedias;
+                store.commit("setTotalMedias", data.totalMedias);
                 if (that.totalMedias > that.medias.length) {
                     theVue.canloadmore = true;
                 }
@@ -545,6 +540,7 @@ class siteManager {
                 }
                 that.users.push(u);
             });
+            store.commit("setUsers", that.users);
             if (that.initing) {
                 that.receiveTags(function () {
                     that.receiveCategories();
@@ -773,7 +769,7 @@ class siteManager {
                     m.comments[key1].user = that.getUserById(value1.user_id);
                 });
                 that.medias.push(m);
-                store.commit("addMedia", m);
+                store.commit("updateOrAddMedia", m);
                 that.medias = theMediaSorter.sort(that.medias);
                 theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias();
@@ -791,6 +787,7 @@ class siteManager {
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
                     theVue.fullmedias = that.medias;
+                    store.commit("updateOrAddMedia", m);
                     theVue.medias = that.getFilteredMedias();
                 }
             }
@@ -816,7 +813,7 @@ class siteManager {
                     m.comments[key1].user = that.getUserById(value1.user_id);
                 });
                 that.medias.push(m);
-                store.commit("addMedia", m);
+                store.commit("updateOrAddMedia", m);
                 that.medias = theMediaSorter.sort(that.medias);
                 theVue.fullmedias = that.medias;
                 theVue.medias = that.getFilteredMedias();
@@ -833,6 +830,7 @@ class siteManager {
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
                     that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
+                    store.commit("updateOrAddMedia", m);
                     theVue.fullmedias = that.medias;
                     theVue.medias = that.getFilteredMedias();
                 }
@@ -862,9 +860,9 @@ class siteManager {
                     m.comments[key1] = that.fillUser(comment);
                     m.comments[key1].user = that.getUserById(comment.user_id);
                 });
+                store.commit("updateOrAddMedia", m);
                 if (that.medias.indexOf(m) == -1) {
                     that.medias.push(m);
-                    store.commit("addMedia", m);
                 }
                 that.medias = theMediaSorter.sort(that.medias);
             }
@@ -883,6 +881,7 @@ class siteManager {
                     that.medias[theKey].updated_at = m.updated_at;
                 }
                 that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
+                store.commit("updateOrAddMedia", m);
             }
             theVue.fullmedias = that.medias;
             theVue.medias = that.getFilteredMedias();

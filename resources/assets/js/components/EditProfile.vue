@@ -1,15 +1,15 @@
 <template>
     <div class="col-xs-12 col-sm-12 col-md-12">
-    <h4>Edit profile</h4>
+    <h4>{{ $t("Edit") }} {{ $t("profile") }}</h4>
     <form id="theForm">
       <div class="form-group">
-          <label>Username</label>
+          <label>{{ $t("Username") }}</label>
           <input type="hidden" name="_token" :value="csrf">
           <input type="hidden" value="" name="image" id="addMediaImage" />
           <input placeholder="Username" class="form-control" :value="currentuser.name" name="name" type="text">
       </div>
     <div class="form-group">
-        <label>Avatar</label>
+        <label>{{ $t("Avatar") }}</label>
         <vue-croppie
           ref="croppieAvatarRef"
           :enableOrientation="true"
@@ -26,7 +26,7 @@
         <div id="avatar"></div>
     </div>
     <div class="form-group">
-        <label>Background</label>
+        <label>{{ $t("Background") }}</label>
         <vue-croppie
           ref="croppieBackgroundRef"
           :enableOrientation="true"
@@ -50,7 +50,7 @@
         </div>
     </div>
       <div class="form-group">
-          <label>Biographie:</label>
+          <label>{{ $t("Biographie") }}</label>
           <textarea placeholder="Media-description" id="addMediaDescription" class="form-control" :value="rmBr(currentuser.bio)" name="bio" cols="50" rows="10"></textarea>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12">
@@ -64,10 +64,10 @@
     </div>
 </template>
 <script>
-  import { eventBus } from '../eventBus.js';
+  import { eventBus, store } from '../eventBus.js';
   import { Media }  from '../models';
   export default {
-    props: ['medias','baseUrl','currentuser','csrf'],
+    props: ['medias','baseUrl','csrf','loggeduserid'],
     mounted: function () {
       this.$refs.croppieAvatarRef.bind({
         url: '/img/404/avatar.png',
@@ -89,6 +89,12 @@
       })
     },
     computed: {
+      currentuser: function(){
+        var u = store.getters.getUserById(this.loggeduserid)
+        if(u!=undefined){
+        }
+        return u
+      },
     },
     methods: {
       rmBr(str) {

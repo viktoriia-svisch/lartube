@@ -12,6 +12,7 @@ export const store = new Vuex.Store({
         users:[],
         tags:[],
         notifications:[],
+        totalMedias:0,
         blockGetRequest:false,
       },
       getters: {
@@ -47,16 +48,37 @@ export const store = new Vuex.Store({
         getCategoryByTitle: (state) => (title) => {
           title = encodeURIComponent(title)
           var m = state.categories.find(cat => cat.urlTitle === title)
+          if(m==undefined){
+            state.categories.forEach(function(cat,key){
+            });
+          }
           return m
+        },
+        getUserById: (state) => (id) => {
+          eventBus.$emit('loadUserVideos',id);
+          return state.users.find(u => u.id == id)
         }
       },
       mutations: {
         disableBlockRequest (state) {
           state.disableBlockRequest=false
         },
-        updateMedia(state,replaceMedia){
-          let theMedia = state.medias.find(media => media.id === replaceMedia.id)
-          theMedia = replaceMedia
+        updateOrAddMedia(state,replaceMedia){
+          var tmpMedias = []
+          var found = false
+          state.medias.forEach(function(value,key){
+            if(value.id===replaceMedia.id){
+              found = true
+              tmpMedias.push(replaceMedia)
+            } else {
+              tmpMedias.push(value)
+            }
+          });
+          if(found==false){
+            tmpMedias.push(replaceMedia)
+          }
+          state.medias = tmpMedias
+          state.medias = mediaSorter.sort(state.medias)
         },
         addMedia(state,media){
           if(state.medias.indexOf(media)==-1){
@@ -80,6 +102,12 @@ export const store = new Vuex.Store({
         },
         setCategories(state,categories){
           state.categories = categories
+        },
+        setUsers(state,users){
+          state.users = users
+        },
+        setTotalMedias(state,totalMedias){
+          state.totalMedias = totalMedias
         },
       }
     })
