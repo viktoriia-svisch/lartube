@@ -51,7 +51,7 @@
     </div>
       <div class="form-group">
           <label>{{ $t("Biographie") }}</label>
-          <textarea placeholder="Media-description" id="addMediaDescription" class="form-control" :value="rmBr(currentuser.bio)" name="bio" cols="50" rows="10"></textarea>
+          <MarkdownCreator :theText="currentuser.bio" theId="bio" theTitle="Bio" ></MarkdownCreator>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12">
           <div class="form-group">
@@ -66,8 +66,12 @@
 <script>
   import { eventBus, store } from '../eventBus.js';
   import { Media }  from '../models';
+  import MarkdownCreator from './MarkdownCreator'
   export default {
     props: ['medias','baseUrl','csrf','loggeduserid'],
+    components: {
+      MarkdownCreator
+    },
     mounted: function () {
       this.$refs.croppieAvatarRef.bind({
         url: '/img/404/avatar.png',
@@ -92,6 +96,7 @@
       currentuser: function(){
         var u = store.getters.getUserById(this.loggeduserid)
         if(u!=undefined){
+          this.tmpBio = u.bio
         }
         return u
       },
@@ -175,6 +180,7 @@ rotateBackground(rotationAngle,event) {
         editpicloaded:false,
         showdismissiblealert: false,
         avatarCropped: null,
+        tmpBio:'',
         backgroundCropped: null,
       }
     }

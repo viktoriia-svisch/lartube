@@ -80,6 +80,17 @@ export const store = new Vuex.Store({
           state.medias = tmpMedias
           state.medias = mediaSorter.sort(state.medias)
         },
+        deleteMediaByTitle(state,title){
+          var tmpMedias = []
+          var found = false
+          state.medias.forEach(function(value,key){
+            if(value.title!=title){
+              tmpMedias.push(value)
+            }
+          });
+          state.medias = tmpMedias
+          state.medias = mediaSorter.sort(state.medias)
+        },
         addMedia(state,media){
           if(state.medias.indexOf(media)==-1){
             state.medias.push(media)

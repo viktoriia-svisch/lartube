@@ -14,7 +14,7 @@
   import Flick from './SwiperView'
   import SortSelect from './SortSelect'
   export default {
-    props: ['medias','baseUrl','loggeduserid','canloadmore','currentuser'],
+    props: ['baseUrl','loggeduserid','canloadmore','currentuser'],
     methods: {
     },
     computed:{

@@ -52,7 +52,7 @@
         </div>
         <div class="form-group row">
           <label>{{ $t('Description') }}</label>
-          <textarea :placeholder="$t('Description')+'...'" id="addMediaDescription" class="form-control" :value="rmBr(currentmedia.description)" name="description" cols="50" rows="10"></textarea>
+          <MarkdownCreator :theText="currentmedia.description" theId="description" theTitle="Description" ></MarkdownCreator>
         </div>
         <div class="form-group row">
           <label>Tags (separate with spaces):</label>
@@ -96,10 +96,14 @@
 <script>
   import { eventBus, store } from '../eventBus.js';
   import { Media }  from '../models';
+  import MarkdownCreator from './MarkdownCreator'
   export default {
-    props: ['medias','baseUrl','categories','csrf','treecatptions'],
+    props: ['baseUrl','categories','csrf','treecatptions'],
     mounted: function () {
                 this.currentmedia=this.getCurrentMedia();
+    },
+    components: {
+      MarkdownCreator
     },
     updated: function () {
       this.$nextTick(function () {
@@ -140,7 +144,11 @@
         this.$refs.myModalRef.hide()
       },
       getCurrentMedia() {
-        return store.getters.getMediaByTitle(this.$route.params.currentTitle)
+        var m = store.getters.getMediaByTitle(this.$route.params.editTitle)
+        if(m!=undefined){
+          this.catid = m.category_id
+        }
+        return m
       },
       posterChange(){
         var reader = new FileReader();
@@ -242,12 +250,13 @@ rotate(rotationAngle,event) {
       return {
         mediaType: '',
         currentmedia:undefined,
-        catid:'',
+        catid:0,
         tmpid:0,
         editpicloaded:false,
         showdismissiblealert: false,
         cropped: null,
-        blockGetRequest:false
+        blockGetRequest:false,
+        medias:store.state.medias
       }
     }
   }

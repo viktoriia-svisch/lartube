@@ -15,7 +15,7 @@
                 <h5>({{ item.created_at_readable }})</h5>
               </div>
               <div>
-                <div>{{ item.description }}</div>
+                <div><VueMarkdown>{{ item.description }}</VueMarkdown></div>
                 <div>
                   <span v-for="tag in item.tags" >
                     <router-link class="" :to="'/tags/'+tag.name" >
@@ -50,12 +50,14 @@
 <script>
   import { eventBus } from '../eventBus.js';
   import GalleryComponent from './GalleryComponent'
+  import VueMarkdown from 'vue-markdown'
   export default {
     props: ['medias','loggeduserid','currentuser'],
     methods: {
     },
   components : {
-      'gallery': GalleryComponent
+      'gallery': GalleryComponent,
+      VueMarkdown
   },
   mounted(){
   },

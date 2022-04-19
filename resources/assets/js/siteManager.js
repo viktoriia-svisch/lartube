@@ -257,7 +257,8 @@ class siteManager {
         });
         eventBus.$on('videoDeleted', title => {
             theVue.alert("Video " + title + " deleted", "success");
-            that.deleteMediaByName(title);
+            store.commit("deleteMediaByTitle", title);
+            theVue.$router.push('/');
             that.updateCSRF();
         });
         eventBus.$on('videoCreated', json => {
@@ -273,8 +274,8 @@ class siteManager {
             });
         });
         eventBus.$on('videoEdited', json => {
-            that.deleteMediaByName(json[0]);
-            that.receiveTagsForMedia(json[1]);
+            store.commit("updateOrAddMedia", this.jsonToMedia(json[1].data));
+            theVue.$router.push('/media/' + json[0]);
             theVue.alert("Video " + json[1].data.title + " edited", "success");
             that.updateCSRF();
         });
@@ -373,7 +374,6 @@ class siteManager {
                 loggeduserid: this.loggedUserId,
                 tags: this.tags,
                 canloadmore: true,
-                medias: this.getFilteredMedias(),
                 user: that.currentUser,
                 categories: that.categories,
                 baseUrl: baseUrl
@@ -826,6 +826,7 @@ class siteManager {
                 });
                 if (m != that.medias[theKey]) {
                     that.medias[theKey].likes = m.likes;
+                    that.medias[theKey].description = m.description;
                     that.medias[theKey].dislikes = m.dislikes;
                     that.medias[theKey].tracks = m.tracks;
                     that.medias[theKey].updated_at = m.updated_at;
@@ -965,6 +966,15 @@ class siteManager {
                 that.fillMediasToCat(value.children);
             }
         });
+    }
+    jsonToMedia(value) {
+        let that = this;
+        var m = new Media(value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, this.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, this.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id);
+        $.each(m.comments, function (key1, value1) {
+            m.comments[key1] = that.fillUser(value1);
+            m.comments[key1].user = that.getUserById(value1.user_id);
+        });
+        return m;
     }
     receiveMedias(url = "/internal-api/media" + this.getIgnoreParam(), forceUpdate = false, callback = undefined) {
         let that = this;
