@@ -11,7 +11,7 @@
         <span class="text-right float-right" v-if="currentuser.admin"><router-link :to="'/editcat/'+currentcat.id" class="btn btn-warning btn-sm mr-1"><vs-icon icon="edit"></vs-icon>{{ $t("Edit") }}</router-link>
           <button @click="deleteAction(currentcat.id)" class="btn btn-danger btn-sm"><vs-icon icon="delete"></vs-icon>{{ $t("Delete") }}</button></span>
         <h5><router-link :to="'/category/'+currentcat.urlTitle">{{ currentcat.title }}</router-link></h5>
-        <p>{{ currentcat.description }}</p>
+        <p><VueMarkdown>{{ currentcat.description }}</VueMarkdown></p>
          <p v-if="currentcat.children.length>0">Subcategories</p>
          <p v-for="subcat in currentcat.children" v-if="currentcat.children.length>0">
            <router-link :to="'/category/'+subcat.urlTitle">{{ subcat.title }} ({{ subcat.medias.length }} medias)</router-link>
@@ -31,6 +31,7 @@
   import { eventBus,store } from '../eventBus.js';
   import SingleGalleryField from './SingleGalleryField'
   import SwiperView from './SingleSwiperView'
+  import VueMarkdown from 'vue-markdown'
   import { User, Media, Tag, Category } from '../models';
   export default {
     props: ['baseUrl','canloadmore','loggeduserid','categories','catlevel','currentuser','treecatptions'],
@@ -123,7 +124,8 @@
     },
     components : {
         'singleField': SingleGalleryField,
-        SwiperView
+        SwiperView,
+        VueMarkdown
     },
     data(){
       return {
