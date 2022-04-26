@@ -47,6 +47,7 @@ class siteManager {
         this.catchedTagMedias = [];
         this.usedSearchTerms = [];
         this.usedCatRequests = [];
+        this.loadedLangs = ['en'];
         this.nextMedias = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
         this.updateCSRF();
@@ -108,8 +109,7 @@ class siteManager {
             that.receiveMedias();
         });
         eventBus.$on('languageChange', lang => {
-            console.log("change language to " + lang);
-            i18n.locale = lang;
+            that.getLang(lang);
         });
         eventBus.$on('userEdited', id => {
             theVue.alert("Look for new users..");
@@ -163,8 +163,6 @@ class siteManager {
                             that.nextMedias = that.nextVideosList(id);
                             theVue.nextvideos = that.nextMedias;
                             that.loadMorePages();
-                            theVue.medias = that.getFilteredMedias();
-                            theVue.fullmedias = that.medias;
                         });
                     }
                 });
@@ -209,8 +207,6 @@ class siteManager {
                 that.nextMedias = that.nextVideosList(that.currentMediaId);
                 theVue.nextvideos = that.nextMedias;
             }
-            theVue.fullmedias = that.medias;
-            theVue.medias = that.getFilteredMedias();
         });
         eventBus.$on('commentCreated', json => {
             that.receiveMediaById(json.data.media_id, function () {
@@ -245,8 +241,6 @@ class siteManager {
                 store.commit("disableBlockRequest");
                 if (theVue != undefined) {
                     console.log("[loadMedia] update the vue after receive media");
-                    theVue.fullmedias = that.medias;
-                    theVue.medias = that.getFilteredMedias(that.medias);
                     if (theVue.$route.params.currentTitle != undefined) {
                         that.currentMediaId = id;
                         that.nextMedias = that.nextVideosList(id);
@@ -281,19 +275,11 @@ class siteManager {
         });
         eventBus.$on('checkTag', tagName => {
             if (tagName == '') {
-                if ($("#specialAllTag").is(":checked")) {
-                    theVue.medias = that.getFilteredMedias();
-                }
-                else {
-                    theVue.medias = [];
-                    theVue.medias = that.getFilteredMedias();
-                }
             }
             else {
                 if (that.catchedTagMedias.includes(tagName) == false) {
                     that.catchedTagMedias.push(tagName);
                     that.receiveMedias("/api/tags/" + tagName, false, function () {
-                        theVue.fullmedias = that.medias;
                     });
                 }
             }
@@ -330,8 +316,6 @@ class siteManager {
         eventBus.$on('filterTypes', types => {
             that.types = types;
             store.commit("setFilterTypes", types);
-            theVue.fullmedias = that.medias;
-            theVue.medias = that.getFilteredMedias();
             if (this.currentMediaId != 0) {
                 that.nextMedias = that.nextVideosList(this.currentMediaId);
             }
@@ -358,6 +342,9 @@ class siteManager {
             messages: translation,
             dateTimeFormats: dateTranslation
         });
+        if (lang != "en") {
+            this.getLang(lang);
+        }
         theVue = new Vue({
             i18n,
             data: {
@@ -415,10 +402,8 @@ class siteManager {
                                 that.receiveMedias("/internal-api/medias/search/" + s + that.getIgnoreParam());
                             }, 300);
                         }
-                        var so = new Search(s.toString(), that.getFilteredMedias(), that.tags, that.users);
+                        var so = new Search(s.toString(), that.getFilteredMedias(), store.state.tags, store.state.users);
                         theVue.search = so;
-                        theVue.fullmedias = that.medias;
-                        theVue.medias = that.getFilteredMedias(so.mediaResult);
                         theVue.users = so.userResult;
                     }
                 }
@@ -466,7 +451,7 @@ class siteManager {
         var theMedias = [];
         var origMedias;
         if (myList == undefined) {
-            origMedias = this.medias;
+            origMedias = store.state.medias;
         }
         else {
             origMedias = myList;
@@ -498,6 +483,19 @@ class siteManager {
         });
         comment.childs = comment.childs.sort(MediaSorter.byCreatedAtComments);
         return comment;
+    }
+    getLang(lang) {
+        let that = this;
+        if (this.loadedLangs.includes(lang) == false) {
+            this.loadedLangs.push(lang);
+            $.getJSON('/lang/' + lang + ".json").done(function (data) {
+                i18n.setLocaleMessage(lang, data.default);
+                i18n.locale = lang;
+            });
+        }
+        else {
+            i18n.locale = lang;
+        }
     }
     updateCSRF() {
         let that = this;
@@ -748,49 +746,16 @@ class siteManager {
         }
         return theMedia;
     }
-    receiveMediaByCommentId(mediaName, callback = undefined) {
+    receiveMediaByCommentId(cid, callback = undefined) {
         let that = this;
         var theKey;
         var existsAlready = false;
-        $.getJSON("/internal-api/medias/byCommentId/" + mediaName, function name(data) {
+        $.getJSON("/internal-api/medias/byCommentId/" + cid, function name(data) {
             data = data.data;
-            $.each(that.medias, function (key, value) {
-                $.each(value.comments, function (key2, comment) {
-                    if (comment.id == mediaName) {
-                        existsAlready = true;
-                        theKey = key;
-                    }
-                });
-            });
-            if (existsAlready == false) {
-                var m = new Media(data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
-                $.each(m.comments, function (key1, value1) {
-                    m.comments[key1] = that.fillUser(value1);
-                    m.comments[key1].user = that.getUserById(value1.user_id);
-                });
-                that.medias.push(m);
-                store.commit("updateOrAddMedia", m);
-                that.medias = theMediaSorter.sort(that.medias);
-                theVue.fullmedias = that.medias;
-                theVue.medias = that.getFilteredMedias();
-            }
-            else {
-                var m = new Media(data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
-                $.each(m.comments, function (key1, value1) {
-                    m.comments[key1] = that.fillUser(value1);
-                    m.comments[key1].user = that.getUserById(value1.user_id);
-                });
-                if (m != that.medias[theKey]) {
-                    that.medias[theKey].likes = m.likes;
-                    that.medias[theKey].dislikes = m.dislikes;
-                    that.medias[theKey].tracks = m.tracks;
-                    that.medias[theKey].updated_at = m.updated_at;
-                    that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
-                    theVue.fullmedias = that.medias;
-                    store.commit("updateOrAddMedia", m);
-                    theVue.medias = that.getFilteredMedias();
-                }
-            }
+            var m = that.jsonToMedia(data);
+            that.medias.push(m);
+            store.commit("updateOrAddMedia", m);
+            that.medias = theMediaSorter.sort(that.medias);
             if (callback != undefined) {
                 callback();
             }
@@ -798,44 +763,12 @@ class siteManager {
     }
     receiveMediaById(mediaName, callback = undefined) {
         let that = this;
-        var theKey;
         $.getJSON("/internal-api/medias/byId/" + mediaName, function name(data) {
-            $.each(that.medias, function (key, value) {
-                if (value.id == mediaName) {
-                    theKey = key;
-                }
-            });
             data = data.data;
-            if (that.findMediaById(mediaName, undefined, false) == undefined) {
-                var m = new Media(data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
-                $.each(m.comments, function (key1, value1) {
-                    m.comments[key1] = that.fillUser(value1);
-                    m.comments[key1].user = that.getUserById(value1.user_id);
-                });
-                that.medias.push(m);
-                store.commit("updateOrAddMedia", m);
-                that.medias = theMediaSorter.sort(that.medias);
-                theVue.fullmedias = that.medias;
-                theVue.medias = that.getFilteredMedias();
-            }
-            else {
-                var m = new Media(data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
-                $.each(m.comments, function (key1, value1) {
-                    m.comments[key1] = that.fillUser(value1);
-                    m.comments[key1].user = that.getUserById(value1.user_id);
-                });
-                if (m != that.medias[theKey]) {
-                    that.medias[theKey].likes = m.likes;
-                    that.medias[theKey].description = m.description;
-                    that.medias[theKey].dislikes = m.dislikes;
-                    that.medias[theKey].tracks = m.tracks;
-                    that.medias[theKey].updated_at = m.updated_at;
-                    that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
-                    store.commit("updateOrAddMedia", m);
-                    theVue.fullmedias = that.medias;
-                    theVue.medias = that.getFilteredMedias();
-                }
-            }
+            var m = that.jsonToMedia(data);
+            that.medias.push(m);
+            store.commit("updateOrAddMedia", m);
+            that.medias = theMediaSorter.sort(that.medias);
             if (callback != undefined) {
                 callback();
             }
@@ -854,38 +787,10 @@ class siteManager {
         });
         $.getJSON("/internal-api/media/" + mediaName, function name(data) {
             data = data.data;
-            if (that.findMediaByName(mediaName) == undefined) {
-                console.log("receiveMediaByName; seems undefined");
-                m = new Media(data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
-                $.each(m.comments, function (key1, comment) {
-                    m.comments[key1] = that.fillUser(comment);
-                    m.comments[key1].user = that.getUserById(comment.user_id);
-                });
-                store.commit("updateOrAddMedia", m);
-                if (that.medias.indexOf(m) == -1) {
-                    that.medias.push(m);
-                }
-                that.medias = theMediaSorter.sort(that.medias);
-            }
-            else if (theKey != undefined) {
-                console.log("receiveMediaByName; seems already exist");
-                m = new Media(data.id, data.title, data.description, data.source, data.poster_source, data.duration, data.simpleType, data.techType, data.type, that.getUserById(data.user_id), data.user_id, data.created_at, data.updated_at, data.created_at_readable, data.comments, that.getTagsByIdArray(data.tagsIds), data.myLike, data.likes, data.dislikes, data.tracks, data.category_id);
-                $.each(m.comments, function (key1, comment) {
-                    m.comments[key1] = that.fillUser(comment);
-                    m.comments[key1].user = that.getUserById(comment.user_id);
-                });
-                if (m != that.medias[theKey]) {
-                    m.comments = m.comments.sort(MediaSorter.byCreatedAtComments);
-                    that.medias[theKey].likes = m.likes;
-                    that.medias[theKey].dislikes = m.dislikes;
-                    that.medias[theKey].tracks = m.tracks;
-                    that.medias[theKey].updated_at = m.updated_at;
-                }
-                that.medias[theKey].comments = m.comments.sort(MediaSorter.byCreatedAtComments);
-                store.commit("updateOrAddMedia", m);
-            }
-            theVue.fullmedias = that.medias;
-            theVue.medias = that.getFilteredMedias();
+            var m = that.jsonToMedia(data);
+            that.medias.push(m);
+            store.commit("updateOrAddMedia", m);
+            that.medias = theMediaSorter.sort(that.medias);
             if (callback != undefined) {
                 callback(data.id);
             }
@@ -951,8 +856,6 @@ class siteManager {
             }
             i++;
         });
-        theVue.fullmedias = that.medias;
-        theVue.medias = that.getFilteredMedias();
         theVue.$router.push('/');
     }
     fillMediasToCat(c = undefined) {
@@ -974,6 +877,8 @@ class siteManager {
             m.comments[key1] = that.fillUser(value1);
             m.comments[key1].user = that.getUserById(value1.user_id);
         });
+        m.comments = m.comments.sort(MediaSorter.byCreatedAt);
+        m.comments.sort(MediaSorter.byCreatedAtComments);
         return m;
     }
     receiveMedias(url = "/internal-api/media" + this.getIgnoreParam(), forceUpdate = false, callback = undefined) {
@@ -986,21 +891,10 @@ class siteManager {
         if (this.totalMedias > this.medias.length) {
             $.getJSON(url, function name(data) {
                 $.each(data.data, function (key, value) {
-                    if (that.findMediaById(value.id, undefined, false) == undefined) {
-                        var m = new Media(value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, that.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, that.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id);
-                        $.each(m.comments, function (key1, value1) {
-                            m.comments[key1] = that.fillUser(value1);
-                            m.comments[key1].user = that.getUserById(value1.user_id);
-                        });
-                        loadCount++;
-                        m.comments = m.comments.sort(MediaSorter.byCreatedAtComments);
-                        that.medias.push(m);
-                        store.commit("addMedia", m);
-                        that.fillMediasToCat();
-                    }
-                    else {
-                        replaceCount++;
-                    }
+                    var m = that.jsonToMedia(value);
+                    that.medias.push(m);
+                    store.commit("updateOrAddMedia", m);
+                    that.fillMediasToCat();
                 });
                 if (theVue == undefined) {
                     that.initVue();
@@ -1019,13 +913,9 @@ class siteManager {
                     theVue.treecatptions = that.treecatptions;
                 }
                 that.medias = theMediaSorter.sort(that.medias);
-                theVue.fullmedias = that.medias;
-                theVue.medias = that.getFilteredMedias();
                 theVue.categories = that.categories;
                 if (theVue.$route.params.profileId != undefined) {
                     theVue.user = that.getUserById(theVue.$route.params.profileId);
-                    theVue.fullmedias = that.medias;
-                    theVue.medias = that.getFilteredMedias(that.getMediasByUser(theVue.$route.params.profileId));
                 }
                 if ((theVue.$router.currentRoute.path == "/search")) {
                     theVue.searching();
