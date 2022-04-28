@@ -367,13 +367,11 @@ class siteManager {
     i18n,
     data : {
       title : "Overview",
-      search:'',
+      search:undefined,
       nextvideos:[],
       notifications:[],
       treecatptions:undefined,
-      fullmedias:that.medias,
       csrf:that.csrf,
-      totalmedias:that.totalMedias,
       currentuser:that.currentUser,
       users:this.users,
       loggeduserid:this.loggedUserId,
@@ -385,6 +383,11 @@ class siteManager {
     },
     components : {
         'thesidebar': sidebarComp
+    },
+    computed:{
+        medias:function(){
+          return store.state.medias;
+        }
     },
     router:new Router({ routes,
       scrollBehavior (to, from, savedPosition) {
@@ -417,10 +420,13 @@ class siteManager {
             }
             searchDelay = setTimeout(function(){
               that.usedSearchTerms.push(s);
-              that.receiveMedias("/internal-api/medias/search/"+s+that.getIgnoreParam());
+              that.receiveMedias("/internal-api/medias/search/"+s+that.getIgnoreParam(), false, function(){
+              });
             }, 300);
           }
           var so = new Search(s.toString(),that.getFilteredMedias(),store.state.tags,store.state.users);
+          console.log("the media-result")
+          console.log(so.mediaResult)
           theVue.search = so;
           theVue.users = so.userResult;
         }
@@ -430,6 +436,9 @@ class siteManager {
     },
     watch:{
       $route (to, from){
+          if(from.path=="/search"&&to.path!="/search"){
+            $("#theLiveSearch").val('');
+          }
           if(to.path=="/login"||to.path=="/register"){
             if(that.loggedUserId!=0){
               theVue.$router.push('/');
@@ -581,7 +590,7 @@ if(localStorage.getItem('cookiePolicy')!="read"){
     if(first){
       content = "?i=0";
     }
-    $.each( this.medias, function( key, value ) {
+    $.each( store.state.medias, function( key, value ) {
       content += ","+value.id
     });
     return content+"&types="+this.types.join()+"&sortBy="+theMediaSorter.sortBy
