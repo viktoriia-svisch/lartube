@@ -68,6 +68,19 @@
         this.currentmedias = tmpMedias
       },
       medias:function(val){
+        var tmpMedias = []
+        let that = this
+        this.medias.forEach(function(val,key){
+          if(val.category_id==that.catids){
+            tmpMedias.push(val)
+          }
+        });
+        this.currentmedias = tmpMedias
+      }
+    },
+    computed:{
+      medias:function(){
+        return store.getters.getMediasByTypes()
       }
     },
     methods: {
@@ -133,7 +146,6 @@
         catids:0,
         currentcat:undefined,
         currentmedias:[],
-        medias:store.state.medias
       }
     }
   }
