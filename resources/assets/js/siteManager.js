@@ -337,7 +337,7 @@ class siteManager {
             lang = localStorage.getItem("language");
         }
         i18n = new VueI18n({
-            locale: lang,
+            locale: 'en',
             fallbackLocale: 'en',
             messages: translation,
             dateTimeFormats: dateTranslation
@@ -886,7 +886,7 @@ class siteManager {
     }
     jsonToMedia(value) {
         let that = this;
-        var m = new Media(value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, this.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, this.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id);
+        var m = new Media(value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, this.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, this.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id, value.intro, value.outro);
         $.each(m.comments, function (key1, value1) {
             m.comments[key1] = that.fillUser(value1);
             m.comments[key1].user = that.getUserById(value1.user_id);
