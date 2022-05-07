@@ -201,7 +201,6 @@ class siteManager {
             if (theVue.$router.currentRoute.path == "/search") {
                 theVue.search.mediaResult = theMediaSorter.sort(theVue.search.mediaResult);
             }
-            that.medias = theMediaSorter.sort(that.medias);
             if (that.currentMediaId != 0) {
                 console.log("nextMedias set by sort");
                 that.nextMedias = that.nextVideosList(that.currentMediaId);
@@ -451,7 +450,7 @@ class siteManager {
         }
     }
     loadMorePages(callback = undefined) {
-        if (this.totalMedias > this.medias.length) {
+        if (this.totalMedias > store.state.medias.length) {
             console.log("loadMorePages go for");
             this.receiveMedias('/internal-api/media?' + this.getIgnoreParam(false), false, callback);
             theVue.canloadmore = true;
@@ -520,7 +519,7 @@ class siteManager {
                 theVue.csrf = data.csrf;
                 theVue.totalmedias = data.totalMedias;
                 store.commit("setTotalMedias", data.totalMedias);
-                if (that.totalMedias > that.medias.length) {
+                if (that.totalMedias > store.state.medias.length) {
                     theVue.canloadmore = true;
                 }
             }
@@ -655,7 +654,7 @@ class siteManager {
     }
     getCategoryMedias(category_id) {
         var ma = [];
-        $.each(this.medias, function (key, value) {
+        $.each(store.state.medias, function (key, value) {
             if (value.category_id == category_id) {
                 ma.push(value);
             }
@@ -743,7 +742,7 @@ class siteManager {
         }
         var theMedia = undefined;
         let that = this;
-        this.medias.forEach(function (val, key) {
+        store.state.medias.forEach(function (val, key) {
             val.comments.forEach(function (comment, key2) {
                 if (comment.id == id) {
                     theMedia = comment;
@@ -767,9 +766,7 @@ class siteManager {
         $.getJSON("/internal-api/medias/byCommentId/" + cid, function name(data) {
             data = data.data;
             var m = that.jsonToMedia(data);
-            that.medias.push(m);
             store.commit("updateOrAddMedia", m);
-            that.medias = theMediaSorter.sort(that.medias);
             if (callback != undefined) {
                 callback();
             }
@@ -780,9 +777,7 @@ class siteManager {
         $.getJSON("/internal-api/medias/byId/" + mediaName, function name(data) {
             data = data.data;
             var m = that.jsonToMedia(data);
-            that.medias.push(m);
             store.commit("updateOrAddMedia", m);
-            that.medias = theMediaSorter.sort(that.medias);
             if (callback != undefined) {
                 callback();
             }
@@ -790,21 +785,10 @@ class siteManager {
     }
     receiveMediaByName(mediaName, callback = undefined) {
         let that = this;
-        var theKey;
-        var existsAlready = false;
-        var m;
-        $.each(that.medias, function (key, value) {
-            if (value.urlTitle == mediaName) {
-                existsAlready = true;
-                theKey = key;
-            }
-        });
         $.getJSON("/internal-api/media/" + mediaName, function name(data) {
             data = data.data;
             var m = that.jsonToMedia(data);
-            that.medias.push(m);
             store.commit("updateOrAddMedia", m);
-            that.medias = theMediaSorter.sort(that.medias);
             if (callback != undefined) {
                 callback(data.id);
             }
@@ -830,7 +814,8 @@ class siteManager {
     findMediaByName(mediaName) {
         var returnMedia = undefined;
         let that = this;
-        $.each(that.medias, function (key, value) {
+        console.warn("[findMediaByName] deprecated function");
+        $.each(store.state.medias, function (key, value) {
             if (value.urlTitle == mediaName) {
                 returnMedia = value;
             }
@@ -840,7 +825,8 @@ class siteManager {
     findMediaById(id, callback = undefined, getIfUndefined = true) {
         var returnMedia = undefined;
         let that = this;
-        $.each(that.medias, function (key, value) {
+        console.warn("[findMediaById] deprecated function");
+        $.each(store.state.medias, function (key, value) {
             if (value.id == id) {
                 returnMedia = value;
             }
@@ -857,28 +843,13 @@ class siteManager {
         }
         return returnMedia;
     }
-    deleteMediaByName(mediaName) {
-        console.log("deletemethod reach");
-        let that = this;
-        var i = 0;
-        $.each(that.medias, function (key, value) {
-            if (value != undefined) {
-                if (value.title == mediaName) {
-                    console.log("delete media " + mediaName);
-                    that.medias.splice(i, 1);
-                }
-            }
-            i++;
-        });
-        theVue.$router.push('/');
-    }
     fillMediasToCat(c = undefined) {
         let that = this;
         if (c == undefined) {
             c = that.categories;
         }
         $.each(c, function (key1, value) {
-            value.setMedias(that.medias);
+            value.setMedias(store.state.medias);
             if (value.children.length > 0) {
                 that.fillMediasToCat(value.children);
             }
@@ -898,15 +869,13 @@ class siteManager {
     receiveMedias(url = "/internal-api/media" + this.getIgnoreParam(), forceUpdate = false, callback = undefined) {
         let that = this;
         var loadCount = 0, replaceCount = 0;
-        if ((forceUpdate) || (that.medias == undefined)) {
-            that.medias = [];
+        if (forceUpdate) {
             store.commit("clearMedias");
         }
-        if (this.totalMedias > this.medias.length) {
+        if (this.totalMedias > store.state.medias.length) {
             $.getJSON(url, function name(data) {
                 $.each(data.data, function (key, value) {
                     var m = that.jsonToMedia(value);
-                    that.medias.push(m);
                     store.commit("updateOrAddMedia", m);
                     that.fillMediasToCat();
                 });
@@ -926,7 +895,6 @@ class siteManager {
                 if (that.treecatptions != undefined) {
                     theVue.treecatptions = that.treecatptions;
                 }
-                that.medias = theMediaSorter.sort(that.medias);
                 theVue.categories = that.categories;
                 if (theVue.$route.params.profileId != undefined) {
                     theVue.user = that.getUserById(theVue.$route.params.profileId);
@@ -935,7 +903,7 @@ class siteManager {
                     theVue.searching();
                 }
                 if (loadCount == 0 && replaceCount == 0) {
-                    if (that.totalMedias == that.medias.length) {
+                    if (that.totalMedias == store.state.medias.length) {
                         theVue.alert("All medias are loaded", "warning");
                     }
                 }
@@ -959,7 +927,7 @@ class siteManager {
     }
     getMediasByUser(id) {
         var userMedias = [];
-        $.each(this.medias, function (key, value) {
+        $.each(store.state.medias, function (key, value) {
             if (value.user_id == id) {
                 userMedias.push(value);
             }
