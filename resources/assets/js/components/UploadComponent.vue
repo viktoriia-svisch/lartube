@@ -56,11 +56,11 @@
     </div>
     <div class="form-group row">
         <label>{{ $t('Intro') }}</label>
-        <input placeholder="Time in seconds" class="form-control" :value="currentmedia.intro" id="intro" name="intro" type="text">
+        <input placeholder="Time in seconds" class="form-control" id="intro" name="intro" type="text">
     </div>
     <div class="form-group row">
         <label>{{ $t('Outro') }}</label>
-        <input placeholder="Time in seconds" class="form-control" :value="currentmedia.outro" id="outro" name="outro" type="text">
+        <input placeholder="Time in seconds" class="form-control" id="outro" name="outro" type="text">
     </div>
     <div class="form-group">
         <label>Media-poster:</label>
@@ -113,10 +113,7 @@
     },
     mounted: function () {
       let that = this;
-      this.$refs.croppieRef.bind({
-        url: '/img/404/image.png',
-      })
-      eventBus.$on('playerSetDuration', duration => {
+                      eventBus.$on('playerSetDuration', duration => {
         console.log("receive duration: "+this.secondsToHms(duration))
         $("#duration").val(this.secondsToHms(duration))
       });

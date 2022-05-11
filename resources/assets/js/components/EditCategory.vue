@@ -27,7 +27,7 @@
   import { Media }  from '../models';
   import MarkdownCreator from './MarkdownCreator'
   export default {
-    props: ['baseUrl','categories','csrf','treecatptions'],
+    props: ['baseUrl','csrf','treecatptions'],
     components: {
       MarkdownCreator
     },
@@ -46,7 +46,10 @@
       })
     },
     computed: {
-          },
+            categories:function(){
+        return store.state.categories
+      }
+    },
     watch:{
       categories: function(val){
         this.getCurrentCat();
