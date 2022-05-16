@@ -16,17 +16,20 @@
       </div>
 </template>
 <script>
-  import { eventBus } from '../eventBus.js';
+  import { eventBus,store } from '../eventBus.js';
   export default {
-    props: ['medias','loggeduserid'],
+    props: ['loggeduserid'],
     methods:{
     },
     computed: {
+      medias:function(){
+        return store.getters.getMediasByTypes()
+      },
       likeOptions: function () {
                 var titles = []
-this.medias.forEach( function(item, index) {
-  titles.push(item.title)
-});
+        this.medias.forEach( function(item, index) {
+          titles.push(item.title)
+        });
         return {
           chart: {
             id: 'vuechart-likes'

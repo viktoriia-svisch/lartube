@@ -54,7 +54,6 @@ class siteManager {
         this.receiveUsers(function () {
         });
         this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        setInterval(this.updateCSRF, 1800000);
     }
     initVue() {
         var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
@@ -307,7 +306,6 @@ class siteManager {
             if (that.usedCatRequests.includes(id) == false) {
                 that.usedCatRequests.push(id);
                 that.receiveMedias("/internal-api/medias/byCatId/" + id + that.getIgnoreParam(), false, function () {
-                    that.fillMediasToCat();
                     eventBus.$emit('mediasByCatIdReceived', id);
                 });
             }
@@ -514,6 +512,7 @@ class siteManager {
         let that = this;
         $.getJSON('/internal-api/refresh-csrf').done(function (data) {
             that.csrf = data.csrf;
+            store.commit("setCSRF", data.csrf);
             that.totalMedias = data.totalMedias;
             if (theVue != undefined) {
                 theVue.csrf = data.csrf;
@@ -554,7 +553,9 @@ class siteManager {
             store.commit("setUsers", that.users);
             if (that.initing) {
                 that.receiveTags(function () {
-                    that.receiveCategories();
+                    that.receiveCategories(function () {
+                        that.receiveMedias();
+                    });
                 });
             }
             if (callback != undefined) {
@@ -610,7 +611,6 @@ class siteManager {
             $.each(data.data, function (key, value) {
                 that.categories.push(new Category(value.id, value.title, value.description, value.avatar_source, value.background_source, value.parent_id, value.children));
             });
-            that.fillMediasToCat();
             that.treecatptions = that.mkTreeCat(data.data);
             store.commit("setCategories", that.categories);
             if (theVue != undefined) {
@@ -843,18 +843,6 @@ class siteManager {
         }
         return returnMedia;
     }
-    fillMediasToCat(c = undefined) {
-        let that = this;
-        if (c == undefined) {
-            c = that.categories;
-        }
-        $.each(c, function (key1, value) {
-            value.setMedias(store.state.medias);
-            if (value.children.length > 0) {
-                that.fillMediasToCat(value.children);
-            }
-        });
-    }
     jsonToMedia(value) {
         let that = this;
         var m = new Media(value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, this.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, this.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id, value.intro, value.outro);
@@ -877,7 +865,6 @@ class siteManager {
                 $.each(data.data, function (key, value) {
                     var m = that.jsonToMedia(value);
                     store.commit("updateOrAddMedia", m);
-                    that.fillMediasToCat();
                 });
                 if (theVue == undefined) {
                     that.initVue();

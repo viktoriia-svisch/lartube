@@ -33,7 +33,7 @@
       <vs-sidebar-item index="1" icon="home" to="/">
         Home
       </vs-sidebar-item>
-      <vs-sidebar-item index="9" to="/categories" icon="view_list">
+      <vs-sidebar-item index="9" to="/categories" icon="category">
         {{ $t('Categories') }}
       </vs-sidebar-item>
       <vs-sidebar-item index="3" icon="tag" to="/tags">
