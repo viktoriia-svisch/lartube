@@ -17,6 +17,19 @@ export const store = new Vuex.Store({
         CSRF:document.querySelector('meta[name="csrf-token"]').getAttribute('content')
       },
       getters: {
+        nextMediasList: (state) => (id) => {
+          var nextVideos = []
+          var startAdd = false;
+          $.each( state.medias, function( key, value ) {
+            if(startAdd){
+              nextVideos.push(value)
+            }
+            if(value.id==id){
+              startAdd=true;
+            }
+          });
+          return nextVideos;
+        },
         getMediasByTypes: (state) => () => {
           var m = state.medias.filter(media => state.filterTypes.includes(media.simpleType))
           return m
@@ -144,6 +157,7 @@ export const store = new Vuex.Store({
     }) 
   export const controls = `
     <div class="plyr__controls">
+    <!-- <div class="text-center row plyr__control mb-5" id="title"> hkjhsohkshjd sdklhjdshdshk </div> -->
         <button type="button" class="plyr__control" data-plyr="restart">
             <svg role="presentation"><use xlink:href="#plyr-restart"></use></svg>
             <span class="plyr__tooltip" role="tooltip">Restart</span>

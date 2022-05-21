@@ -24,7 +24,9 @@ import { swiper, swiperSlide } from 'vue-awesome-swiper'
     },
     watch:{
       medias:function(val){
-            this.swiper.update()
+              if(this.$refs.mySwiper!=undefined){
+          this.swiper.update()
+        }
       }
     },
     mounted(){

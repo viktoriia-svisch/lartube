@@ -14,7 +14,7 @@
         <p><VueMarkdown :source="currentcat.description" ></VueMarkdown></p>
          <p v-if="currentcat.children.length>0">Subcategories</p>
          <p v-for="subcat in currentcat.children" v-if="currentcat.children.length>0">
-           <router-link :to="'/category/'+subcat.urlTitle">{{ subcat.title }} ({{ subcat.medias.length }} medias)</router-link>
+           <router-link :to="'/category/'+subcat.urlTitle">{{ subcat.title }} ({{ getCategoryMedias(subcat.id).length }} medias)</router-link>
          </p>
              <h5>{{ currentmedias.length }} {{ $t("medias") }}</h5>
           <div class="row">
@@ -59,13 +59,7 @@
         this.currentcat = this.getCurrentCategory(val)
         console.log(this.currentcat.description)
         localStorage.setItem("categories_remember",val)
-        var tmpMedias = []
-        this.medias.forEach(function(val,key){
-          if(val.category_id==that.catids){
-            tmpMedias.push(val)
-          }
-        });
-        this.currentmedias = tmpMedias
+        this.currentmedias = this.getCategoryMedias(that.catids)
       },
       medias:function(val){
         var tmpMedias = []
@@ -87,6 +81,15 @@
       }
     },
     methods: {
+      getCategoryMedias(id){
+        var tmpMedias = []
+        this.medias.forEach(function(val,key){
+          if(val.category_id==id){
+            tmpMedias.push(val)
+          }
+        });
+        return tmpMedias
+      },
       getCurrentCategory(id,data=undefined) {
                 let that = this;
         var emptyCat = new Category(0,"None","All medias which are in no category","","");

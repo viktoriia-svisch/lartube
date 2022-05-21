@@ -51,9 +51,24 @@ class siteManager {
         this.nextMedias = [];
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
         this.updateCSRF();
+        let that = this;
         this.receiveUsers(function () {
+            that.receiveTags(function () {
+                that.receiveCategories(function () {
+                    that.receiveMedias();
+                    store.commit("setCSRF", document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+                    that.initVue();
+                    that.receiveNotifications();
+                    if (that.notificationTimer != undefined) {
+                        clearInterval(that.notificationTimer);
+                    }
+                    that.notificationTimer = setInterval(function () {
+                        console.log("check for new notifications");
+                        that.receiveNotifications();
+                    }, 120000);
+                });
+            });
         });
-        this.csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     }
     initVue() {
         var overview = Vue.component('overview', require("./components/OverviewComponent.vue"));
@@ -133,17 +148,17 @@ class siteManager {
         });
         eventBus.$on('autoplayNextVideo', id => {
             console.log("received autoplay");
-            var tmpv = that.nextVideosList(id);
+            var tmpv = store.getters.nextMediasList(id);
             if (tmpv.length > 0) {
                 console.log("got values!" + tmpv[0].title);
                 theVue.currentmedia = tmpv[0];
                 theVue.$router.push('/media/' + tmpv[0].urlTitle);
-                that.nextMedias = that.nextVideosList(tmpv[0].id);
+                that.nextMedias = store.getters.nextMediasList(tmpv[0].id);
                 theVue.nextvideos = that.nextMedias;
                 if (theVue.nextvideos == null || theVue.nextvideos) {
                     console.log("do load more cause nextvideos is empty");
                     that.loadMorePages(function () {
-                        that.nextMedias = that.nextVideosList(id);
+                        that.nextMedias = store.getters.nextMediasList(id);
                         theVue.nextvideos = that.nextMedias;
                         that.loadMorePages();
                         console.log("received by callback from nextvideo-empty");
@@ -352,9 +367,7 @@ class siteManager {
                 treecatptions: undefined,
                 csrf: that.csrf,
                 currentuser: that.currentUser,
-                users: this.users,
                 loggeduserid: this.loggedUserId,
-                tags: this.tags,
                 canloadmore: true,
                 user: that.currentUser,
                 categories: that.categories,
@@ -533,7 +546,7 @@ class siteManager {
     receiveUsers(callback = undefined) {
         let that = this;
         $.getJSON("/internal-api/users", function name(data) {
-            that.users = [];
+            var tmpUsers = [];
             if (that.loggedUserId == 0) {
                 that.currentUser = new User(0, "Guest", "/img/404/avatar.png", "/img/404/background.png", "", "", "", false);
                 if (theVue != undefined) {
@@ -548,16 +561,9 @@ class siteManager {
                         theVue.currentuser = u;
                     }
                 }
-                that.users.push(u);
+                tmpUsers.push(u);
             });
-            store.commit("setUsers", that.users);
-            if (that.initing) {
-                that.receiveTags(function () {
-                    that.receiveCategories(function () {
-                        that.receiveMedias();
-                    });
-                });
-            }
+            store.commit("setUsers", tmpUsers);
             if (callback != undefined) {
                 callback();
             }
@@ -607,14 +613,13 @@ class siteManager {
     receiveCategories(callback = undefined) {
         let that = this;
         $.getJSON("/internal-api/categories", function name(data) {
-            that.categories = [];
+            var tmpCategories = [];
             $.each(data.data, function (key, value) {
-                that.categories.push(new Category(value.id, value.title, value.description, value.avatar_source, value.background_source, value.parent_id, value.children));
+                tmpCategories.push(new Category(value.id, value.title, value.description, value.avatar_source, value.background_source, value.parent_id, value.children));
             });
             that.treecatptions = that.mkTreeCat(data.data);
-            store.commit("setCategories", that.categories);
+            store.commit("setCategories", tmpCategories);
             if (theVue != undefined) {
-                theVue.categories = that.categories;
                 theVue.treecatptions = that.treecatptions;
             }
             if (callback != undefined) {
@@ -651,15 +656,6 @@ class siteManager {
                 }
             });
         }
-    }
-    getCategoryMedias(category_id) {
-        var ma = [];
-        $.each(store.state.medias, function (key, value) {
-            if (value.category_id == category_id) {
-                ma.push(value);
-            }
-        });
-        return ma;
     }
     getCategoryKey(category_id, data = undefined) {
         var res;
@@ -704,36 +700,24 @@ class siteManager {
     receiveTags(callback = undefined) {
         let that = this;
         $.getJSON("/api/tags", function name(data) {
-            that.tags = [];
+            var tmpTags = [];
             $.each(data.data, function (key, value) {
-                that.tags.push(new Tag(value.id, value.name, value.slug, value.count));
+                tmpTags.push(new Tag(value.id, value.name, value.slug, value.count));
             });
-            this.tags = that.tags;
-            store.commit("setTags", that.tags);
-            if (theVue != undefined) {
-                theVue.tags = this.tags;
-            }
+            store.commit("setTags", tmpTags);
             if (callback != undefined) {
                 callback();
             }
-            that.receiveMedias();
         });
     }
     receiveTagsForMedia(json, forceUpdate = true) {
         let that = this;
         $.getJSON("/api/tags", function name(data) {
-            if ((that.tags == undefined) || (forceUpdate)) {
-                that.tags = [];
-                $.each(data.data, function (key, value) {
-                    that.tags.push(new Tag(value.id, value.name, value.slug, value.count));
-                });
-            }
-            this.tags = that.tags;
-            store.commit("setTags", that.tags);
-            if (theVue != undefined) {
-                theVue.tags = this.tags;
-            }
-            json = json.data;
+            var tmpTags = [];
+            $.each(data.data, function (key, value) {
+                tmpTags.push(new Tag(value.id, value.name, value.slug, value.count));
+            });
+            store.commit("setTags", tmpTags);
         });
     }
     getCommentById2(id, callback = undefined) {
@@ -804,7 +788,7 @@ class siteManager {
     }
     findTagById(id) {
         var returner = undefined;
-        $.each(this.tags, function (key, value) {
+        $.each(store.state.tags, function (key, value) {
             if (value.id == id) {
                 returner = value;
             }
@@ -867,22 +851,10 @@ class siteManager {
                     store.commit("updateOrAddMedia", m);
                 });
                 if (theVue == undefined) {
-                    that.initVue();
-                    that.receiveNotifications();
-                    if (that.notificationTimer != undefined) {
-                        clearInterval(that.notificationTimer);
-                    }
-                    that.notificationTimer = setInterval(function () {
-                        console.log("check for new notifications");
-                        that.receiveNotifications();
-                    }, 120000);
-                    that.updateCSRF();
                 }
-                theVue.users = that.users;
                 if (that.treecatptions != undefined) {
                     theVue.treecatptions = that.treecatptions;
                 }
-                theVue.categories = that.categories;
                 if (theVue.$route.params.profileId != undefined) {
                     theVue.user = that.getUserById(theVue.$route.params.profileId);
                 }
@@ -905,7 +877,7 @@ class siteManager {
     }
     getUserById(id) {
         var search = new User(0, "None", "/img/404/avatar.png", "/img/404/background.png", "None-profile", {}, "", false);
-        $.each(this.users, function (key, value) {
+        $.each(store.state.users, function (key, value) {
             if (value.id == id) {
                 search = value;
             }
