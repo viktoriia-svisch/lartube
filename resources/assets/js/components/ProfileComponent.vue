@@ -37,14 +37,7 @@
       return u
     },
         usermedias: function () {
-      var filteredMedias = [];
-      let that = this;
-      $.each( store.getters.getMediasByTypes(), function( key, value ) {
-        if(value.user.id==that.currentuser.id){
-          filteredMedias.push(value);
-        }
-      });
-      return filteredMedias;
+      return store.getters.getMediasByUserId(store.state.loginId)
     },
   }
   }

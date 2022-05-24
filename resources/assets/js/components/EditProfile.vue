@@ -93,6 +93,9 @@
       })
     },
     computed: {
+      loggeduserid(){
+        return store.state.loginId
+      },
       csrf: function(){
         return store.getters.getCSRF()
       },

@@ -49,6 +49,7 @@ class siteManager {
         this.usedCatRequests = [];
         this.loadedLangs = ['en'];
         this.nextMedias = [];
+        store.commit("setLoginId", Number($("#loggedUserId").attr("content")));
         this.loggedUserId = Number($("#loggedUserId").attr("content"));
         this.updateCSRF();
         let that = this;
@@ -186,6 +187,7 @@ class siteManager {
             this.initing = false;
             this.loggedUserId = settings.user_id;
             theVue.loggeduserid = this.loggedUserId;
+            store.commit("setLoginId", settings.user_id);
             that.receiveUsers(function () {
                 that.currentUser = that.getUserById(that.loggedUserId);
                 theVue.currentuser = that.currentUser;
@@ -196,6 +198,7 @@ class siteManager {
         });
         eventBus.$on('logout', settings => {
             this.loggedUserId = 0;
+            store.commit("setLoginId", 0);
             theVue.loggeduserid = this.loggedUserId;
             that.currentUser = that.getUserById(that.loggedUserId);
             theVue.currentuser = that.currentUser;
@@ -230,7 +233,6 @@ class siteManager {
         eventBus.$on('refreshMedia', id => {
             that.receiveMediaById(id, function () {
                 that.updateCSRF();
-                theVue.alert(theVue.$t("Media") + " " + theVue.$t("refreshed"), "success");
             });
         });
         eventBus.$on('loadMediaById', id => {
@@ -526,11 +528,11 @@ class siteManager {
         $.getJSON('/internal-api/refresh-csrf').done(function (data) {
             that.csrf = data.csrf;
             store.commit("setCSRF", data.csrf);
+            store.commit("setTotalMedias", data.totalMedias);
             that.totalMedias = data.totalMedias;
             if (theVue != undefined) {
                 theVue.csrf = data.csrf;
                 theVue.totalmedias = data.totalMedias;
-                store.commit("setTotalMedias", data.totalMedias);
                 if (that.totalMedias > store.state.medias.length) {
                     theVue.canloadmore = true;
                 }
@@ -638,6 +640,7 @@ class siteManager {
                             console.log("push media-like-notification " + value.id);
                             that.notifications.push(new Notification(value.id, value.type, value.data, value.read_at, value.created_at));
                             theVue.notifications = that.notifications;
+                            store.commit("setNotifications", that.notifications);
                         });
                     }
                     if (value.data.comment_id != null && value.data.comment_id != 0) {
@@ -646,10 +649,12 @@ class siteManager {
                             console.log("push comment-like-notification " + value.id);
                             that.notifications.push(new Notification(value.id, value.type, value.data, value.read_at, value.created_at));
                             theVue.notifications = that.notifications;
+                            store.commit("setNotifications", that.notifications);
                         });
                     }
                 });
                 this.notifications = that.notifications;
+                store.commit("setNotifications", that.notifications);
                 if (theVue != undefined) {
                     console.log("set notifications to vue");
                     theVue.notifications = this.notifications;
@@ -829,7 +834,7 @@ class siteManager {
     }
     jsonToMedia(value) {
         let that = this;
-        var m = new Media(value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, this.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, this.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id, value.intro, value.outro);
+        var m = new Media(value.id, value.title, value.description, value.source, value.poster_source, value.duration, value.simpleType, value.techType, value.type, this.getUserById(value.user_id), value.user_id, value.created_at, value.updated_at, value.created_at_readable, value.comments, this.getTagsByIdArray(value.tagsIds), value.myLike, value.likes, value.dislikes, value.tracks, value.category_id, value.intro_start, value.outro_start, value.intro_end, value.outro_end);
         $.each(m.comments, function (key1, value1) {
             m.comments[key1] = that.fillUser(value1);
             m.comments[key1].user = that.getUserById(value1.user_id);

@@ -1,16 +1,22 @@
 <?php
 namespace App\Http\Controllers;
+use App\Notifications\CommentReceived;
 use App\Comment;
 use App\Http\Resources\Comment as CommentResource;
 use App\Media;
+use App\User;
 use Auth;
 use Illuminate\Http\Request;
 class CommentController extends Controller
 {
     public function create(Request $request)
     {
-        $comment = Comment::create(['media_id' =>  $request->input('medias_id'),'parent_id' =>  $request->input('parent_id'),'user_id' => Auth::id(),'body' => $request->input('body')]);
-        return new CommentResource($comment);
+        $media = Media::find($request->input('media_id'));
+        if((!empty(Auth::id()))&&(!empty($media))){
+          $comment = Comment::create(['media_id' =>  $request->input('media_id'),'parent_id' =>  $request->input('parent_id'),'user_id' => Auth::id(),'body' => $request->input('body')]);
+          User::find($media->user_id)->notify(new CommentReceived($comment));
+          return new CommentResource($comment);
+        }
     }
     public function destroy(Request $request,$id)
     {

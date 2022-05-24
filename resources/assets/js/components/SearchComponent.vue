@@ -22,7 +22,7 @@
   import TagComponent from './TagComponent'
   import UserList from './UserList'
   export default {
-    props: ['item','loggeduserid','search','canloadmore','loggeduserid','tags','users'],
+    props: ['item','search','canloadmore','tags','users'],
     data(){
       return {
         tagsen:false,
@@ -37,9 +37,18 @@
         eventBus.$emit('refreshSearch','');
       })
     },
-    computed:{
+    computed: {
+      currentuser(){
+        return store.getters.getUserById(store.state.loginId)
+      },
+      loggeduserid(){
+        return store.state.loginId
+      },
+      tags(){
+        return store.state.tags
+      },
       medias:function(){
-        return store.state.medias
+        return store.getters.getMediasByTypes()
       }
     },
     methods: {

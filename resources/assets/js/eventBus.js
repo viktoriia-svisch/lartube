@@ -8,6 +8,7 @@ export const store = new Vuex.Store({
       state: {
         filterTypes:["video","audio"],
         medias:[],
+        loginId:0,
         categories:[],
         users:[],
         tags:[],
@@ -32,6 +33,13 @@ export const store = new Vuex.Store({
         },
         getMediasByTypes: (state) => () => {
           var m = state.medias.filter(media => state.filterTypes.includes(media.simpleType))
+          return m
+        },
+        getMediasByUserId: (state) => (userId, filtered=true) => {
+          var m = state.medias.filter(media => media.user_id===userId)
+          if(filtered){
+            m = state.medias.filter(media => state.filterTypes.includes(media.simpleType))
+          }
           return m
         },
         getMediaById: (state) => (id) => {
@@ -153,6 +161,9 @@ export const store = new Vuex.Store({
         setTotalMedias(state,totalMedias){
           state.totalMedias = totalMedias
         },
+        setLoginId(state,loginId){
+          state.loginId = loginId
+        },
       }
     }) 
   export const controls = `
@@ -172,7 +183,7 @@ export const store = new Vuex.Store({
         </button>
         <button type="button" id="skipIntroBtn" class="plyr__control" data-plyr="restart3">
             <i class="material-icons md-18">arrow_forward</i>
-            <span id="savePositionBtnTooltip" class="plyr__tooltip" role="tooltip">Skip intro</span>
+            <span id="skipIntroBtnTooltip" class="plyr__tooltip" role="tooltip">Skip intro</span>
         </button>
         <button type="button" class="plyr__control" data-plyr="rewind">
             <svg role="presentation"><use xlink:href="#plyr-rewind"></use></svg>

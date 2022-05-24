@@ -119,8 +119,20 @@ export default {
       eventBus.$emit('loadAllMedias',"");
     },
   },
-  props:['notifications','currentuser','csrf','totalmedias'],
+  props:[],
   computed:{
+    totalmedias: function(){
+      return store.state.totalMedias
+    },
+    csrf: function(){
+      return store.getters.getCSRF()
+    },
+    notifications: function(){
+      return store.state.notifications
+    },
+    currentuser(){
+      return store.getters.getUserById(store.state.loginId)
+    },
     tags: function(){ 
       return store.state.tags
     },
@@ -129,7 +141,10 @@ export default {
     },
     tm: function(){ 
       return store.state.totalMedias
-     } 
+    },
+    medias: function(){
+      return store.state.medias
+    }
   },
   watch:{
     lang:function(val){
@@ -156,7 +171,6 @@ export default {
     lang:'en',
     dataTypes: ["audio","video"],
     n:0,
-    medias:store.state.medias,
     treeTypes: [{id:'audio',label:'Audio'},{id:'video',label:'Video'}]
   })
 }
