@@ -121,7 +121,7 @@
   import MarkdownCreator from './MarkdownCreator'
   import SingleMediaView from './SingleMediaView'
   export default {
-    props: ['baseUrl','categories','csrf','treecatptions'],
+    props: ['baseUrl','treecatptions'],
     mounted: function () {
                     eventBus.$on('playerSetDuration', duration => {
       console.log("receive duration: "+this.secondsToHms(duration))
@@ -155,7 +155,13 @@
       })
     },
     computed: {
-            currentmedia: function(){
+      categories: function(){
+        return store.state.categories
+      },
+      csrf: function(){
+        return store.getters.getCSRF()
+      },
+      currentmedia: function(){
         return this.getCurrentMedia()
       }
     },

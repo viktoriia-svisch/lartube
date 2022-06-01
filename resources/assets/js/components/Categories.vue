@@ -34,7 +34,7 @@
   import VueMarkdown from 'vue-markdown'
   import { User, Media, Tag, Category } from '../models';
   export default {
-    props: ['baseUrl','canloadmore','loggeduserid','catlevel','currentuser','treecatptions'],
+    props: ['baseUrl','canloadmore','catlevel','treecatptions'],
     name: 'categoriesTag',
     mounted: function () {
       let that = this
@@ -73,6 +73,12 @@
       }
     },
     computed:{
+      currentuser:function(){
+        return store.getters.getUserById(store.state.loginId)
+      },
+      loggeduserid:function(){
+        return store.state.loginId
+      },
       medias:function(){
         return store.getters.getMediasByTypes()
       },

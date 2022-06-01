@@ -106,7 +106,7 @@
   import SingleMediaView from './SingleMediaView'
   import MarkdownCreator from './MarkdownCreator'
   export default {
-    props: ['medias','baseUrl','treecatptions'],
+    props: ['baseUrl','treecatptions'],
     components : {
         'mediaView' : SingleMediaView,
         MarkdownCreator

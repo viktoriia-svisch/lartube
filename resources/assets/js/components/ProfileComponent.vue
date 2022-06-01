@@ -31,7 +31,7 @@
           },
   computed: {
     currentuser: function(){
-      var u = store.getters.getUserById(this.$route.params.profileId)
+      var u = store.getters.getUserById(Number(this.$route.params.profileId))
       if(u!=undefined){
       }
       return u

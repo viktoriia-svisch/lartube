@@ -163,7 +163,7 @@
               if(res.status==200){
               }
               eventBus.$emit('login',res.responseJSON.data);
-                                                }
+            }
         });
         return false;
       },
