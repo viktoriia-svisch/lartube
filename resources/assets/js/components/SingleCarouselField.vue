@@ -34,10 +34,10 @@
         </div>
 </template>
 <script>
-  import { eventBus } from '../eventBus.js';
+  import { eventBus, store } from '../eventBus.js';
   import VueMarkdown from 'vue-markdown'
   export default {
-    props: ['item','loggeduserid'],
+    props: ['item'],
     components : {
         VueMarkdown
     },
@@ -50,12 +50,11 @@
       },
     },
     watch:{
-      medias:function(val){
-        console.log("do swiper update")
-        this.swiper.update()
-      }
     },
     computed: {
+      loggeduserid: function(){
+        return store.state.loginId
+      },
       swiper() {
         return this.$refs.mySwiper.swiper
       },

@@ -28,7 +28,8 @@
       VueMarkdown,
   },
   mounted(){
-          },
+    eventBus.$emit("loadUserVideos",this.currentuser.id)
+  },
   computed: {
     currentuser: function(){
       var u = store.getters.getUserById(Number(this.$route.params.profileId))

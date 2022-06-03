@@ -220,9 +220,6 @@ export class Search{
       that.mediaResult = tms.sort(that.mediaResult)
       });
     }
-    if($("#theLiveSearchMedias").is(':checked')){
-      this.userResult=medias
-    }
   }
   }
 }

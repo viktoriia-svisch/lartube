@@ -2,7 +2,7 @@
   <div v-if="medias.length>0">
       <swiper refs="mySwiper" id="theSwiper" :options="swiperOption">
         <swiper-slide v-for="(item,index) in medias" :key="index">
-          <singleField v-bind:item="item" v-bind:loggeduserid="loggeduserid"></singleField>
+          <singleField v-bind:item="item"></singleField>
         </swiper-slide>
         <div class="swiper-pagination" slot="pagination"></div>
         <div class="swiper-button-prev" style="" slot="button-prev"></div>
@@ -42,10 +42,10 @@
       loggeduserid: function(){
         return store.state.loginId
       },
-      swiper() {
+      swiper:function() {
         return this.$refs.mySwiper.swiper
       },
-      medias() {
+      medias:function() {
                         return store.getters.getMediasByTypes()
       }
     },
