@@ -1,5 +1,5 @@
 <template>
-  <div v-if="currentmedia!=undefined">
+  <div v-if="currentmedia!=undefined" style="overflow-y:auto;overflow-x:hidden;" id="mediaDiv">
       <mediaView v-bind:currentmedia="currentmedia" v-bind:autoplay="autoplay"></mediaView>
       <div class="col-xs-12 col-sm-12 col-md-12"></div>
       <div class="card">
@@ -68,6 +68,7 @@
               <vs-icon icon="thumb_down"></vs-icon>
               <span class="ml-1" id="dislikeCount">{{ dislikes }}</span>
             </button>
+          <a class="btn btn-primary col-1 float-right" @click="mediaGoFullscreen()"><vs-icon size="big" icon="fullscreen"></vs-icon></a>
             <span v-if="loggeduserid==currentmedia.user.id|currentuser.admin" class="">
               <router-link class="btn btn-sm btn-info ml-1" :to="'/mediaedit/'+currentmedia.urlTitle"><vs-icon icon="edit"></vs-icon>{{ $t('Edit') }}</router-link>
             </span>
@@ -132,6 +133,46 @@
     methods: {
       skipIntro(s){
         eventBus.$emit('playerJumpTo',s);
+      },
+      mediaGoFullscreen(){
+        eventBus.$emit('mediaGoFullscreen','');
+      },
+      goFullscreen(){
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          }
+          $('#mediaDiv').css("height","100%")
+          if(this.currentmedia.type=="localAudio"){
+            $('#audioVisual').css("height","400px")
+            $('#audioVisual').css("width","100%")
+                      }
+          eventBus.$emit('playerGoFullscreen',false);
+        } else {
+          var element = $('#mediaDiv');
+          element.css("height","100vh")
+          element = element[0];
+          if (element.requestFullscreen) {
+            element.requestFullscreen();
+          } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+          } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+          } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+          }
+          if(this.currentmedia.type=="localAudio"){
+            $('#audioVisual').css("height","100vh")
+            $('#audioVisual').css("width","100vw")
+                      }
+          eventBus.$emit('playerGoFullscreen',true);
+        }
       },
       getCategoryById(category_id,data=undefined){
         var res;
@@ -278,6 +319,12 @@
         this.likes = this.currentmedia.likes;
         this.dislikes = this.currentmedia.dislikes;
       }
+      eventBus.$on('mediaGoFullscreen', isFullscreen => {
+        that.goFullscreen()
+        if(isFullscreen){
+        } else {
+        }
+      });
       eventBus.$emit('audioVisualType',[this.audiovisualtype,this.audioVisualChangeSeconds]);
       eventBus.$on('torrentChartData', chartData => {
                 that.peers = chartData[0][0];
