@@ -24,7 +24,7 @@
             </audio>
           </vue-plyr>
           <vue-plyr v-if="currentmedia.type=='directAudio'||currentmedia.type=='localAudio'" :options="playerConfig" ref="player">
-            <audio v-if="currentmedia.type=='localAudio'" class="text-center col-11"  :src="currentmedia.source" id="audioPlayer"  preload autobuffer   controls :poster="currentmedia.poster_source">
+            <audio v-if="currentmedia.type=='directAudio'||currentmedia.type=='localAudio'" class="text-center col-11"  :src="currentmedia.source" id="audioPlayer"  preload autobuffer   controls :poster="currentmedia.poster_source">
               <source id="audioSource" :src="currentmedia.source" type="audio/mp3"></source>
             </audio>
           </vue-plyr>
@@ -57,7 +57,7 @@
                   initTorrent(){
         let that = this;
           if(client.torrents.length>0){
-              theTorrent.destroy(function(){
+              client.torrents[0].destroy(function(){
                 that.initTorrent();
               })
           } else {
@@ -134,7 +134,7 @@
           setTimeout(function(){
             if(that.autoplay){
               that.player.play();
-                          }
+            }
           }, 3000);
         } else {
           if(this.autoplay){
@@ -168,6 +168,16 @@
     watch: {
       '$route.params.currentTitle': function (val) {
                                             },
+      'currentmedia':function(val){
+        if(theTorrent!=undefined){
+          let that = this
+          theTorrent.destroy(function(){
+            console.log("torrent destroyed on vue-currentmedia-change-method")
+            that.initTorrent()
+          });
+        }
+        this.initTorrent()
+      }
     },
     computed: {
       loggeduserid: function(){
@@ -208,11 +218,19 @@
             $('#audioVisual').css("width","100vw")
             visualizer.setRendererSize($(document).width(), $(document).height());
           }
+          if(this.currentmedia.simpleType=="video"){
+            $("video").css("height","100vh")
+            $("video").css("width","100vw")
+          }
         } else {
           if(this.currentmedia.type=='localAudio'){
             $('#audioVisual').css("height","400px")
             $('#audioVisual').css("width","100%")
             visualizer.setRendererSize(400, 400);
+          }
+          if(this.currentmedia.simpleType=="video"){
+            $("video").css("height","100%")
+            $("video").css("width","100%")
           }
         }
       });    
