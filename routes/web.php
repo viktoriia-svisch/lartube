@@ -8,6 +8,7 @@ use App\Http\Resources\Media as MediaResource;
 use App\Http\Resources\Category as CategoryResource;
 use App\User;
 use App\Http\Resources\User as UserResource;
+if(function_exists("getMediaOrder")==false){
 function getMediaOrder($sortByInput){
   $ascDesc = 'desc';
   $sortBy = 'updated_at';
@@ -37,6 +38,7 @@ function getMediaOrder($sortByInput){
     $sortBy = 'type';
   }
   return [$ascDesc,$sortBy];
+};
 }
 Auth::routes();
 Route::get('/', function () {
