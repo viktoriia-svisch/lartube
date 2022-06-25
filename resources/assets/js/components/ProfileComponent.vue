@@ -38,7 +38,7 @@
       return u
     },
         usermedias: function () {
-      return store.getters.getMediasByUserId(store.state.loginId)
+      return store.getters.getMediasByUserId(Number(store.state.loginId))
     },
   }
   }
