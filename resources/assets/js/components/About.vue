@@ -11,7 +11,7 @@
     <p class="ml-2">
       This project uses a lot of ressources to be created. Thanks to all of them!
       <ul class="ml-4">
-        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:      </ul>
+        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:        <li><a href="https:      </ul>
     </p>
   </div>
 </template>

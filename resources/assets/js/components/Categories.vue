@@ -4,7 +4,7 @@
       <router-link v-if="currentuser.admin" to="/newcat/" class="btn btn-block btn-warning btn-sm">
         <vs-icon icon="create"></vs-icon>{{ $t("Create") }} {{ $t("category") }}
       </router-link>
-      <treeselect instanceId="catoverviewtree" v-if="treecatptions!=undefined" :multiple="false" :append-to-body="false" :always-open="true" v-model="catids" name="parent_id"  :options="treecatptions" />
+      <treeselect instanceId="catoverviewtree" :style="'margin-bottom: 150px;'" v-if="treecatptions!=undefined" :multiple="false" :append-to-body="false" :always-open="true" v-model="catids" name="parent_id"  :options="treecatptions" />
     </p>
     <div class="float-right col-md-9 col-sm-6 mt-sm-5 mt-md-0 pt-sm-5 pt-md-0">
       <div class="" v-if="currentcat!=undefined">
