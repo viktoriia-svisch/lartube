@@ -96,7 +96,7 @@
       </div>
     </form>
     <p v-if="uploadPercent!=-1">Please wait, you will be redirected to startpage after upload</p>
-    <vs-progress :percent="uploadPercent" v-if="uploadPercent!=-1" color="primary">primary</vs-progress>
+    <v-progress-linear v-model="uploadPercent" v-if="uploadPercent!=-1"></v-progress-linear>
     <button @click="submitAction();" >Submit</button>
     </div>
 </template>
