@@ -42,8 +42,26 @@
     </div>
   </v-card-text>
   <v-card-actions>
-    <v-layout row wrap hidden-sm-and-down >
-    <v-list-tile class="grow">
+    <v-layout
+      row wrap hidden-sm-and-down
+    >
+    <v-btn :to="'/media/'+item.urlTitle">
+    <v-icon class="mr-1">play_circle_filled</v-icon>
+    <span class="subheading hidden-sm-and-down" >{{ $t('Play') }}</span>
+  </v-btn>
+      <v-btn hidden-sm-and-down :to="'/mediaedit/'+item.title" v-if="loggeduserid==item.user.id|currentuser.admin">
+      <v-icon class="mr-1">settings</v-icon>
+      <span class="subheading mr-2 hidden-sm-and-down" >{{ $t('Edit') }}</span>
+    </v-btn>
+    </v-layout>
+    <v-spacer></v-spacer>
+    <v-layout 
+    align-end
+    justify-end
+    wrap
+    xs12 sm4
+     >
+    <v-list-tile class="">
       <router-link :to="'/profile/'+item.user.id">
       <v-list-tile-avatar color="grey darken-3" >
         <v-img
@@ -52,7 +70,7 @@
         ></v-img>
       </v-list-tile-avatar>
     </router-link>
-    <v-badge class="ml-3 small" left color="blue" overlap>
+    <v-badge class="ml-1 small" left color="blue" overlap>
       <span slot="badge" class="small">{{ item.comments.length }}</span>
     <v-icon>comment</v-icon>
   </v-badge>
@@ -65,21 +83,6 @@
 <v-icon >thumb_down</v-icon>
 </v-badge>
     </v-list-tile>
-  </v-layout>
-  <v-layout
-    align-center
-    justify-end
-    wrap
-    xs12 sm4
-  >
-    <v-btn hidden-sm-and-down :to="'/mediaedit/'+item.title" v-if="loggeduserid==item.user.id|currentuser.admin">
-    <v-icon class="mr-1">settings</v-icon>
-    <span class="subheading mr-2 hidden-sm-and-down" >{{ $t('Edit') }}</span>
-  </v-btn>
-    <v-btn :to="'/media/'+item.urlTitle">
-    <v-icon class="mr-1">play_circle_filled</v-icon>
-    <span class="subheading hidden-sm-and-down" >{{ $t('Play') }}</span>
-  </v-btn>
   </v-layout>
   </v-card-actions>
 </v-card>

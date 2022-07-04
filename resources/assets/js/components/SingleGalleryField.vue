@@ -37,7 +37,15 @@
       <span class="hidden-sm-and-down" >{{ $t('Play') }}</span>
     </v-btn>
       <v-spacer></v-spacer>
-      <v-badge class="ml-3 small" left color="blue" overlap>
+      <router-link :to="'/profile/'+item.user.id" class="ml-1">
+      <v-list-tile-avatar color="grey darken-3" >
+        <v-img
+          class="elevation-6"
+          :src="item.user.avatar"
+        ></v-img>
+      </v-list-tile-avatar>
+    </router-link>
+      <v-badge class="ml-1 small" left color="blue" overlap>
         <span slot="badge" class="small">{{ item.comments.length }}</span>
       <v-icon>comment</v-icon>
     </v-badge>
