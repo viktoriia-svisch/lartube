@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 class MediaController extends Controller
 {
     public function addTrack(Request $request){
-      if(empty(Auth::id())){
+      if(!empty(Auth::id())){
       $media_id = $request->input("media_id");
       $lang = $request->input("lang");
       $file = $request->file('track');
@@ -27,7 +27,7 @@ class MediaController extends Controller
     }
     }
     public function deleteTrack(Request $request,$trackid){
-      if(empty(Auth::id())){
+      if(!empty(Auth::id())){
       $media = Media::find(Track::find($trackid)->media_id);
       Track::find($trackid)->delete();
       return new MediaResource($media);
@@ -35,7 +35,7 @@ class MediaController extends Controller
     }
     public function create(Request $request)
     {
-      if(empty(Auth::id())){
+      if(!empty(Auth::id())){
         $getID3 = new \getID3;
         $title = $request->input('title');
         $source = $request->input('source');
@@ -93,7 +93,7 @@ class MediaController extends Controller
       }
     }
     public function like(Request $request){
-      if(empty(Auth::id())){
+      if(!empty(Auth::id())){
       $notifyId = 0;
       if(!empty($request->input('media_id'))){
         $like = Like::firstOrCreate(['user_id' => Auth::id(),'media_id' => $request->input('media_id')]);
