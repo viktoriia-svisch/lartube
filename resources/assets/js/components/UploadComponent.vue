@@ -119,6 +119,7 @@
       <v-text-field
         :label="$t('Tags')"
         name="tags"
+        :hint="$t('Separate tags with space')"
         ></v-text-field>
     </form>
     <p v-if="uploadPercent!=-1">Please wait, you will be redirected to startpage after upload</p>
