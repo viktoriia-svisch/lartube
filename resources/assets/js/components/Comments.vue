@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="level==0">
-    <h4>{{ $t('Comments') }} <a class="btn btn-sm" @click="refreshMedia()"><vs-icon icon="refresh"></vs-icon></a></h4>
+    <h4>{{ $t('Comments') }} <v-btn @click="refreshMedia()"><v-icon>refresh</v-icon></v-btn></h4>
     <form class="form-inline mb-1 col-12" id="commentForm" >
       <input type="hidden" name="_token" :value="csrf">
       <input id="media_id" name="media_id" type="hidden" :value="currentmedia.id">
@@ -13,7 +13,7 @@
   <div v-for="(comment,i) in commentlist" :class="'comment mb-2 row col-12 pl-'+Number(level)" :id='"cid"+comment.id'>
       <div class="comment-content col-12">
           <h6 class="small comment-meta"><router-link class="btn btn-sm btn-primary mr-2" :to="'/profile/'+comment.user.id"><img class="" style="width:25px;"  :src="'/'+comment.user.avatar" alt="avatar" /> {{ comment.user.name }}</router-link> {{ comment.created_at_readable}}
-              <span @click="openConfirm(comment.id)" v-if="loggeduserid==comment.user_id" class="float-right btn btn-sm btn-danger" onclick=""><vs-icon icon="delete"></vs-icon></span>
+              <span @click="openConfirm(comment.id)" v-if="loggeduserid==comment.user_id" class="float-right btn btn-sm btn-danger" onclick=""><v-icon>delete</v-icon></span>
           </h6>
           <div class="comment-body">
           <p><VueMarkdown :source="comment.body"></VueMarkdown></p>

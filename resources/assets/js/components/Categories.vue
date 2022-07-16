@@ -2,14 +2,14 @@
   <div>
     <p v-if="catlevel==0" class="float-left col-md-3 col-sm-6 ">
       <router-link v-if="currentuser.admin" to="/newcat/" class="btn btn-block btn-warning btn-sm">
-        <vs-icon icon="create"></vs-icon>{{ $t("Create") }} {{ $t("category") }}
+        <v-icon>create</v-icon>{{ $t("Create") }} {{ $t("category") }}
       </router-link>
       <treeselect instanceId="catoverviewtree" :style="'margin-bottom: 150px;'" v-if="treecatptions!=undefined" :multiple="false" :append-to-body="false" :always-open="true" v-model="catids" name="parent_id"  :options="treecatptions" />
     </p>
     <div class="float-right col-md-9 col-sm-6 mt-sm-5 mt-md-0 pt-sm-5 pt-md-0">
       <div class="" v-if="currentcat!=undefined">
-        <span class="text-right float-right" v-if="currentuser.admin"><router-link :to="'/editcat/'+currentcat.id" class="btn btn-warning btn-sm mr-1"><vs-icon icon="edit"></vs-icon>{{ $t("Edit") }}</router-link>
-          <button @click="deleteAction(currentcat.id)" class="btn btn-danger btn-sm"><vs-icon icon="delete"></vs-icon>{{ $t("Delete") }}</button></span>
+        <span class="text-right float-right" v-if="currentuser.admin"><router-link :to="'/editcat/'+currentcat.id" class="btn btn-warning btn-sm mr-1"><v-icon>edit</v-icon>{{ $t("Edit") }}</router-link>
+          <button @click="deleteAction(currentcat.id)" class="btn btn-danger btn-sm"><v-icon>delete</v-icon>{{ $t("Delete") }}</button></span>
         <h5><router-link :to="'/category/'+currentcat.urlTitle">{{ currentcat.title }}</router-link></h5>
         <p><VueMarkdown :source="currentcat.description" ></VueMarkdown></p>
          <p v-if="currentcat.children.length>0">Subcategories</p>

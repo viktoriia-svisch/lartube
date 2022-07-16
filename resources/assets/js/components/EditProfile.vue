@@ -45,7 +45,7 @@
     <div class="form-group">
         <label for="public" class="col-md-4 col-form-label text-md-right">Public</label>
         <div class="col-md-6">
-            <vs-switch v-model="public"/>
+            <v-switch v-model="public" :label="$t('Public')+' '+$t('account')"></v-switch>
             <input type="hidden" name="public" :value="Number(public)" />
         </div>
     </div>
@@ -60,7 +60,7 @@
           </div>
       </div>
     </form>
-    <button @click="submitAction();" class="btn btn-success" ><vs-icon icon="save"></vs-icon>{{ $t('Save') }}</button> 
+    <v-btn @click="submitAction();"color="green" ><v-icon>save</v-icon>{{ $t('Save') }}</v-btn> 
     </div>
 </template>
 <script>
