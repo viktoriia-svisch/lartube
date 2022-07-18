@@ -1,10 +1,9 @@
 <template>
   <div v-if="currentmedia!=undefined" style="overflow-y:auto;overflow-x:hidden;" class="bg-light" id="mediaDiv">
-    <mediaView :key="$route.fullPath" v-bind:currentmedia="currentmedia" v-bind:autoplay="autoplay"></mediaView>
     <div class="col-xs-12 col-sm-12 col-md-12"></div>
-    <div class="card">
-      <div class="card-header">
-        <div style="float:right;width:100%;">
+    <v-card>
+      <mediaView :key="$route.fullPath" v-bind:currentmedia="currentmedia" v-bind:autoplay="autoplay"></mediaView>
+      <v-card-actions>
           <span class="float-left"><vs-input-number v-if="currentmedia.type=='localAudio'" v-model="audioVisualChangeSeconds" :step="0.1"/></span>
           <span v-if="currentmedia.type=='localAudio'" class="" >
             <v-btn color="blue" small @click="previousVisual()"><v-icon>skip_previous</v-icon></v-btn>
@@ -14,14 +13,11 @@
             </select>
             <v-btn color="blue" small @click="nextVisual()"><v-icon>skip_next</v-icon></v-btn>
           </span>
-        </div>
-        <div style="float:right;width:100%;">
           <v-btn id="mfs" small color="blue" @click="mediaGoFullscreen()"><v-icon>fullscreen</v-icon></v-btn>
           <vs-dropdown vs-trigger-click class="btn-sm">
             <a href.prevent class="btn btn-sm btn-primary">More</a>
             <vs-dropdown-menu class="">
-              <vs-dropdown-item v-b-modal.torrentmodal class="mr-1 btn-sm" v-if="currentmedia.techType=='torrent'">Torrent-info</vs-dropdown-item>
-              <vs-dropdown-item>{{ currentmedia.type }}</vs-dropdown-item>
+            <vs-dropdown-item>{{ currentmedia.type }}</vs-dropdown-item>
             </vs-dropdown-menu>
           </vs-dropdown>
           <v-dialog
@@ -33,6 +29,7 @@ width="500"
 slot="activator"
 color="red lighten-2"
 dark
+small
 >
 Torrent-details
 </v-btn>
@@ -89,30 +86,31 @@ Torrent-details
               <h5>{{ currentCat.title }}</h5>
               <p>{{ currentCat.description }}</p>
             </b-tooltip>
-            <v-btn id="like" v-if="mylike==1" type="button" @click="like(0,'like')" color="green">
+            <v-btn id="like" small v-if="mylike==1" type="button" @click="like(0,'like')" color="green">
               <v-icon>thumb_up</v-icon>
               <span class="ml-1" id="likeCount">{{ likes }}</span>
             </v-btn>
-            <v-btn id="like" v-else type="button" @click="like(1,'like')" color="blue">
+            <v-btn id="like" small v-else type="button" @click="like(1,'like')" color="blue">
               <v-icon>thumb_up</v-icon>
               <span class="ml-1" id="likeCount">{{ likes }}</span>
             </v-btn>
-            <v-btn id="dislike" v-if="mylike==-1" type="button" @click="like(0,'dislike')" color="green">
+            <v-btn id="dislike" small v-if="mylike==-1" type="button" @click="like(0,'dislike')" color="green">
               <v-icon>thumb_down</v-icon>
               <span class="ml-1" id="dislikeCount">{{ dislikes }}</span>
             </v-btn>
-            <v-btn id="dislike" v-else type="button" @click="like(-1,'dislike')" color="blue">
+            <v-btn id="dislike" small v-else type="button" @click="like(-1,'dislike')" color="blue">
               <v-icon>thumb_down</v-icon>
               <span class="ml-1" id="dislikeCount">{{ dislikes }}</span>
             </v-btn>
-            <span v-if="loggeduserid==currentmedia.user.id|currentuser.admin" class="">
-              <router-link class="btn btn-sm btn-info ml-1" :to="'/mediaedit/'+currentmedia.urlTitle"><v-icon>edit</v-icon>{{ $t('Edit') }}</router-link>
-            </span>
-          </div>
-          <div class="card-body">
-            <span class='h3'>{{ currentmedia.title }}</span>
-            <VueMarkdown :source="currentmedia.description"></VueMarkdown></div>
-          <div class="card-footer">
+              <v-btn small v-if="loggeduserid==currentmedia.user.id|currentuser.admin" color="blue" :to="'/mediaedit/'+currentmedia.urlTitle"><v-icon>edit</v-icon>{{ $t('Edit') }}</v-btn>
+        </v-card-actions>
+          <v-card-title primary-title>
+            {{ currentmedia.title }}
+            </v-card-title>
+          <v-card-text>
+            <VueMarkdown :source="currentmedia.description"></VueMarkdown>
+            </v-card-text>
+          <v-card-text>
             <span v-for="tag in currentmedia.tags">
               <router-link class=""  :to="'/tags/'+tag.name" >
                 <v-chip class="small" small>
@@ -123,9 +121,8 @@ Torrent-details
                 </v-chip>
               </router-link>
             </span>
-          </div>
-        </div>
-      </div>
+          </v-card-text>
+      </v-card>
       <div class="comments col-sm-8 col-12 float-left">
         <comments class="bg-light" v-bind:csrf="csrf" v-bind:level="'0'" v-bind:commentlist="currentmedia.comments" v-bind:loggeduserid="loggeduserid" v-bind:currentmedia="currentmedia"></comments>
       </div>
@@ -141,8 +138,6 @@ Torrent-details
         <div v-if="nextMedias.length==0">No more next medias</div>
         <button class="btn btn-block btn-danger" v-if="canloadmore" @click="emitLoadMore()">Load more</button>
       </div>
-      <b-modal  style="width:520px;" id="torrentmodal" title="Torrent-infos">
-        </b-modal>
   </div>
 </template>
 <script>
