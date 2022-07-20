@@ -66,7 +66,7 @@ class siteManager {
             that.initVue();
             that.receiveMedias("/internal-api/media"+that.getIgnoreParam(),false,function(){
               that.receiveNotifications();
-            });
+            });    
             if(that.notificationTimer!=undefined){
               clearInterval(that.notificationTimer);
             }
@@ -84,7 +84,7 @@ class siteManager {
     var player = Vue.component('player', require("./components/MediaComponent.vue"));
     var profileComp = Vue.component('profile', require("./components/ProfileComponent.vue"));
     var editProfileComp = Vue.component('editprofile', require("./components/EditProfile.vue"));
-    var tagComp = Vue.component('tags', require("./components/TagComponent.vue"));
+    var tagComp = Vue.component('tags', require("./components/Tags.vue"));
     var loginComp = Vue.component('login', require("./components/auth/Login.vue"));
     var registerComp = Vue.component('register', require("./components/auth/Register.vue"));
     var uploadComp = Vue.component('upload', require("./components/UploadComponent.vue"));
@@ -92,7 +92,7 @@ class siteManager {
     var chartsComp = Vue.component('search', require("./components/ChartsComponent.vue"));
     var editVideoComp = Vue.component('search', require("./components/EditVideo.vue"));
     var aboutComp = Vue.component('search', require("./components/About.vue"));
-    var sidebarComp = Vue.component('thesidebar', require("./components/SidebarComponent.vue"));
+    var sidebarComp = Vue.component('thesidebar', require("./components/Navigation.vue"));
     var catComp = Vue.component('thesidebar', require("./components/Categories.vue"));
     var uaComp = Vue.component('thesidebar', require("./components/UserAdmin.vue"));
     var myVideosComp = Vue.component('thesidebar', require("./components/MyVideos.vue"));
@@ -123,6 +123,9 @@ class siteManager {
       { path: '/admin/users', component: uaComp },
       { path: '/mediaedit/:editTitle', component: editVideoComp }
     ]
+    eventBus.$on('alert', a => {
+        theVue.alert(a.text,a.type)
+    });
     eventBus.$on('getNotifications', url => {
       that.receiveNotifications(url,function(){
         theVue.alert(theVue.$t("New")+" "+theVue.$t("notifications")+" "+theVue.$t("received"))
@@ -337,7 +340,10 @@ class siteManager {
       search:undefined,
       treecatptions:undefined,
       canloadmore:true,
-      baseUrl:baseUrl
+      baseUrl:baseUrl,
+      alertshown:false,
+      alerttext:'',
+      alertcolor:'success'
     },
     components : {
         'thesidebar': sidebarComp
@@ -353,8 +359,10 @@ class siteManager {
       }
    }),
     methods:{
-      alert(msg,type="dark",icon=''){
-        this.$vs.notify({title:msg,text:'',icon:icon,color:type,position:'bottom-center'})
+      alert(msg,type="info",icon=''){
+        this.alertshown=true
+        this.alerttext=msg
+        this.alertcolor=type
       },
       openLoading(){
         this.$vs.loading()

@@ -150,18 +150,18 @@
       </v-list-tile>
       <v-list-tile @click="emitLoadAllMedias()">
         <v-list-tile-action>
-          <v-icon>category</v-icon>
+          <v-icon>get_app</v-icon>
         </v-list-tile-action>
         <v-list-tile-content>
-          <v-list-tile-title>Load all {{ $t('medias') }}</v-list-tile-title>
+          <v-list-tile-title>{{ $t('Load') }} {{ $t('all') }} {{ $t('medias') }}</v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
       <v-list-tile @click="emitRefreshMedias()">
         <v-list-tile-action>
-          <v-icon>category</v-icon>
+          <v-icon>clear_all</v-icon>
         </v-list-tile-action>
         <v-list-tile-content>
-          <v-list-tile-title>Reset data</v-list-tile-title>
+          <v-list-tile-title>{{ $t('Reset') }} {{ $t('data') }}</v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
     </v-list-group>
@@ -222,6 +222,21 @@
   </v-btn>
 </v-fab-transition>
 </v-toolbar>
+<v-snackbar
+v-model="alertshown"
+:bottom="true"
+:color="alertcolor"
+:multi-line="true"
+:timeout="9000"
+>
+{{ alerttext }}
+<v-btn
+flat
+@click="alertshown = false"
+>
+{{ $t('Close') }}
+</v-btn>
+</v-snackbar>
     </div>
 </template>
 <script>
@@ -267,7 +282,7 @@ export default {
       eventBus.$emit('loadAllMedias',"");
     },
   },
-  props:[],
+  props:['alertshown','alerttext','alertcolor'],
   computed:{
     totalmedias: function(){
       return store.state.totalMedias
