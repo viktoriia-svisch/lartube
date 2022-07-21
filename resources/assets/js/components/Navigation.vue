@@ -223,7 +223,7 @@
 </v-fab-transition>
 </v-toolbar>
 <v-snackbar
-v-model="alertshown"
+v-model="alarmEnabledInternal"
 :bottom="true"
 :color="alertcolor"
 :multi-line="true"
@@ -232,7 +232,7 @@ v-model="alertshown"
 {{ alerttext }}
 <v-btn
 flat
-@click="alertshown = false"
+@click="closeAlarm()"
 >
 {{ $t('Close') }}
 </v-btn>
@@ -254,6 +254,9 @@ export default {
     }
 },
   methods:{
+    closeAlarm(){
+      eventBus.$emit('closeAlarm',"");
+    },
     searching(){
       eventBus.$emit('refreshSearch',"");
     },
@@ -310,6 +313,12 @@ export default {
     }
   },
   watch:{
+    alarmEnabledInternal: function(val){
+      eventBus.$emit('closeAlarm',"");
+    },
+    alertshown: function(val){
+      this.alarmEnabledInternal = val
+    },  
     lang:function(val){
       localStorage.setItem("language",val);
       eventBus.$emit('languageChange',val);
@@ -335,6 +344,7 @@ export default {
     dataTypes: ["audio","video"],
     n:0,
     mini:false,
+    alarmEnabledInternal:false,
     treeTypes: [{id:'audio',label:'Audio'},{id:'video',label:'Video'}]
   })
 }

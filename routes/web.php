@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Media;
 use App\Comment;
 use App\Category;
@@ -43,6 +44,10 @@ function getMediaOrder($sortByInput){
 Auth::routes();
 Route::get('/', function () {
     return view('base');
+});
+Route::get('/import-files', function () {
+  $files = Storage::allFiles("import");
+  return $files;
 });
 Route::get('/internal-api/info', function () {
     return response()->json(["data"=>["media_count"=>Media::count(),"can_admin"=>Auth::user()->can('admin')]],200);

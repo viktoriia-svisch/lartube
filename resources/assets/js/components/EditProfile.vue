@@ -1,13 +1,16 @@
 <template>
-    <div class="col-xs-12 col-sm-12 col-md-12">
-    <h4>{{ $t("Edit") }} {{ $t("profile") }}</h4>
+    <div>
+    <h1 class="text-center">{{ $t("Edit") }} {{ $t("profile") }}</h1>
     <form id="theForm">
-      <div class="form-group">
-          <label>{{ $t("Username") }}</label>
           <input type="hidden" name="_token" :value="csrf">
           <input type="hidden" value="" name="image" id="addMediaImage" />
-          <input placeholder="Username" class="form-control" :value="currentuser.name" name="name" type="text">
-      </div>
+      <v-text-field
+        v-model="name"
+        :label="$t('Name')"
+        name="name"
+         :value="currentuser.name"
+        required
+        ></v-text-field>
     <div class="form-group">
         <label>{{ $t("Avatar") }}</label>
         <vue-croppie
@@ -20,8 +23,8 @@
           @update="updateAvatar">
           </vue-croppie>
           <input type="hidden" id="avatarBase" name="avatar" :value="avatarCropped" />
-          <button @click="rotateAvatar(-90,$event)">Rotate Left</button>
-          <button @click="rotateAvatar(90,$event)">Rotate Right</button>
+          <v-btn small @click="rotateAvatar(-90,$event)">Rotate Left</v-btn>
+          <v-btn small @click="rotateAvatar(90,$event)">Rotate Right</v-btn>
         <input id="avatarUpload" accept=".png,.jpg,.jpeg" @change="avatarChange()" name="avatarf" type="file">
         <div id="avatar"></div>
     </div>
@@ -37,28 +40,19 @@
           @update="updateBackground">
           </vue-croppie>
           <input type="hidden" id="backgroundBase" name="background" :value="backgroundCropped" />
-          <button @click="rotateBackground(-90,$event)">Rotate Left</button>
-          <button @click="rotateBackground(90,$event)">Rotate Right</button>
+          <v-btn small @click="rotateBackground(-90,$event)">Rotate Left</v-btn>
+          <v-btn small @click="rotateBackground(90,$event)">Rotate Right</v-btn>
         <input id="backgroundUpload" accept=".png,.jpg,.jpeg" @change="backgroundChange()" name="backgroundf" type="file">
         <div id="background"></div>
     </div>
-    <div class="form-group">
-        <label for="public" class="col-md-4 col-form-label text-md-right">Public</label>
-        <div class="col-md-6">
             <v-switch v-model="public" :label="$t('Public')+' '+$t('account')"></v-switch>
             <input type="hidden" name="public" :value="Number(public)" />
-        </div>
-    </div>
-      <div class="form-group">
-          <label>{{ $t("Biographie") }}</label>
-          <MarkdownCreator :theText="currentuser.bio" theId="bio" theTitle="Bio" ></MarkdownCreator>
-      </div>
-      <div class="col-xs-12 col-sm-12 col-md-12">
-          <div class="form-group">
-              <strong>Tags (separate with spaces):</strong>
-              <input id="tags" type="text" class="form-control" name="tags" :value="currentuser.tagString" >
-          </div>
-      </div>
+          <MarkdownCreator :theText="currentuser.bio" theId="bio" :theTitle="$t('Biographie')" ></MarkdownCreator>
+          <v-text-field
+            label="Tags"
+            name="tags"
+            :value="currentuser.tagString"
+            ></v-text-field>
     </form>
     <v-btn @click="submitAction();"color="green" ><v-icon>save</v-icon>{{ $t('Save') }}</v-btn> 
     </div>

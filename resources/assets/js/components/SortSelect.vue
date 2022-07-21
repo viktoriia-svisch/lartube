@@ -1,7 +1,9 @@
 <template>
   <v-select
+  :key="$route.fullPath+'sortselect'"
+  single-line
+  menu-props='{"closeOnClick":true, "closeOnContentClick":true, "openOnClick":false, "maxHeight":300}'
   v-model="selectVal"
-  @change="sortBy()"
   :items="[
   {text:$t('Created at'),value:'created_at'},
   {text:$t('Created at')+' '+$t('reverse'),value:'created_at_reverse'},
@@ -44,6 +46,11 @@ export default {
       }
       eventBus.$emit('sortBy',this.selectVal);
     })
+  },
+  watch:{
+    selectVal: function(val){
+      this.sortBy()
+    }
   },
   data(){
     return {

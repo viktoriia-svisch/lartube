@@ -1,7 +1,7 @@
 <template>
   <v-card class="mb-2"><div class="subheading text-center">{{ item.title }}</div>
     <v-layout>
-      <v-flex xs5 style="height:160px;">
+      <v-flex xs5 style="height:160px; overflow-x:auto;">
         <router-link :to="'/media/'+item.urlTitle">
           <v-img
             :src="item.poster_source"
