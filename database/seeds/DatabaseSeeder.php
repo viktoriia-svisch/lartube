@@ -60,9 +60,20 @@ this is a work in progress and the database gets dropped from time to time!','em
      $m1 = Media::create(['title' => 'Monplaisir - 08 - It sounds so true','poster_source' => 'testing/media/posters/mon.png','category_id' => $c4->id, 'source' => 'testing/media/medias/Monplaisir_-_08_-_It_sounds_so_true.mp3', 'type' => 'localAudio','description' => 'Found at freemusicarchive.org . Nicer than noise only :)','user_id' => 2]);
      $m1->tag('Audio');
      $m1->tag('Noisy');
+     Like::create(['user_id'=>$u->id,'media_id'=>$m1->id,'count'=>1]);
+     Like::create(['user_id'=>$u1->id,'media_id'=>$m1->id,'count'=>-1]);
+     Like::create(['user_id'=>$u2->id,'media_id'=>$m1->id,'count'=>1]);
+     Like::create(['user_id'=>$u3->id,'media_id'=>$m1->id,'count'=>1]);
      $m1 = Media::create(['title' => 'Eine kurze Geschichte des CCC - die 1980er','intro_end' => 40,'duration' =>'00:14:06','poster_source' => 'testing/media/posters/6.png','category_id' => $c3->id, 'source' => '9BmPUCgUNYU', 'type' => 'youtube','description' => 'Direct stream from 
      $m1->tag('Youtube');
      $m1->tag('Doku');
+     Like::create(['user_id'=>$u->id,'media_id'=>$m1->id,'count'=>1]);
+     Like::create(['user_id'=>$u1->id,'media_id'=>$m1->id,'count'=>1]);
+     Like::create(['user_id'=>$u2->id,'media_id'=>$m1->id,'count'=>1]);
+     Like::create(['user_id'=>$u3->id,'media_id'=>$m1->id,'count'=>1]);
+     $m1 = Media::create(['title' => 'Raggatek Mix 2012 (Herbalistek)','intro_end' => 40,'duration' =>'00:14:06','poster_source' => 'testing/media/posters/4.png','category_id' => $c3->id, 'source' => 'EjwoINqxwdc', 'type' => 'youtube','description' => 'Direct stream from 
+     $m1->tag('Youtube');
+     $m1->tag('Tekk');
      Like::create(['user_id'=>$u->id,'media_id'=>$m1->id,'count'=>1]);
      Like::create(['user_id'=>$u1->id,'media_id'=>$m1->id,'count'=>1]);
      Like::create(['user_id'=>$u2->id,'media_id'=>$m1->id,'count'=>1]);
@@ -165,6 +176,10 @@ As their journey unfolds we discover signs that the machine is not all Proog thi
      $m1->tag('Walulis');
      $m1->tag('Torrent');
      $m1->tag('Movie');
+     Like::create(['user_id'=>$u->id,'media_id'=>$m1->id,'count'=>1]);
+     Like::create(['user_id'=>$u1->id,'media_id'=>$m1->id,'count'=>1]);
+     Like::create(['user_id'=>$u2->id,'media_id'=>$m1->id,'count'=>1]);
+     Like::create(['user_id'=>$u3->id,'media_id'=>$m1->id,'count'=>1]);
      $m1 = Media::create(['title' => 'Hackerethik - eine Einführung','duration' =>'00:40:57',"created_at" => "2018-12-27 07:21:52","updated_at" => "2018-12-27 07:21:52",'poster_source' => 'testing/media/posters/6.png','category_id' => $c31->id, 'source' => 'https:
      $m1->tag('35C3');
      $m1->tag('Doku');
@@ -179,24 +194,32 @@ As their journey unfolds we discover signs that the machine is not all Proog thi
 - https:
      $m1->tag('Big');
      $m1->tag('SampleVideos');
+     Like::create(['user_id'=>$u->id,'media_id'=>$m1->id,'count'=>-1]);
+     Like::create(['user_id'=>$u1->id,'media_id'=>$m1->id,'count'=>-1]);
+     Like::create(['user_id'=>$u2->id,'media_id'=>$m1->id,'count'=>-1]);
+     Like::create(['user_id'=>$u3->id,'media_id'=>$m1->id,'count'=>1]);
      $m1 = Media::create(['title' => 'Audio test', 'source' => 'https:
      $m1->tag('Audio');
      $m1->tag('SampleVideos');
      $m1 = Media::create(['title' => 'Big test','poster_source' => 'testing/media/posters/3.png', 'source' => 'https:
 - github-file.','user_id' => 3]);
+    Like::create(['user_id'=>$u->id,'media_id'=>$m1->id,'count'=>1]);
+    Like::create(['user_id'=>$u2->id,'media_id'=>$m1->id,'count'=>-1]);
+    Like::create(['user_id'=>$u3->id,'media_id'=>$m1->id,'count'=>-1]);
      $m1->tag('Movie');
      $m1->tag('Github');
      $m1 = Media::create(['title' => 'Ocean test',"created_at" => "2017-05-11 11:11:12",'poster_source' => 'testing/media/posters/1.png', 'source' => 'http:
      $m1->tag('Movie');
      $m1->tag('ZENCDN');
      $m1->tag('Nature');
-     Like::create(['user_id'=>$u->id,'media_id'=>$m1->id,'count'=>1]);
-     Like::create(['user_id'=>$u1->id,'media_id'=>$m1->id,'count'=>1]);
      Like::create(['user_id'=>$u2->id,'media_id'=>$m1->id,'count'=>1]);
      Like::create(['user_id'=>$u3->id,'media_id'=>$m1->id,'count'=>1]);
      $m1 = Media::create(['title' => 'Big bucks test',"created_at" => "2017-08-11 11:11:12", 'poster_source' => 'testing/media/posters/3.png','source' => 'https:
      $m1->tag('Movie');
      $m1->tag('Animation');
+     Like::create(['user_id'=>$u->id,'media_id'=>$m1->id,'count'=>-1]);
+     Like::create(['user_id'=>$u1->id,'media_id'=>$m1->id,'count'=>1]);
+     Like::create(['user_id'=>$u3->id,'media_id'=>$m1->id,'count'=>-1]);
      $m1 = Media::create(['title' => 'ANOTHER Ocean test',"created_at" => "2017-09-11 11:11:12",'category_id' => $c4->id,'poster_source' => 'testing/media/posters/1.png', 'source' => 'http:
      $m1->tag('Movie');
      $m1->tag('ZENCDN');
