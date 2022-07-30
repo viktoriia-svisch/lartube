@@ -147,7 +147,7 @@ Torrent-details
       <div class="comments col-sm-8 col-12 float-left">
         <comments class="bg-light" v-bind:csrf="csrf" v-bind:level="'0'" v-bind:commentlist="currentmedia.comments" v-bind:loggeduserid="loggeduserid" v-bind:currentmedia="currentmedia"></comments>
       </div>
-      <div data-app class="col-sm-4 col-12 float-right bg-light">
+      <div class="col-sm-4 col-12 float-right bg-light">
         <h4>{{ $t('Next') }} {{ $t('medias') }}</h4>
         <p>{{ $t('Sort by') }} <sortSelect></sortSelect></p>
         <p>
