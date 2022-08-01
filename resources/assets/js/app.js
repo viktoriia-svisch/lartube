@@ -1,5 +1,4 @@
 window.$ = window.jQuery = require('jquery');
-require('bootstrap');
 var $ = require('jquery');
 var WebTorrent = require('webtorrent')
 $( document ).ready(function() {
