@@ -5,7 +5,6 @@
           <input type="hidden" name="_token" :value="csrf">
           <input type="hidden" value="" name="image" id="addMediaImage" />
       <v-text-field
-        v-model="name"
         :label="$t('Name')"
         name="name"
          :value="currentuser.name"

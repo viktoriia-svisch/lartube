@@ -90,6 +90,9 @@ class siteManager {
     var tagComp = Vue.component('tags', require("./components/Tags.vue"));
     var loginComp = Vue.component('login', require("./components/auth/Login.vue"));
     var registerComp = Vue.component('register', require("./components/auth/Register.vue"));
+    var personalAccessTokensComp = Vue.component('PersonalAccessTokens', require("./components/passport/PersonalAccessTokens.vue"));
+    var clientsComp = Vue.component('Clients', require("./components/passport/Clients.vue"));
+    var authorizedClientsComp = Vue.component('AuthorizedClients', require("./components/passport/AuthorizedClients.vue"));
     var uploadComp = Vue.component('upload', require("./components/UploadComponent.vue"));
     var searchComp = Vue.component('search', require("./components/SearchComponent.vue"));
     var chartsComp = Vue.component('search', require("./components/ChartsComponent.vue"));
@@ -111,6 +114,9 @@ class siteManager {
       { path: '/tags', component: tagComp },
       { path: '/tags/:tagName', component: tagComp },
       { path: '/login', component: loginComp },
+      { path: '/passport/clients', component: clientsComp },
+      { path: '/passport/authorizedclients', component: authorizedClientsComp },
+      { path: '/passport/personalaccess', component: personalAccessTokensComp },
       { path: '/editprofile', component: editProfileComp },
       { path: '/register', component: registerComp },
       { path: '/upload', component: uploadComp },
