@@ -1,7 +1,7 @@
 <?php
 return [
     'name' => env('APP_NAME', 'LaraTube'),
-    'env' => env('APP_ENV', 'production'),
+    'env' => env('APP_ENV', 'local'),
     'debug' => env('APP_DEBUG', false),
     'url' => env('APP_URL', 'http:
     'timezone' => 'UTC',

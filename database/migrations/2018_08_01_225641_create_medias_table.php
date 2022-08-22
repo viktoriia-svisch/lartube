@@ -10,6 +10,7 @@ class CreateMediasTable extends Migration
             $table->increments('id');
             $table->string('title')->unique();
             $table->string('type')->default('');
+            $table->string('language')->default('');
             $table->string('file_type')->default('');
             $table->string('poster_source')->default('');
             $table->text('source');
@@ -27,9 +28,17 @@ class CreateMediasTable extends Migration
             $table->enum('allowed_group', ['public', 'family', 'acquaintances', 'close_friends'])->default('public');
             $table->timestamps();
         });
+        Schema::create('media_sources', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('title')->unique();
+            $table->string('file_type')->default('');
+            $table->integer('media_id')->nullable()->references('id')->on('medias')->default(0);
+            $table->timestamps();
+        });
     }
     public function down()
     {
         Schema::dropIfExists('medias');
+        Schema::dropIfExists('media_sources');
     }
 }
