@@ -15,15 +15,6 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
-    public function authenticated(Request $request, $user)
-    {
-        if (!empty(Auth::id())) {
-          UserSettings::firstOrCreate(['user_id' => Auth::id()]);
-          return new UserSettingsRessource(UserSettings::where('user_id', '=' ,Auth::id())->firstOrFail());
-        } else {
-          return response()->json(["data"=>["error_msg"=>"Login failed"]],403);
-        }
-    }
     public function logout(Request $request) {
         $this->guard()->logout();
         $request->session()->invalidate();
@@ -48,7 +39,11 @@ class LoginController extends Controller
             return $this->sendLockoutResponse($request);
         }
         if ($this->attemptLogin($request)) {
-            return $this->sendLoginResponse($request);
+          UserSettings::firstOrCreate(['user_id' => Auth::id()]);
+          if(!empty($request->input("ajaxLogin"))){
+            return new UserSettingsRessource(UserSettings::where('user_id', '=' ,Auth::id())->firstOrFail());
+          }
+          return $this->sendLoginResponse($request);
         }
         $this->incrementLoginAttempts($request);
         return $this->sendFailedLoginResponse($request);

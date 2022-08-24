@@ -10,7 +10,7 @@ use App\Http\Resources\Id as Id;
 use App\Comment;
 use App\Http\Resources\Comment as CommentResource;
 Route::get('/user', function (Request $request) {
-    return $request->user();
+    return new UserResource($request->user());
 })->middleware('scope:userprofile');;
 Route::get('/media', function (Request $request) {
     return MediaResource::collection(Media::orderBy('updated_at', 'desc')->whereNotIn('id', explode(",",$request->input('i')))->paginate(3));
