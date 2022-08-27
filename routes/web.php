@@ -46,10 +46,34 @@ function getMediaOrder($sortByInput){
   return [$ascDesc,$sortBy];
 };
 }
-Auth::routes();
+if(config("app.auth")=="local"){
+  Auth::routes();
+}
 Route::get('/', function () {
     return view('base');
 });
+Route::get('/2fa','PasswordSecurityController@show2faForm');
+Route::post('/generate2faSecret','PasswordSecurityController@generate2faSecret')->name('generate2faSecret');
+Route::post('/2fa','PasswordSecurityController@enable2fa')->name('enable2fa');
+Route::post('/disable2fa','PasswordSecurityController@disable2fa')->name('disable2fa');
+Route::post('/verify2FA','HomeController@verify2FA');
+Route::post('/2faVerify', 'PasswordSecurityController@my2faverify')->name('2faVerify')->middleware('2fa');
+Route::post('/internal-api/settings/2faTest', 'PasswordSecurityController@my2faTest')->middleware('2fa');
+Route::post('/internal-api/settings/refresh/twofactor', 'PasswordSecurityController@my2faRefresh');
+Route::post('/internal-api/settings/get/twofactor', 'PasswordSecurityController@my2faGet');
+Route::post('/internal-api/settings/disable/twofactor', 'PasswordSecurityController@my2fadisable');
+Route::post('/internal-api/settings/password','UserController@changePassword');
+Route::post('/internal-api/users/changeroles', 'UserController@changeRoles');
+Route::post('/internal-api/friends/block', 'FriendController@block');
+Route::post('/internal-api/friends/unblock', 'FriendController@unblock');
+Route::post('/internal-api/friends/friendRequest', 'FriendController@friendRequest');
+Route::post('/internal-api/friends/acceptRequest', 'FriendController@acceptRequest');
+Route::post('/internal-api/friends/denyRequest', 'FriendController@denyRequest');
+Route::post('/internal-api/friends/unfriend', 'FriendController@unfriend');
+Route::get('/api/oauth/login', 'OauthClientController@oauthLogin');
+Route::get('/api/auth/callback', 'OauthClientController@oauthCallback');
+Route::get('/api/auth/getOauthUser', 'OauthClientController@oauthGetUser');
+Route::get('/api/auth/refreshOauthUser', 'OauthClientController@oauthRefreshUser');
 Route::get('/internal-api/import-files', function () {
   $files = Storage::allFiles("import");
   return $files;
@@ -61,13 +85,14 @@ Route::get('/internal-api/licenses', function () {
   return LicenseResource::collection(License::all());
 });
 Route::get('/internal-api/info', function () {
-    return response()->json(["data"=>["media_count"=>Media::count(),"can_admin"=>Auth::user()->can('admin')]],200);
+    return response()->json(["data"=>["media_count"=>Media::count(),"can_admin"=>Auth::user()->hasRole('admin')]],200);
 });
 Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles','RoleController');
     Route::resource('users','UserController');
 });
 Route::get('/logout', 'Auth\LoginController@logout')->name('logout' );
+Route::post('/logout', 'Auth\LoginController@logout')->name('logout' );
 Route::put('/friends','UserController@changeFriends')->name('friends');
 Route::delete('/comment','CommentController@destroy')->name('comments.add');
 Route::get('welcome/{locale}', function ($locale) {
@@ -113,28 +138,8 @@ Route::get('/internal-api/notifications/delete', function (Request $request) {
   Auth::user()->notifications()->delete();
   return Auth::user()->notifications->toJson();
 });
-Route::get('/internal-api/media', function (Request $request) {
-    $types = explode(",",$request->input('types'));
-    $tArr = [];
-    foreach($types as $type){
-      if($type=="audio"){
-        $tArr = array_merge($tArr,['localAudio','torrentAudio','directAudio']);
-      }
-      if($type=="video"){
-        $tArr = array_merge($tArr,['localVideo','torrentVideo','directVideo','youtube','vimeo']);
-      }
-    }
-    $sortBy = getMediaOrder($request->input('sortBy'));
-    $res = Media::orderBy($sortBy[1], $sortBy[0])->whereIn('type', $tArr)->whereNotIn('id', explode(",",$request->input('i')))->limit(3)->get();
-    if(empty($res->count())){
-      $res = Media::orderBy($sortBy[1], $sortBy[0])->whereNotIn('id', explode(",",$request->input('i')))->limit(3)->get();
-    }
-  return MediaResource::collection($res);
-});
-Route::get('/internal-api/medias/all', function (Request $request) {
-    $sortBy = getMediaOrder($request->input('sortBy'));
-    return MediaResource::collection(Media::orderBy($sortBy[1], $sortBy[0])->whereNotIn('id', explode(",",$request->input('i')))->get());
-});
+Route::get('/internal-api/media', 'MediaController@get');
+Route::get('/internal-api/medias/all', 'MediaController@getAll');
 Route::get('/internal-api/medias/search/{title}', function (Request $request,$title) {
   $title = urldecode($title);
   $sortBy = getMediaOrder($request->input('sortBy'));
@@ -143,13 +148,8 @@ Route::get('/internal-api/medias/search/{title}', function (Request $request,$ti
 Route::get('/internal-api/categories', function (Request $request) {
     return CategoryResource::collection(Category::where("parent_id",0)->get());
 });
-Route::get('/internal-api/media/{title}', function ($title) {
-  $title = urldecode($title);
-  return new MediaResource(Media::where('title', '=' ,$title)->firstOrFail());
-});
-Route::get('/internal-api/medias/byId/{id}', function ($id) {
-    return new MediaResource(Media::where('id', '=' ,$id)->firstOrFail());
-});
+Route::get('/internal-api/media/{title}', 'MediaController@getByTitle');
+Route::get('/internal-api/medias/byId/{id}', 'MediaController@getById');
 Route::get('/internal-api/medias/byCatId/{id}', function (Request $request,$id) {
   $sortBy = getMediaOrder($request->input('sortBy'));
   return MediaResource::collection(Media::orderBy($sortBy[1], $sortBy[0])->where('category_id', '=' ,$id)->whereNotIn('id', explode(",",$request->input('i')))->get());

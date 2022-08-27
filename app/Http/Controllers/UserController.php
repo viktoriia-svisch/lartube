@@ -14,6 +14,36 @@ class UserController extends Controller
   function __construct()
   {
   }
+  public function changeRoles(Request $request){
+    if(Auth::user()->level()>(int)config('adminlevel')){
+      $slugArray = explode(",",$request->input("roles"));
+      $i = 0;
+      $tmpArr = array();
+      foreach(config('roles.models.role')::all() as $r){
+        foreach($slugArray as $s){
+        if($s==$r->slug){
+          array_push($tmpArr,$r->id);
+        }
+        }
+      }
+      $user = config('roles.defaultUserModel')::find($request->input("uid"));
+      $user->syncRoles($tmpArr);
+      return $this->get($request);
+    }
+  }
+    public function changePassword(Request $request)
+    {
+      if(Auth::user()->level()>0){
+        if(Hash::check($request->input("oldpass"), Auth::user()->password)){
+          $user = User::find(Auth::id());
+          if($request->input("newpass")==$request->input("newpass2")){
+            $user->password = $request->input("newpass");
+            $user->save();
+            return $this->get($request);
+          }
+        }
+      }
+    }  
     public function info(){
       $au = Auth::id();
       return "{ login: ".$au."}";
@@ -61,28 +91,28 @@ class UserController extends Controller
         }
         $user = User::find($id);
         $user->update($input);
-        $avatar_source = 'public/user/avatars/'.$user->name.'.png';
+        $avatar = 'public/user/avatars/'.$user->username.'.png';
         $data = $request->input('avatar');
         if(!empty($data)){
           list($type, $data) = explode(';', $data);
           list(, $data)      = explode(',', $data);
           $data = base64_decode($data);
-          Storage::put('public/user/avatars/'.$user->name.'.png', $data);
+          Storage::put('public/user/avatars/'.$user->username.'.png', $data);
         } else {
-          $avatar_source = '';
+          $avatar = '';
         }
-        $background_source = 'public/user/backgrounds/'.$user->name.'.png';
+        $background = 'public/user/backgrounds/'.$user->username.'.png';
         $data = $request->input('background');
         if(!empty($data)){
           list($type, $data) = explode(';', $data);
           list(, $data)      = explode(',', $data);
           $data = base64_decode($data);
-          Storage::put('public/user/backgrounds/'.$user->name.'.png', $data);
+          Storage::put('public/user/backgrounds/'.$user->username.'.png', $data);
         } else {
-          $background_source = '';
+          $background = '';
         }
-        $user->avatar_source = $avatar_source;
-        $user->background_source = $background_source;
+        $user->avatar = $avatar;
+        $user->background = $background;
         $user->save();
         if(!empty($request->input('roles'))){
           DB::table('model_has_roles')->where('model_id',$id)->delete();

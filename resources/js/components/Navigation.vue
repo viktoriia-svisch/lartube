@@ -101,22 +101,30 @@
       </v-list-tile-content>
     </v-list-tile>
     <v-list-group
-      prepend-icon="warning"
+      prepend-icon="settings"
       no-action
       v-if="currentuser.admin"
-    >
-      <v-list-tile slot="activator">
-        <v-list-tile-title>Admin</v-list-tile-title>
-      </v-list-tile>
-      <v-list-tile to="/admin/users">
-        <v-list-tile-action>
-          <v-icon>account_box</v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>{{ $t('Users') }}</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list-group>
+    >    
+    <v-list-tile slot="activator">
+      <v-list-tile-title>Admin</v-list-tile-title>
+    </v-list-tile>
+    <v-list-tile to="/admin/users">
+      <v-list-tile-action>
+        <v-icon>supervised_user_circle</v-icon>
+      </v-list-tile-action>
+      <v-list-tile-content>
+        <v-list-tile-title>Users</v-list-tile-title>
+      </v-list-tile-content>
+    </v-list-tile>
+    <v-list-tile to="/admin/roles">
+      <v-list-tile-action>
+        <v-icon>reorder</v-icon>
+      </v-list-tile-action>
+      <v-list-tile-content>
+        <v-list-tile-title>Roles</v-list-tile-title>
+      </v-list-tile-content>
+    </v-list-tile>
+  </v-list-group>
     <v-list-group
       prepend-icon="build"
       no-action
@@ -147,14 +155,6 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>{{ $t('Personal access tokens') }}</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile to="/passport/authorizedclients">
-          <v-list-tile-action>
-            <v-icon>account_box</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>{{ $t('authorized clients') }}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list-group>
@@ -199,7 +199,15 @@
         </v-list-tile-content>
       </v-list-tile>
     </v-list-group>
-    <v-list-tile v-if="currentuser.id==0" to="/login">
+    <v-list-tile v-if="((currentuser.id==0)&&(auth=='oauth'))" href="/api/oauth/login">
+      <v-list-tile-action>
+        <v-icon>exit_to_app</v-icon>
+      </v-list-tile-action>
+      <v-list-tile-content>
+        <v-list-tile-title>{{ $t('Oauthlogin') }}</v-list-tile-title>
+      </v-list-tile-content>
+    </v-list-tile>
+    <v-list-tile v-if="((currentuser.id==0)&&(auth=='local'))" to="/login">
       <v-list-tile-action>
         <v-icon>exit_to_app</v-icon>
       </v-list-tile-action>
@@ -207,7 +215,7 @@
         <v-list-tile-title>{{ $t('Login') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
-    <v-list-tile v-if="currentuser.id==0" to="/register">
+    <v-list-tile v-if="((currentuser.id==0)&&(auth=='local'))" to="/register">
       <v-list-tile-action>
         <v-icon>person_add</v-icon>
       </v-list-tile-action>
@@ -215,14 +223,55 @@
         <v-list-tile-title>{{ $t('Register') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
-    <v-list-tile v-if="currentuser.id!=0" to="/editprofile">
+    <v-list-group
+      prepend-icon="settings"
+      no-action
+      v-if="currentuser.id!=0"
+    >    
+    <v-list-tile slot="activator">
+      <v-list-tile-title>{{ $t('Settings') }}</v-list-tile-title>
+    </v-list-tile>
+    <v-list-tile to="/settings/profile">
       <v-list-tile-action>
-        <v-icon>settings</v-icon>
+        <v-icon>account_circle</v-icon>
       </v-list-tile-action>
       <v-list-tile-content>
-        <v-list-tile-title>{{ $t('Settings') }}</v-list-tile-title>
+        <v-list-tile-title>{{ $t('Profile') }}</v-list-tile-title>
       </v-list-tile-content>
     </v-list-tile>
+    <v-list-tile to="/settings/friends">
+      <v-list-tile-action>
+        <v-icon>accessibility</v-icon>
+      </v-list-tile-action>
+      <v-list-tile-content>
+        <v-list-tile-title>{{ $t('Friends') }}</v-list-tile-title>
+      </v-list-tile-content>
+    </v-list-tile>
+    <v-list-tile to="/settings/apps">
+      <v-list-tile-action>
+        <v-icon>apps</v-icon>
+      </v-list-tile-action>
+      <v-list-tile-content>
+        <v-list-tile-title>{{ $t('Manage apps') }}</v-list-tile-title>
+      </v-list-tile-content>
+    </v-list-tile>
+    <v-list-tile to="/settings/2fa">
+      <v-list-tile-action>
+        <v-icon>security</v-icon>
+      </v-list-tile-action>
+      <v-list-tile-content>
+        <v-list-tile-title>2factor-Auth</v-list-tile-title>
+      </v-list-tile-content>
+    </v-list-tile>
+    <v-list-tile to="/settings/password">
+      <v-list-tile-action>
+        <v-icon>lock</v-icon>
+      </v-list-tile-action>
+      <v-list-tile-content>
+        <v-list-tile-title>{{ $t('Password') }}</v-list-tile-title>
+      </v-list-tile-content>
+    </v-list-tile>
+  </v-list-group>
     <v-list-tile v-if="currentuser.id!=0" @click="emitLogout()" >
       <v-list-tile-action>
         <v-icon>power_settings_new</v-icon>
@@ -300,6 +349,9 @@ flat
 {{ $t('Close') }}
 </v-btn>
 </v-snackbar>
+<form class="d-none" id="logoutForm">
+  <input type="hidden" name="_token" :value="csrf">
+</form>
     </div>
 </template>
 <script>
@@ -352,6 +404,9 @@ export default {
   computed:{
     totalmedias: function(){
       return store.state.totalMedias
+    },
+    auth:function(){
+      return store.state.env.MIX_APP_AUTH
     },
     csrf: function(){
       return store.getters.getCSRF()
