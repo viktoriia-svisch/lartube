@@ -115,20 +115,7 @@
     </v-layout>
     <div class="form-group">
         <label>Media-poster</label>
-        <vue-croppie
-          ref="croppieRef"
-          :enableOrientation="true"
-          :enableResize="false"
-          @result="result"
-          :viewport="{ width: 700, height: 394, type: 'square' }"
-          :boundary="{ width: 700, height: 394 }"
-          @update="update">
-          </vue-croppie>
-          <input type="hidden" id="posterBase" name="poster" :value="cropped" />
-          <button @click="rotate(-90,$event)">Rotate Left</button>
-          <button @click="rotate(90,$event)">Rotate Right</button>
-        <input id="posterUpload" accept=".png,.jpg,.jpeg" @change="posterChange()" name="poster" type="file">
-        <div id="poster"></div>
+        <Cropper v-bind:width="700" v-bind:height="394" type="square" name="poster" ></Cropper>
     </div>
     <input type="hidden" value="" name="image" id="addMediaImage" />
       <v-text-field
@@ -143,6 +130,7 @@
     </div>
 </template>
 <script>
+  import Cropper from './cropp'
   import { eventBus,store } from '../eventBus.js';
   import { User, Media, Tag } from '../models';
   import SingleMediaView from './SingleMediaView'
@@ -239,18 +227,6 @@
       positionTestMedia(type){
         eventBus.$emit('playerGetPosition',type);
       },
-      posterChange(){
-        var reader = new FileReader();
-        let that = this;
-       reader.onload = function (e) {
-         that.$refs.croppieRef.bind({
-             url: e.target.result,
-         });
-        }
-        reader.readAsDataURL($("#posterUpload")[0].files[0]);
-      },
-      uploadProgress(){
-    },
       submitAction() {
         let that = this;
         if(this.linkTested==false){
@@ -285,21 +261,6 @@
         });
         return false;
       },
-result(output) {
-    this.cropped = output;
-},
-update(val) {
-  let options = {
-      format: 'png'
-  }
-  this.$refs.croppieRef.result(options, (output) => {
-      this.cropped = output;
-  });
-},
-rotate(rotationAngle,event) {
-        if (event) event.preventDefault()
-    this.$refs.croppieRef.rotate(rotationAngle);
-}
     },
     data(){
       return {

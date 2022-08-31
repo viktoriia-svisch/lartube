@@ -33,6 +33,7 @@ class Media extends JsonResource
           'tagString' => $this->tagString(),
           'user_id' => $this->user_id,
           'category_id' => $this->category_id,
+          'tracks' => TrackResource::collection($this->tracks()),
           'comments' => CommentResource::collection($comments),
           'created_at' => $this->created_at,
           'created_at_readable' => $this->created_at->diffForHumans(),
