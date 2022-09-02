@@ -70,7 +70,9 @@ Route::post('/internal-api/friends/friendRequest', 'FriendController@friendReque
 Route::post('/internal-api/friends/acceptRequest', 'FriendController@acceptRequest');
 Route::post('/internal-api/friends/denyRequest', 'FriendController@denyRequest');
 Route::post('/internal-api/friends/unfriend', 'FriendController@unfriend');
-Route::get('/api/oauth/login', 'OauthClientController@oauthLogin');
+if(config("app.auth")=="oauth"){
+Route::get('/login', 'OauthClientController@oauthLogin')->name("login");
+}
 Route::get('/api/auth/callback', 'OauthClientController@oauthCallback');
 Route::get('/api/auth/getOauthUser', 'OauthClientController@oauthGetUser');
 Route::get('/api/auth/refreshOauthUser', 'OauthClientController@oauthRefreshUser');

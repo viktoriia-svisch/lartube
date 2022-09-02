@@ -9,11 +9,9 @@ use App\Http\Resources\Tag as TagResource;
 use App\Http\Resources\Id as Id;
 use App\Comment;
 use App\Http\Resources\Comment as CommentResource;
-if(config("app.auth")=="local"){
   Route::get('/user', function (Request $request) {
     return new UserResource($request->user());
-  })->middleware('scope:userprofile');;
-}
+  })->middleware('scope:profile');
 Route::get('/media', function (Request $request) {
     return MediaResource::collection(Media::orderBy('updated_at', 'desc')->whereNotIn('id', explode(",",$request->input('i')))->paginate(3));
 });
