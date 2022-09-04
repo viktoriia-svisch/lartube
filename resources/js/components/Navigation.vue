@@ -199,7 +199,7 @@
         </v-list-tile-content>
       </v-list-tile>
     </v-list-group>
-    <v-list-tile v-if="((currentuser.id==0)&&(auth=='oauth'))" href="/api/oauth/login">
+    <v-list-tile v-if="((currentuser.id==0)&&(auth=='oauth'))" href="/login">
       <v-list-tile-action>
         <v-icon>exit_to_app</v-icon>
       </v-list-tile-action>
