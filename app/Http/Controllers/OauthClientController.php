@@ -32,7 +32,14 @@ class OauthClientController extends Controller
           $u->save();
         }
       }
-      $res["data"]["roles"]=join(",",$res["data"]["roles"]);
+      $u->detachAllPermissions();
+      foreach($res["data"]["roles"] as $role){
+        $roleAndLevel = explode(":",$role);
+        $p = config('roles.models.role')::firstOrCreate(['slug'=>$roleAndLevel[0]]);
+        $p->level = $roleAndLevel[1];
+        $p->save();
+        $u->attachRole($p);
+      }
       return $u;
     }
     public function oauthRefreshUser(Request $request){
