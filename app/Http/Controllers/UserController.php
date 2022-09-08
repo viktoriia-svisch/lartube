@@ -83,7 +83,7 @@ class UserController extends Controller
         $this->validate($request, [
             'name' => 'required',
         ]);
-        $input = $request->all();
+        $input = $request->except(['avatar','background','_token']);
         if(!empty($input['password'])){
             $input['password'] = Hash::make($input['password']);
         }else{
