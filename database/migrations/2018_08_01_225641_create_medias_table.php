@@ -50,6 +50,8 @@ class CreateMediasTable extends Migration
     }
     public function down()
     {
+        Schema::dropIfExists('media_chapters');
+        Schema::dropIfExists('media_views');
         Schema::dropIfExists('medias');
         Schema::dropIfExists('media_sources');
         Schema::dropIfExists('media_chapter');

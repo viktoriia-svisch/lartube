@@ -7,11 +7,11 @@
             <v-text-field
             label="Seconds (for visualiser)"
             mask="#"
-            v-if="currentmedia.type=='localAudio'"
+            v-if="currentmedia.sources.find(source => source.type =='localAudio') != undefined"
             v-model="audioVisualChangeSeconds"
             ></v-text-field>
           </span>
-          <span v-if="currentmedia.type=='localAudio'" class="" >
+          <span v-if="currentmedia.sources.find(source => source.type =='localAudio') != undefined" class="" >
             <v-btn icon color="blue" small @click="previousVisual()"><v-icon>skip_previous</v-icon></v-btn>
             <select id="visualList" value="Flexi - alien fish pond" v-model="audiovisualtype">
               <option value="Poster">Poster</option>
@@ -61,7 +61,7 @@ Torrent-details
   <p>Downloadspeed: {{ downloadspeed }}</p>
   <p>Uploadspeed: {{ uploadspeed }}</p>
   <p>Downloadpercent: {{ downloadpercent }}</p>
-  <p><v-switch v-model="chartEnabled" label="Enable chart (workaround)"</v-switch></p>
+  <p><v-switch v-model="chartEnabled" label="Enable chart (workaround)"></v-switch></p>
   <p><apexchart v-if="chartEnabled" width="100%" type="line" id="chart3" :options="chartOptions2" :series="chartData"></apexchart></p>
 </v-card-text>
 <v-divider></v-divider>
