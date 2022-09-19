@@ -9,6 +9,7 @@ return [
     'oauthclienttoken' => env('OAUTH_CLIENT_BASEURL','0').env('OAUTH_CLIENT_TOKEN', '0'),
     'oauthclientauthorize' => env('OAUTH_CLIENT_BASEURL','0').env('OAUTH_CLIENT_AUTHORIZE', '0'),
     'oauthclientuntrustedssl' => env('OAUTH_CLIENT_ALLOW_UNTRUSTED_SSL', 'false'),
+    'ssl_url' => env('APP_SSL_URL', false),
     'env' => env('APP_ENV', 'local'),
     'debug' => env('APP_DEBUG', false),
     'url' => env('APP_URL', 'http:
