@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\FriendableTempFix;
 class User extends Authenticatable
 {
-  use HasApiTokens, Notifiable, HasRoleAndPermission;
+  use HasRoleAndPermission;
   use \Conner\Tagging\Taggable;
   use FriendableTempFix;
   use Notifiable;

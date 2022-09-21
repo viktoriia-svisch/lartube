@@ -81,13 +81,11 @@ class siteManager {
         var profileComp = Vue.component('profile', require("./components/ProfileComponent.vue"));
         var editProfileComp = Vue.component('editprofile', require("./components/settings/EditProfile.vue"));
         var tagComp = Vue.component('tags', require("./components/Tags.vue"));
-        var loginComp = Vue.component('login', require("./components/auth/Login.vue"));
         var registerComp = Vue.component('register', require("./components/auth/Register.vue"));
         var personalAccessTokensComp = Vue.component('PersonalAccessTokens', require("./components/passport/PersonalAccessTokens.vue"));
         var clientsComp = Vue.component('Clients', require("./components/passport/Clients.vue"));
         var authorizedClientsComp = Vue.component('AuthorizedClients', require("./components/passport/AuthorizedClients.vue"));
         var faLoginComp = Vue.component('twofaLogin', require("./components/auth/twofaLogin.vue"));
-        var twofaComp = Vue.component('twofa', require("./components/settings/twofa.vue"));
         var uploadComp = Vue.component('upload', require("./components/UploadComponent.vue"));
         var searchComp = Vue.component('search', require("./components/SearchComponent.vue"));
         var chartsComp = Vue.component('search', require("./components/ChartsComponent.vue"));
@@ -103,7 +101,6 @@ class siteManager {
         var ceComp = Vue.component('thesidebar', require("./components/EditCategory.vue"));
         var singleCatComp = Vue.component('thesidebar', require("./components/Category.vue"));
         var friendsComp = Vue.component('friends', require("./components/settings/Friends.vue"));
-        var passwordComp = Vue.component('friends', require("./components/settings/password.vue"));
         let that = this;
         const routes = [
             { path: '/', component: overview },
@@ -111,14 +108,10 @@ class siteManager {
             { path: '/profile/:profileId', component: profileComp },
             { path: '/tags', component: tagComp },
             { path: '/settings/friends', component: friendsComp },
-            { path: '/settings/password', component: passwordComp },
             { path: '/tags/:tagName', component: tagComp },
-            { path: '/login', component: loginComp },
-            { path: '/twofaLogin', component: faLoginComp },
             { path: '/passport/clients', component: clientsComp },
             { path: '/passport/personalaccess', component: personalAccessTokensComp },
             { path: '/settings/profile', component: editProfileComp },
-            { path: '/settings/twofa', component: twofaComp },
             { path: '/settings/apps', component: authorizedClientsComp },
             { path: '/register', component: registerComp },
             { path: '/upload', component: uploadComp },

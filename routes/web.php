@@ -46,33 +46,16 @@ function getMediaOrder($sortByInput){
   return [$ascDesc,$sortBy];
 };
 }
-if(config("app.auth")=="local"){
-  Auth::routes();
-}
 Route::get('/', function () {
     return view('base');
 });
-Route::get('/2fa','PasswordSecurityController@show2faForm');
-Route::post('/generate2faSecret','PasswordSecurityController@generate2faSecret')->name('generate2faSecret');
-Route::post('/2fa','PasswordSecurityController@enable2fa')->name('enable2fa');
-Route::post('/disable2fa','PasswordSecurityController@disable2fa')->name('disable2fa');
-Route::post('/verify2FA','HomeController@verify2FA');
-Route::post('/2faVerify', 'PasswordSecurityController@my2faverify')->name('2faVerify')->middleware('2fa');
-Route::post('/internal-api/settings/2faTest', 'PasswordSecurityController@my2faTest')->middleware('2fa');
-Route::post('/internal-api/settings/refresh/twofactor', 'PasswordSecurityController@my2faRefresh');
-Route::post('/internal-api/settings/get/twofactor', 'PasswordSecurityController@my2faGet');
-Route::post('/internal-api/settings/disable/twofactor', 'PasswordSecurityController@my2fadisable');
-Route::post('/internal-api/settings/password','UserController@changePassword');
-Route::post('/internal-api/users/changeroles', 'UserController@changeRoles');
 Route::post('/internal-api/friends/block', 'FriendController@block');
 Route::post('/internal-api/friends/unblock', 'FriendController@unblock');
 Route::post('/internal-api/friends/friendRequest', 'FriendController@friendRequest');
 Route::post('/internal-api/friends/acceptRequest', 'FriendController@acceptRequest');
 Route::post('/internal-api/friends/denyRequest', 'FriendController@denyRequest');
 Route::post('/internal-api/friends/unfriend', 'FriendController@unfriend');
-if(config("app.auth")=="oauth"){
 Route::get('/login', 'OauthClientController@oauthLogin')->name("login");
-}
 Route::get('/api/auth/callback', 'OauthClientController@oauthCallback');
 Route::get('/api/auth/getOauthUser', 'OauthClientController@oauthGetUser');
 Route::get('/api/auth/refreshOauthUser', 'OauthClientController@oauthRefreshUser');
@@ -161,8 +144,6 @@ Route::get('/internal-api/medias/byCommentId/{id}', function ($id) {
 });
 Route::post('/internal-api/media/{id}','MediaController@edit')->name('mediasapi.edit');
 Route::delete('/internal-api/media/{id}','MediaController@destroy')->name('mediasapi.delete');
-Route::post('/internal-api/login', 'Auth\LoginController@login');
-Route::post('/internal-api/register', 'Auth\RegisterController@register');
 Route::get('/internal-api/medias/by/{user}', function (Request $request,$user) {
     return MediaResource::collection(Media::where('user_id', '=' ,$user)->whereNotIn('id', explode(",",$request->input('i')))->get());
 });

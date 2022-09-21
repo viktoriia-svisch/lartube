@@ -55,7 +55,7 @@ class OauthClientController extends Controller
         $u->save();
         return new UserResource($u);
       }
-    }  
+    }
     public function oauthGetUser(Request $request){
       if(config("app.auth")=="oauth"){
         $response = $this->gc->get(config("app.oauthbaseurl").'/api/user', [
@@ -70,7 +70,6 @@ class OauthClientController extends Controller
       }
       }
     public function oauthLogin(Request $request){
-      if(config("app.auth")=="oauth"){
         $query = http_build_query([
             'client_id' => config('app.oauthclientid'), 
             'redirect_uri' => config('app.oauthclientcallback'),
@@ -78,10 +77,8 @@ class OauthClientController extends Controller
             'scope' => 'profile notifications'
         ]);
        return redirect(config('app.oauthclientauthorize').'?'.$query);
-     }
     }
     public function oauthCallback(Request $request){
-      if(config("app.auth")=="oauth"){
         $response = $this->gc->post(config('app.oauthclienttoken'), [
           'form_params' => [
           'grant_type' => 'authorization_code',
@@ -89,10 +86,9 @@ class OauthClientController extends Controller
           'client_secret' => config('app.oauthclientsecret'), 
           'redirect_uri' => config('app.oauthclientcallback'),
           'code' => $request->code,
-          ]  
+          ]
         ]);
         session()->put('token', json_decode((string) $response->getBody(), true));
         return redirect('/api/auth/getOauthUser');
       }
-    }
 }
