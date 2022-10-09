@@ -244,9 +244,5 @@ $mv1 = MediaView::create(['media_id'=>$m1->id,'seconds'=>90,'user_id'=>4]);
      Like::create(['user_id'=>$u2->id,'media_id'=>$m1->id,'count'=>1]);
      Like::create(['user_id'=>$u3->id,'media_id'=>$m1->id,'count'=>-1]);
      $role = config('roles.models.role')::where('name', '=', 'Admin')->first();
-     $u->attachRole($role);
-     $u1->attachRole($role);
-     $u2->attachRole($role);
-     $u3->attachRole($role);
     }
 }
