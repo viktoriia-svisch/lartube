@@ -25,7 +25,7 @@
   <v-list-tile>
     <v-list-tile-action>
       <v-btn @click="active=false" small fab color="orange" style="cursor:pointer;"><v-icon>close</v-icon></v-btn>
-    </v-list-tile-action>  
+    </v-list-tile-action>
   </v-list-tile>
   <v-list-tile>
     <v-list-tile-action>
@@ -104,7 +104,7 @@
       prepend-icon="settings"
       no-action
       v-if="currentuser.admin"
-    >    
+    >
     <v-list-tile slot="activator">
       <v-list-tile-title>Admin</v-list-tile-title>
     </v-list-tile>
@@ -227,7 +227,7 @@
       prepend-icon="settings"
       no-action
       v-if="currentuser.id!=0"
-    >    
+    >
     <v-list-tile slot="activator">
       <v-list-tile-title>{{ $t('Settings') }}</v-list-tile-title>
     </v-list-tile>
@@ -417,13 +417,13 @@ export default {
     currentuser(){
       return store.getters.getUserById(store.state.loginId)
     },
-    tags: function(){ 
+    tags: function(){
       return store.state.tags
     },
-    users: function(){ 
+    users: function(){
       return store.state.users
     },
-    tm: function(){ 
+    tm: function(){
       return store.state.totalMedias
     },
     medias: function(){
@@ -439,7 +439,7 @@ export default {
     alertshown: function(val){
       console.log("react to alertshown",val)
       this.alarmEnabledInternal = val
-    },  
+    },
     lang:function(val){
       localStorage.setItem("language",val);
       eventBus.$emit('languageChange',val);
@@ -471,35 +471,35 @@ export default {
   })
 }
 </script>
-<style lang="stylus">
-.vue-treeselect__multi-value
-  display inline-flex
-  overflow hidden
-vs-navbar >>> .vue-treeselect__menu
-  width 100px
-  padding-left 15px
-  padding-bottom 15px
-  z-index 999999
-.header-sidebar
-  display flex
-  align-items center
-  justify-content center
-  flex-direction column
-  width 100%
-  h4
-    display flex
-    align-items center
-    justify-content center
-    width 100%
-    > button
-      margin-left 10px
-.footer-sidebar
-  display flex
-  align-items center
-  justify-content space-between
-  width 100%
-  > button
-      border 0px solid rgba(0,0,0,0) !important
-      border-left 1px solid rgba(0,0,0,.07) !important
-      border-radius 0px !important
+<style>
+.vue-treeselect__multi-value {
+    display: inline-flex;
+    overflow: hidden; }
+vs-navbar > > > .vue-treeselect__menu {
+    width: 100px;
+    padding-left: 15px;
+    padding-bottom: 15px;
+    z-index: 999999; }
+.header-sidebar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%; }
+.header-sidebar h4 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; }
+.header-sidebar h4 > button {
+    margin-left: 10px; }
+.footer-sidebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%; }
+.footer-sidebar > button {
+    border: 0px solid transparent !important;
+    border-left: 1px solid rgba(0, 0, 0, 0.07) !important;
+    border-radius: 0px !important; }
 </style>

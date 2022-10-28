@@ -1,7 +1,7 @@
 <template>
   <div v-if="currentsource!=undefined" id="playDiv">
           <p>
-            <img @click="player.togglePlay()" @dblclick="visualFullScreen()" class="img-fluid" :src="currentmedia.poster_source" v-if="currentsource.type=='directAudio'|(currentsource.type=='localAudio'&audiovisualtype=='Poster')">
+            <img @click="player.togglePlay()" @dblclick="visualFullScreen()" class="img-fluid" :src="currentmedia.poster_source" v-if="currentsource.type=='directAudio'||(currentsource.type=='localAudio'&audiovisualtype=='Poster')">
           </p>
           <canvas v-if="currentsource.type=='localAudio'&audiovisualtype!='Poster'"  class="col-12" style="height: 400px; width:100%;" @click="player.togglePlay()" @dblclick="visualFullScreen()" id="audioVisual"></canvas>
           <vue-plyr v-if="currentsource.type=='torrentVideo'" :options="playerConfig" ref="player">
@@ -25,10 +25,17 @@
               <source id="audioSource" :src="currentsource.source" type="audio/mp3"></source>
             </audio>
           </vue-plyr>
-          <vue-plyr v-if="currentsource.type=='youtube'||currentsource.type=='vimeo'" :options="playerConfig" ref="player">
-            <div data-plyr-provider="youtube" v-if="currentsource.type=='youtube'" :data-plyr-embed-id="currentsource.source"></div>
-            <div data-plyr-provider="vimeo" v-if="currentsource.type=='vimeo'" :data-plyr-embed-id="currentsource.source"></div>
+          <vue-plyr class="plyr__video-embed" id="player" :data-plyr-provider="currentsource.type" :data-plyr-embed-id="currentsource.source" v-if="currentsource.type=='youtube'" :options="playerConfig" ref="player">
+              <iframe
+                  style="width: 100%; height: 100%;"
+                  :src='"https:                  allowfullscreen
+                  allowtransparency
+                  allow="autoplay"
+              ></iframe>
           </vue-plyr>
+      <vue-plyr class="plyr__video-embed" id="player" :data-plyr-provider="currentsource.type" :data-plyr-embed-id="currentsource.source" v-if="currentsource.type=='vimeo'" :options="playerConfig" ref="player">
+          <div data-plyr-provider="vimeo" v-if="currentsource.type=='vimeo'" :data-plyr-embed-id="currentsource.source"></div>
+      </vue-plyr>
   </div>
 </template>
 <script>
@@ -36,9 +43,7 @@
     import { User, Media, Tag } from '../models';
   import butterchurn from 'butterchurn';
   import butterchurnPresets from 'butterchurn-presets';
-  var WebTorrent = require('webtorrent')
-  var client = new WebTorrent();
-  let theTorrent;
+      let theTorrent;
   var torrentInterval;
   var audioCtx, audioNode, gainNode, visualizer;
   const presets = butterchurnPresets.getPresets();
@@ -49,14 +54,6 @@
         eventBus.$emit('mediaGoFullscreen','');
       },
                   initTorrent(){
-        let that = this;
-          if(client.torrents.length>0){
-              client.torrents[0].destroy(function(){
-                that.initTorrent();
-              })
-          } else {
-            that.initTorrentAfterRemove();
-          }
       },
       initTorrentAfterRemove(){
         let that = this;
@@ -67,45 +64,6 @@
           console.log("start to setup torrent")
           this.inited=true
           let that = this;
-                    client.add(this.currentsource.source, function (torrent) {
-            theTorrent = torrent;
-                        var file = theTorrent.files.find(function (file) {
-            that.lasttorrentid = theTorrent.magnetURI;
-            if(that.currentsource.type=='torrentVideo'){
-              return file.name.endsWith('.mp4')
-            }
-            if(that.currentsource.type=='torrentAudio'){
-              return file.name.endsWith('.mp3')
-            }
-          })
-          theTorrent.on('done', onDone);
-            torrentInterval = setInterval(onProgress, 500);
-            onProgress();
-            file.getBlobURL(function (err, url) {
-              if (err){
-                console.log(err.message);
-              }
-                          });
-                        function onProgress () {
-                            that.peers = torrent.numPeers + (torrent.numPeers === 1 ? ' peer' : ' peers');
-              if(that.lasttorrentid == theTorrent.magnetURI&&torrent.numPeers>0){
-                var percent = Math.round(torrent.progress * 100 * 100) / 100;
-                var datetime = new Date();
-                datetime = datetime.getTime();
-                var ds = torrent.downloadSpeed/1000000;
-                var us = torrent.uploadSpeed/1000000;
-                that.downloadpercent = that.prettyBytes(torrent.downloaded) + " / " + that.prettyBytes(torrent.length) + " ("+percent+"%)";
-                that.downloadspeed = that.prettyBytes(torrent.downloadSpeed) + '/s (down)';
-                that.uploadspeed = that.prettyBytes(torrent.uploadSpeed) + '/s (up)';
-                eventBus.$emit('torrentChartData',[[that.peers,that.downloadpercent,that.downloadspeed,that.uploadspeed],{x:datetime,y:percent},{x:datetime,y:ds},{x:datetime,y:us}]);
-              }
-            }
-            function onDone () {
-              onProgress();
-                                          that.torrentdownloadurl = torrent.torrentFileBlobURL
-            }
-            file.renderTo('video#torrentPlayer');
-          });
       } else if(this.currentsource.type=='localAudio'&this.audiovisualtype!='Poster'){
           this.inited=true
           $('#audioPlayer')[0].crossOrigin = 'Anonymous'
@@ -124,7 +82,7 @@
             visualizer.render();
           }, 100);
         }
-        if(this.currentsource.type=="torrentAudio"||this.currentsource.type=="torrentVideo"){
+       if(this.currentsource.type=="torrentAudio"||this.currentsource.type=="torrentVideo"){
           setTimeout(function(){
             if(that.autoplay){
               that.player.play();
@@ -197,7 +155,7 @@
     },
     mounted(){
       let that = this;
-      this.initTorrent()
+      this.initTorrentAfterRemove()
       if(this.currentsource.intro_end==0){
         $("#skipIntroBtn").hide()
       } else {
@@ -227,21 +185,21 @@
             $("video").css("width","100%")
           }
         }
-      });    
+      });
       if(localStorage.getItem("mediaPosition"+this.currentsource.id)!=undefined&localStorage.getItem("mediaPosition"+this.currentsource.id)!=''){
         $("#jumpToSavedPositionBtnTooltip").html("Jump to position "+localStorage.getItem("mediaPosition"+this.currentsource.id)+"s")
       } else {
         $("#jumpToSavedPositionBtnTooltip").html("No position set yet - set one under More")
-      }  
+      }
       $("#jumpToSavedPositionBtn").on('click',function(){
         if(localStorage.getItem("mediaPosition"+that.currentsource.id)!=undefined&localStorage.getItem("mediaPosition"+that.currentsource.id)!=''){
           that.player.currentTime = Number(localStorage.getItem("mediaPosition"+that.currentsource.id))
-        }    
+        }
       })
       $("#savePositionBtn").on('click',function(){
         $("#jumpToSavedPositionBtnTooltip").html("Jump to position "+that.player.currentTime+"s")
         localStorage.setItem("mediaPosition"+that.currentsource.id,that.player.currentTime)
-        that.$vs.notify({title:'Position saved',text:'at '+that.player.currentTime.toFixed(2)+'s',icon:'save',color:'success',position:'bottom-center'})   
+        that.$vs.notify({title:'Position saved',text:'at '+that.player.currentTime.toFixed(2)+'s',icon:'save',color:'success',position:'bottom-center'})
       })
       eventBus.$on('playerJumpTo', seconds => {
         that.player.currentTime = Number(seconds)

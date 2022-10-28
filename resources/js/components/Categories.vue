@@ -162,7 +162,7 @@
     }
   }
 </script>
-<style lang="stylus">
-.vue-treeselect__menu
-  position:relative !important;
+<style>
+.vue-treeselect__menu {
+    position: relative !important; }
 </style>
